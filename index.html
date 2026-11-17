@@ -1544,8 +1544,9 @@ function initCoach(){
  document.querySelectorAll('.cg').forEach(b=>b.onclick=()=>{cGoal=b.dataset.g;document.querySelectorAll('.cg').forEach(x=>x.classList.toggle('on',x===b));renderCoach();});
  $('coachX').onclick=()=>{$('coach').hidden=true;syncSheet();fitCamera();};
  $('cMin').onclick=()=>{const m=document.body.classList.toggle('sheetMini');$('coach').scrollTop=0;$('cMin').textContent=m?'▴':'▾';syncSheet();};
- const list=$('exList');const h2=document.createElement('h2');h2.className='gh';h2.textContent='Muscle coach';list.appendChild(h2);
- const b=document.createElement('button');b.className='ex';b.innerHTML='<span class="i">🎯</span>Train one muscle';b.onclick=()=>openCoach(sel||cT);list.appendChild(b);
+ const list=$('exList');const h2=document.createElement('h2');h2.className='gh';h2.textContent='Muscle coach';
+ const b=document.createElement('button');b.className='ex';b.dataset.id='explore';b.innerHTML='<span class="i">🎯</span>Train one muscle';b.onclick=()=>{cT=sel||cT;enterExplore();};
+ const h3=document.createElement('h2');h3.className='gh';h3.textContent='Activities';list.prepend(h2,b,h3);
 }
 
 /* =========================================================
