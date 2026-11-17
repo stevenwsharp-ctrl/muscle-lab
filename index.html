@@ -859,7 +859,7 @@ function drawMuscle(it,labels){
  const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
  const isSel=sel===mu.d.id,isHov=hover===mu.d.id;
  ctx.globalAlpha=Z?(mu.d.deep?.88:.97):anat?(mu.d.deep&&layer==='all'?.8:.97):(active?.96:.55);
- const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;
+ const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;else if(!Z&&ex.explore&&cT&&!document.body.classList.contains('pick')&&crole!=='target'&&mu.d.id!==cT)ctx.globalAlpha*=(crole&&crole!=='x'?.6:.32);
  if(st==='con'||st==='ecc'){ctx.shadowColor=scol;ctx.shadowBlur=(anat||Z?14:10)*clamp(Math.abs(mu.v)*4,.3,1.2);}
  const g=ctx.createLinearGradient(mx-nx*hw,my-ny*hw,mx+nx*hw,my+ny*hw);
  g.addColorStop(0,shade(col,.4));g.addColorStop(.42,col);g.addColorStop(.6,shade(col,1.3));g.addColorStop(1,shade(col,.4));
@@ -873,7 +873,7 @@ function drawMuscle(it,labels){
  ctx.fill();ctx.shadowBlur=0;
  if((anat||Z)&&active&&!(isSel||isHov)){ctx.lineWidth=1.8;ctx.strokeStyle=scol;}else{ctx.lineWidth=isSel||isHov?2:.7;ctx.strokeStyle=isSel||isHov?'#ffffff':'rgba(0,0,0,.35)';}ctx.stroke();
  if(ex.explore&&crole&&crole!=='x'&&crole!=='target'&&!(isSel||isHov)){ctx.lineWidth=1.8;ctx.strokeStyle=ROLECOL[crole];ctx.stroke();}
- if(crole==='target'){ctx.save();ctx.strokeStyle='#ff4fd8';ctx.lineWidth=2.6;ctx.shadowColor='#ff4fd8';ctx.shadowBlur=12+8*Math.sin(RT*4);ctx.stroke();ctx.restore();}
+ if(crole==='target'||(ex.explore&&mu.d.id===cT&&!Z)){ctx.save();ctx.globalAlpha=.35+.25*Math.sin(RT*3);ctx.fillStyle='#ff4fd8';ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ff4fd8';ctx.lineWidth=2.6;ctx.shadowColor='#ff4fd8';ctx.shadowBlur=12+8*Math.sin(RT*4);ctx.stroke();ctx.restore();}
  // fibers
  if(bl>=hw*1.1&&hw>1.6){
   if(mu.d.pen&&(Z||hw>6)){ // pennate muscle: fibers run at an angle from a central tendon sheet (aponeurosis)
@@ -1515,7 +1515,7 @@ function drawChainPath(W){const R=ex.coach;if(!R||!R.path.length)return;const S=
    ========================================================= */
 let cGoal='wake',cT=null,cPlan=null;
 function chip(id,role){const d=MDEFK[id];return`<span class="chip" data-id="${id}" style="border-color:${ROLECOL[role]};color:${role==='target'?ROLECOL.target:'var(--txt)'}">${d.short}</span>`;}
-function openCoach(T){exitYoga();cT=T||cT||'deltLat';$('coach').hidden=false;$('cMus').value=cT;renderCoach();syncSheet();}
+function openCoach(T){exitYoga();const prevT=cT;cT=T||cT||'deltLat';if(ex.explore&&cT!==prevT){EXPLORE.coach=rolesFor(cT);setTimeout(()=>focusOn(cT),40);}$('coach').hidden=false;$('cMus').value=cT;renderCoach();syncSheet();}
 function detectPhone(){const coarse=matchMedia('(pointer:coarse)').matches;const small=Math.min(screen.width,screen.height)<=820;
  const ua=/iPhone|iPod|Android.+Mobile|Windows Phone/i.test(navigator.userAgent);return(coarse&&small)||ua||innerWidth<=640;}
 let PICKSET=null,pickReg=null;
@@ -1530,7 +1530,7 @@ function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<but
    const B=document.body.classList;B.remove('pick');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();});}
  if(document.body.classList.contains('pick')){document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');layoutCam();}}
 function choosePicked(id){const B=document.body.classList;B.remove('pick');$('coach').scrollTop=0;PICKSET=null;cT=id;if(ex.explore||B.contains('phone'))enterExplore();else openCoach(id);buildPick();layoutCam();}
-function enterPick(){const B=document.body.classList;if(!B.contains('phone'))return;B.add('pick');B.remove('sheetMini');PICKSET=pickReg?new Set(REGION[pickReg]):null;if(!ex.explore)enterExplore();$('coach').hidden=false;
+function enterPick(){const B=document.body.classList;if(!B.contains('phone'))return;FC=null;cam.zoom=1;B.add('pick');B.remove('sheetMini');PICKSET=pickReg?new Set(REGION[pickReg]):null;if(!ex.explore)enterExplore();$('coach').hidden=false;
  document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+60)+'px');buildPick();setTimeout(()=>{document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');syncSheet();},50);syncSheet();}
 function syncSheet(){document.body.classList.toggle('noSheet',$('coach').hidden);layoutCam();}
 function applyPhone(){const ph=detectPhone();const was=document.body.classList.contains('phone');document.body.classList.toggle('phone',ph);
@@ -1540,6 +1540,7 @@ function renderCoach(){
  const T=cT,d=MDEFK[T];cPlan=buildPlan(T,cGoal);if($('cMus').value!==T)$('cMus').value=T;const R=cPlan.R;
  const tip=COMP[T]||`The muscles that share its job (${listNames(R.syn.slice(0,3))||'its helpers'}) can take over. Move slowly, so the ${d.short.toLowerCase()} does the work.`;
  let h=(document.body.classList.contains('shared')?`<div class="sban"><div><b>Shared movement plan</b><div class="csub" style="margin:0">${/#move-/.test(decodeURIComponent(location.hash))?'The exercise repeats. Tap 🎯 Coach mode to explore any muscle.':'The plan plays once. Then coach mode opens: click any muscle.'}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"><button class="b" id="replayShare">▶ Replay plan</button><button class="b" id="exploreShare">🎯 Coach mode</button><button class="b" id="exitShare">Full Muscle Lab</button></div></div>${ctaHTML()}`:'')+`<div class="ctgt"><div class="cn" style="color:${ROLECOL.target}">${d.name}</div><div>${d.does}</div>
+  ${ANAT[T]?`<div class="ctip"><b>📍 Where:</b> ${whereText(T)} of the body · ${REGNAME[regionOf(T)]}<br><b style="color:#34d399">● Starts:</b> ${ANAT[T][0]}<br><b style="color:#5fb4ff">● Attaches:</b> ${ANAT[T][1]}</div>`:''}
   <div class="ctip" style="color:#fde68a"><b>Work with gravity:</b> ${GRAVTIP[regionOf(T)]||''}</div>
   <div class="ctip"><b>${cGoal==='wake'?'If it is underactive':'If it is overactive'}:</b> ${cGoal==='wake'?tip:`It often stays tight to protect a weak neighbor. Strengthen the opposing muscles and the chain, then lengthen it with slow breathing.`}</div></div>`;
  const sec=(t,ids,role,sub)=>ids.length?`<div class="csec"><div class="ch3"><span class="dot" style="background:${ROLECOL[role]}"></span>${t}</div>${sub?`<div class="csub">${sub}</div>`:''}<div>${ids.map(i=>chip(i,role)).join('')}</div></div>`:'';
@@ -1579,7 +1580,7 @@ const EXPLORE={id:'explore',name:'Muscle coach — click any muscle',icon:'🎯'
  keys:[{t:0,p:{},cap:'Coach mode: click any muscle on the body. The coach shows what works with it, what opposes it, its chain from the feet to the head, and a plan.'},{t:.5,p:{'chest.f':-2,'B.clav.e':2},cap:''}],work:[],stab:[]};
 function enterExplore(){exitYoga();if(document.body.classList.contains('phone')){document.body.classList.remove('sheetMini');$('cMin').textContent='▾';}
  EXPLORE.focus=[REG2ZOOM[regionOf(cT)]||'shoulder','core','foot','neck','shoulder','hip','knee','leg'].filter((v,i,a)=>a.indexOf(v)===i);
- prep(EXPLORE);selectEx(EXPLORE);EXPLORE.coach=(cPlan&&cPlan.R.T===cT)?cPlan.R:rolesFor(cT);sel=cT;anat=true;$('tAnat').classList.add('on');$('coach').hidden=false;renderCoach();syncSheet();}
+ prep(EXPLORE);selectEx(EXPLORE);EXPLORE.coach=(cPlan&&cPlan.R.T===cT)?cPlan.R:rolesFor(cT);sel=cT;anat=true;$('tAnat').classList.add('on');$('coach').hidden=false;renderCoach();syncSheet();setTimeout(()=>focusOn(cT),40);}
 const planHash=(T,g,i)=>'#plan-'+T+'-'+g+(i!=null?'-'+(i+1):'');
 const shareURL=(T,g,i)=>baseShareURL()+planHash(T,g,i)+settingsStr();
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>el.classList.remove('on'),2200);}
@@ -2225,11 +2226,60 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
  ctx.fillStyle='#fff';ctx.font=`700 ${ph?10:11.5}px Inter,system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(BR.ph,x,y-(ph?5:6));
  ctx.font=`600 ${ph?9.5:10.5}px "JetBrains Mono",monospace`;ctx.fillStyle='#cfe3ff';ctx.fillText(BR.n?`${Math.ceil(BR.left)}s · ${BR.k}/${BR.n}`:Math.ceil(BR.left)+'s',x,y+(ph?7:8));ctx.textAlign='left';ctx.restore();}
 
+// origin (where it starts) and insertion (where it attaches) — standard anatomy references
+const ANAT={deltAnt:['front of the collarbone (outer third)','deltoid bump on the side of the upper arm bone'],deltLat:['acromion, the top tip of the shoulder blade','deltoid bump on the side of the upper arm bone'],deltPost:['spine of the shoulder blade','deltoid bump on the side of the upper arm bone'],
+ pec:['collarbone, breastbone and ribs 1–6','front of the upper arm bone, just below the shoulder'],lats:['spine from mid-back to the sacrum, back of the hip bone, lower ribs and the lower tip of the shoulder blade','front of the upper arm bone (it twists on the way)'],
+ trapUpper:['base of the skull and the back of the neck','outer third of the collarbone'],trapMid:['spine at the base of the neck and upper back (C7–T3)','top edge of the shoulder blade (acromion and spine)'],trapLower:['spine of the mid-back (T4–T12)','inner end of the shoulder blade spine'],
+ rhomboid:['spine at the base of the neck and upper back (C7–T5)','inner edge of the shoulder blade'],serratus:['sides of ribs 1–8','inner edge of the shoulder blade, on its rib side'],
+ biceps:['two heads on the shoulder blade (above the socket and the coracoid)','radius bone of the forearm, just below the elbow'],brachialis:['front of the lower half of the upper arm bone','ulna bone, just below the elbow'],triceps:['shoulder blade below the socket and the back of the upper arm bone','olecranon, the point of the elbow'],
+ brachiorad:['outer edge of the upper arm bone above the elbow','thumb side of the wrist (radius)'],forearmFlex:['inner bump of the elbow (medial epicondyle)','palm side of the wrist and fingers'],forearmExt:['outer bump of the elbow (lateral epicondyle)','back of the wrist and fingers'],
+ rectusAbd:['pubic bone','lower breastbone and ribs 5–7'],oblique:['outer surface of ribs 5–12','hip bone crest and the midline of the belly'],erector:['sacrum, hip bone crest and lower spine','ribs and the spine all the way up to the skull'],scm:['top of the breastbone and inner collarbone','mastoid bone behind the ear'],
+ gluteMax:['back of the hip bone, sacrum and tailbone','back of the thigh bone and the IT band'],gluteMed:['outer surface of the hip bone','greater trochanter, the bony point on the side of the hip'],iliopsoas:['lower spine (T12–L5) and the inside of the hip bone','lesser trochanter, on the inside top of the thigh bone'],
+ rectFem:['front of the hip bone (below the hip point)','shin bone below the knee, through the kneecap tendon'],vastLat:['outer upper thigh bone','shin bone below the knee, through the kneecap tendon'],vastMed:['inner thigh bone','shin bone below the knee, through the kneecap tendon'],
+ hamstrings:['sit bone (ischial tuberosity)','top of the fibula and the inner shin bone, below the knee'],adductors:['pubic bone and sit bone','inner back of the thigh bone'],gastroc:['back of the thigh bone, just above the knee','heel bone, through the Achilles tendon'],soleus:['back of the shin bone and fibula, below the knee','heel bone, through the Achilles tendon'],
+ tibAnt:['outer front of the shin bone','inner midfoot (first cuneiform and big-toe metatarsal)'],supraspinatus:['top of the shoulder blade, above its spine','top of the upper arm bone (greater tubercle)'],infraspinatus:['back of the shoulder blade, below its spine','back of the upper arm bone head'],
+ teresMinor:['outer edge of the shoulder blade','back of the upper arm bone head (low)'],subscap:['front (rib side) of the shoulder blade','front of the upper arm bone head (lesser tubercle)'],teresMajor:['lower tip of the shoulder blade','front of the upper arm bone, beside the lats'],
+ pecMinor:['ribs 3–5','coracoid, the hook on the front of the shoulder blade'],coracobrach:['coracoid, the hook on the front of the shoulder blade','inner middle of the upper arm bone'],splenius:['back of the neck and upper back spine (C7–T3)','base of the skull behind the ear'],
+ levScap:['side of the top neck vertebrae (C1–C4)','top inner corner of the shoulder blade'],scalenes:['sides of the neck vertebrae (C2–C7)','first and second ribs'],longusColli:['front of the neck and upper chest vertebrae','front of the upper neck vertebrae'],semispinalis:['upper back vertebrae (C7–T6)','base of the skull'],
+ intOblique:['low back fascia, hip bone crest and groin ligament','lower ribs 10–12 and the midline of the belly'],QL:['back of the hip bone crest','lowest rib and the low back vertebrae (L1–L4)'],multifidus:['sacrum and the vertebrae','vertebrae 2–4 levels above'],
+ tfl:['front hip point (ASIS)','IT band, which runs to the outer shin bone below the knee'],sartorius:['front hip point (ASIS)','inner shin bone below the knee'],gracilis:['lower pubic bone','inner shin bone below the knee'],gluteMin:['outer hip bone, under the glute medius','front of the greater trochanter'],
+ piriformis:['front of the sacrum','top of the greater trochanter'],peroneals:['outer side of the fibula','under the foot to the big-toe side (longus) and the outer foot (brevis)'],tibPost:['back of the shin bone and fibula','bones on the inner sole (navicular and others)'],
+ extDigLong:['outer shin bone and fibula','top of the toes'],flexHalLong:['back of the fibula and shin bone','tips of the toes, under the foot'],flexDigBrev:['heel bone, on the sole','middle bones of toes 2–5'],abdHallucis:['inner side of the heel bone','base of the big toe'],abdDigMin:['outer side of the heel bone','base of the little toe'],extDigBrev:['top of the heel bone','top of toes 1–4']};
+let FC=null;
+function muscleFacing(T){prep(EXPLORE);const W=solve(EXPLORE,0);const m=MUSK[T+'L'];if(!m)return null;let c=[0,0,0],n=0;for(const st of m.strands){for(const q of strandPts(W,st)){c=add(c,q);n++;}}c=mulS(c,1/n);
+ const segs=[[W.pelvis.p,W.spine.p],[W.spine.p,W.chest.p],[W.chest.p,W.neck.p],[W.neck.p,W.head.p],[W.pelvis.p,W.Lthigh.p],[W.Lthigh.p,W.Lshin.p],[W.Lshin.p,W.Lfoot.p],[W.Lfoot.p,W.Ltoes.p],[wp(W,'chest',[0,26,0]),W.Lclav.p],[W.Lclav.p,W.Lupper.p],[W.Lupper.p,W.Lfore.p],[W.Lfore.p,W.Lhand.p]];
+ let best=null,bd=1e9;for(const[A,B]of segs){const ab=sub(B,A);const l2=dot3(ab,ab)||1;const u=clamp(dot3(sub(c,A),ab)/l2,0,1);const q=add(A,mulS(ab,u));const d=Math.hypot(...sub(c,q));if(d<bd){bd=d;best=q;}}
+ let nx=c[0]-best[0],nz=c[2]-best[2];if(Math.hypot(nx,nz)<1.5){nx=0;nz=1;}
+ const yaw=Math.atan2(nx,nz)/D;return{c,yaw};}
+function whereText(T){const f=muscleFacing(T);if(!f)return'';const y=((f.yaw%360)+360)%360;const side=y<35||y>325?'front':y>145&&y<215?'back':(y<180?'outer side':'inner side');return side;}
+function focusOn(T){if(!ex.explore)return;const f=muscleFacing(T);if(!f)return;const ph=document.body.classList.contains('phone');
+ let yaw=f.yaw;if(Math.abs(yaw)>20&&Math.abs(yaw)<160)yaw=yaw*.85;fitCamera();const base=cam.target.slice();
+ const W=solve(ex,phase);const m=MUSK[T+'L'];let c=[0,0,0],n=0;for(const st of m.strands)for(const q of strandPts(W,st)){c=add(c,q);n++;}c=mulS(c,1/n);
+ FC={yaw,pitch:8,zoom:ph?1.9:1.45,target:mix(base,c,ph?.9:.6),t0:RT};orbit=false;$('orbit').classList.remove('on');}
+function stepFocusCam(dt){if(!FC)return;const k=1-Math.exp(-dt*4);let dy=((FC.yaw-cam.yaw+540)%360)-180;cam.yaw+=dy*k;cam.pitch+=(FC.pitch-cam.pitch)*k;cam.zoom+=(FC.zoom-cam.zoom)*k;cam.target=mix(cam.target,FC.target,k);if(RT-FC.t0>2.5)FC=null;}
+function drawFocus(W){if(!ex.explore||!cT||document.body.classList.contains('pick'))return;const S=Math.sin(cam.yaw*D)>=0?'L':'R';const m=MUSK[cT+S];if(!m)return;
+ const pts=[];let c=[0,0,0],n=0;const O=[],I_=[];for(const st of m.strands){const q=strandPts(W,st);q.forEach(v=>{c=add(c,v);n++;});O.push(proj(q[0]));I_.push(proj(q[q.length-1]));}c=proj(mulS(c,1/n));
+ const pulse=.5+.5*Math.sin(RT*3);ctx.save();
+ // spotlight: darken the rest of the screen
+ const rad=Math.max(70,Math.min(VW,VH)*.16);const g=ctx.createRadialGradient(c[0],c[1],rad*.55,c[0],c[1],rad*2.2);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(2,6,14,.55)');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+ ctx.strokeStyle=`rgba(255,79,216,${.35+.35*pulse})`;ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.lineDashOffset=-RT*20;ctx.beginPath();ctx.arc(c[0],c[1],rad*.62+pulse*4,0,7);ctx.stroke();ctx.setLineDash([]);
+ // origin and insertion markers
+ const dd=(arr)=>arr.filter((p,i)=>arr.findIndex(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<10)===i);
+ const ph=document.body.classList.contains('phone');ctx.font=`700 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.textBaseline='middle';
+ for(const[arr,col,lab]of[[dd(O),'#34d399','starts'],[dd(I_),'#5fb4ff','attaches']]){arr.forEach((p,i)=>{ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=10;ctx.beginPath();ctx.arc(p[0],p[1],5.5,0,7);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  if(i===0){const tx=p[0]+(p[0]<c[0]?-10:10);ctx.textAlign=p[0]<c[0]?'right':'left';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(lab,tx,p[1]);ctx.fillStyle=col;ctx.fillText(lab,tx,p[1]);}});}
+ // callout label
+ const d=MDEFK[cT];const left=c[0]>(camArea.x0+camArea.x1)/2;const lx=left?Math.max(camArea.x0+12,c[0]-rad*1.9-150):Math.min(camArea.x1-12-200,c[0]+rad*1.9);const ly=clamp(c[1]-rad*1.1,camArea.y0+10,camArea.y1-70);
+ ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;const t1=d.short,w1=ctx.measureText(t1).width;ctx.font=`600 ${ph?10:11.5}px Inter,system-ui,sans-serif`;const t2=(whereText(cT)+' · '+REGNAME[regionOf(cT)]).toUpperCase();const w=Math.max(w1,ctx.measureText(t2).width)+22;
+ const bx=left?lx:lx,by=ly;ctx.strokeStyle='rgba(255,79,216,.8)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(c[0],c[1]);ctx.lineTo(left?bx+w:bx,by+22);ctx.stroke();
+ ctx.fillStyle='rgba(20,6,26,.88)';ctx.beginPath();ctx.roundRect?ctx.roundRect(bx,by,w,ph?40:46,10):ctx.rect(bx,by,w,46);ctx.fill();ctx.strokeStyle='#ff4fd8';ctx.stroke();
+ ctx.textAlign='left';ctx.fillStyle='#ffe0f7';ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;ctx.fillText(t1,bx+11,by+(ph?14:16));ctx.fillStyle='#f0abfc';ctx.font=`600 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;ctx.fillText(t2,bx+11,by+(ph?30:34));
+ ctx.restore();}
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-1755';
+const BUILD='2026-11-17-1815';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2357,7 +2407,7 @@ function loop(now){
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
  else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawVerdict(W);drawCountdown();
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawVerdict(W);drawCountdown();drawFocus(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -2389,7 +2439,7 @@ function init(){
  $('tl').addEventListener('input',e=>{scrubbing=true;phase=e.target.value/1000;});
  $('tl').addEventListener('change',()=>{scrubbing=false;});
  document.querySelectorAll('.sp').forEach(b=>b.onclick=()=>{speed=+b.dataset.s;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x===b));});
- document.querySelectorAll('.vw').forEach(b=>b.onclick=()=>{cam.yaw=+b.dataset.y;cam.pitch=+b.dataset.p;orbit=false;$('orbit').classList.remove('on');setSweep(false);});
+ document.querySelectorAll('.vw').forEach(b=>b.onclick=()=>{FC=null;fitCamera();cam.yaw=+b.dataset.y;cam.pitch=+b.dataset.p;orbit=false;$('orbit').classList.remove('on');setSweep(false);});
  $('sweep').onclick=()=>setSweep(!sweep);
  $('tBreath').onclick=()=>setBreath(!breathOn);
  $('tShare').onclick=shareNow;
