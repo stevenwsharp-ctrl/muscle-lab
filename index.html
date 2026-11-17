@@ -94,6 +94,7 @@ body.phone #cMus{display:none}
 body.phone.xpl #bot{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;gap:5px}body.phone.xpl #bot::-webkit-scrollbar{display:none}body.phone.xpl #bot .grp{flex-wrap:nowrap;gap:5px}body.phone.xpl #bot .b{padding:6px 8px;font-size:12px;white-space:nowrap;flex:0 0 auto}body.phone.xpl:not(.noSheet) #bot #pCoach{display:none}
 body.phone .pk{font-size:13.5px;padding:8px 13px}
 
+#cap.vBad{border-color:rgba(248,113,113,.85);box-shadow:0 0 0 2px rgba(248,113,113,.35),0 10px 30px rgba(120,0,0,.35)}#cap.vBad .c{color:#fecaca}#cap.vGood{border-color:rgba(52,211,153,.6)}
 #capX{display:none;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px;font-size:11.5px;color:var(--dim)}
 #capX span{padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06)}#capX .rp{background:rgba(94,224,255,.18);color:var(--acc);font-weight:700}
 #capPW{display:none;height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}#capP{display:block;height:100%;width:0;background:linear-gradient(90deg,#5ee0ff,#ff4fd8)}
@@ -599,10 +600,10 @@ function interp(ex,t){
  const a=K[i],b=K[(i+1)%n];const t1=(i+1<n)?b.t:1;
  if(ex.cr){const u=clamp((t-a.t)/((t1-a.t)||1),0,1);const k0=K[(i-1+n)%n].P,k1=a.P,k2=b.P,k3=K[(i+2)%n].P;const P={};
   for(const k of ex.keyList){const p0=k0[k]||0,p1=k1[k]||0,p2=k2[k]||0,p3=k3[k]||0;P[k]=.5*(2*p1+(-p0+p2)*u+(2*p0-5*p1+4*p2-p3)*u*u+(-p0+3*p1-3*p2+p3)*u*u*u);}
-  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;return P;}
+  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;{const v=u<.5||b.ok==null?a:b;P._ok=v.ok;P._okl=v.okl;}return P;}
  let u=clamp((t-a.t)/((t1-a.t)||1),0,1);const e=u*u*(3-2*u);
  const P={};for(const k of ex.keyList){const va=a.P[k]||0,vb=b.P[k]||0;P[k]=va+(vb-va)*e;}
- P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;return P;
+ P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;{const v=u<.5||b.ok==null?a:b;P._ok=v.ok;P._okl=v.okl;}return P;
 }
 // push-up: find body tilt so hands and toes both touch the floor; keep hands from sliding
 function pitchSolve(P){let lo=10,hi=89.5,W;
@@ -653,7 +654,7 @@ const P=interp(ex,t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
 function prep(ex){
  if(ex.K)return;
  let cur=expand(ex.base||{});
- let lc='';ex.K=ex.keys.map(k=>{cur=Object.assign({},cur,expand(k.p||{}));lc=k.cap||lc;return{t:k.t,P:cur,cap:lc,br:k.br};});
+ let lc='';ex.K=ex.keys.map(k=>{cur=Object.assign({},cur,expand(k.p||{}));lc=k.cap||lc;return{t:k.t,P:cur,cap:lc,br:k.br,ok:k.ok,okl:k.okl};});
  const ks=new Set();ex.K.forEach(k=>Object.keys(k.P).forEach(x=>ks.add(x)));ex.keyList=[...ks];
  ex.workSet=new Set(ex.work);ex.stabSet=new Set(ex.stab||[]);
  if(ex.anchor==='pushup')solve(ex,0);
@@ -1780,6 +1781,15 @@ function drawGravHUD(){const G=GR;if(!G)return;const ph=document.body.classList.
   const worst=G.J.slice().sort((a,b)=>b.f-a.f)[0];const cue=worst&&worst.f>.25?GCUE[worst.k.replace(/[LR]$/,'')]:'Stacked and easy: gravity goes through the bones. The muscles only fine-tune.';
   ctx.fillStyle='#e9d5ff';ctx.font='600 10.5px Inter,system-ui,sans-serif';wrapText(cue,x+10,yy+4,w-20,13,2);}}
 function wrapText(t,x,y,mw,lh,max){const ws=t.split(' ');let line='',n=0;for(const w_ of ws){const tl=line?line+' '+w_:w_;if(ctx.measureText(tl).width>mw&&line){ctx.fillText(line,x,y);y+=lh;line=w_;if(++n>=max-1){}}else line=tl;}ctx.fillText(line,x,y);}
+function drawVerdict(W){const P=W._P;if(!P||P._ok==null)return;const bad=P._ok===0;const ph=document.body.classList.contains('phone');
+ // screen tint
+ const g=ctx.createRadialGradient(VW/2,VH/2,Math.min(VW,VH)*.3,VW/2,VH/2,Math.max(VW,VH)*.75);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,bad?'rgba(220,30,30,.38)':'rgba(30,200,120,.12)');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+ // badge
+ const t=(bad?'✕  AVOID: ':'✓  PROPER: ')+(P._okl||(bad?'not proper technique':'good technique'));ctx.save();ctx.font=`800 ${ph?14:19}px Inter,system-ui,sans-serif`;const w=ctx.measureText(t).width+(ph?24:36),h=ph?32:42;
+ const cr=$('cap').getBoundingClientRect();const x=(camArea.x0+camArea.x1)/2-w/2,y=(getComputedStyle($('cap')).display!=='none'&&cr.height?cr.bottom:camArea.y0)+(ph?6:10);
+ ctx.fillStyle=bad?'rgba(185,20,30,.92)':'rgba(10,120,80,.9)';ctx.strokeStyle=bad?'#fecaca':'#a7f3d0';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,h/2):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();
+ if(bad){ctx.globalAlpha=.5+.5*Math.abs(Math.sin(RT*4));ctx.strokeStyle='#fff';ctx.stroke();ctx.globalAlpha=1;}
+ ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x+w/2,y+h/2+1);ctx.restore();}
 function drawVignette(){const g=ctx.createRadialGradient(VW/2,VH/2,Math.min(VW,VH)*.35,VW/2,VH/2,Math.max(VW,VH)*.75);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);}
 // daily life and work
 (function(){
@@ -1789,14 +1799,14 @@ const box=(items,x0,x1,y0,y1,z0,z1,top,side,edge)=>{F(items,[[x0,y1,z0],[x1,y1,z
 const desk={id:'desk',group:'Daily life and work',name:'Desk life: sitting and typing',icon:'⌨',dur:16,anchor:'ground',view:[118,8],props:['desk'],seat:true,
  base:{'B.hip.f':90,'B.kn':90,'B.hip.a':6,'B.sh.f':30,'B.sh.a':10,'B.el':82,'B.sh.r':6},
  work:['splenius','semispinalis','trapUpper','levScap','erector','scalenes','forearmFlex','forearmExt','deltAnt','multifidus'],stab:['rectusAbd','longusColli','rhomboid','trapMid','iliopsoas','pecMinor'],
- keys:[{t:0,p:{},cap:'Stacked sitting: the sit bones carry the weight, the ribs float over the pelvis, the ears are over the shoulders. The elbows hang by your sides. The neck muscles only fine-tune.'},
-  {t:.14,p:{},cap:'Type with soft wrists. The forearm muscles work in small, fast bursts.'},
-  {t:.28,p:{'root.pitch':-9,'B.hip.f':81,'spine.f':12,'chest.f':16,'neck.f':20,'B.sh.f':42,'B.clav.p':8,'B.el':72},cap:'Slump: the pelvis rolls back and the chest drops. The head moves forward of the shoulders. Each 2–3 cm of forward head adds load that the neck and upper back must hold.'},
-  {t:.4,p:{'R.sh.a':24,'R.sh.f':38,'R.sh.r':-8,'R.clav.e':7},cap:'Reach for the mouse: the arm drifts out and the shoulder lifts a little. For hours, this tires the upper trapezius and levator scapulae.'},
-  {t:.52,p:{'R.sh.a':10,'R.sh.f':42,'R.sh.r':6,'R.clav.e':0},cap:'Slumped all afternoon: the Ease score drops and the neck and back rings stay red. The hip flexors stay short and the glutes switch off.'},
-  {t:.64,p:{'root.pitch':0,'B.hip.f':90,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':30,'B.clav.p':0,'B.el':82},cap:'Restack: roll forward onto the sit bones and grow tall from the crown. Gravity goes through the spine again. The rings shrink.'},
-  {t:.76,p:{'B.sh.f':168,'B.sh.a':14,'B.el':8,'chest.f':-6,'neck.f':-6},cap:'Micro-break every 30 minutes: reach up and open the chest. Then try the counter moves below.'},
-  {t:.88,p:{'B.sh.f':30,'B.sh.a':10,'B.el':82,'chest.f':0,'neck.f':0},cap:'Back to stacked typing.'}],
+ keys:[{t:0,p:{},ok:1,okl:'stacked sitting',cap:'Stacked sitting: the sit bones carry the weight, the ribs float over the pelvis, the ears are over the shoulders. The elbows hang by your sides. The neck muscles only fine-tune.'},
+  {t:.14,p:{},ok:1,okl:'stacked sitting',cap:'Type with soft wrists. The forearm muscles work in small, fast bursts.'},
+  {t:.28,p:{'root.pitch':-9,'B.hip.f':81,'spine.f':12,'chest.f':16,'neck.f':20,'B.sh.f':42,'B.clav.p':8,'B.el':72},ok:0,okl:'slumped at the desk',cap:'Slump: the pelvis rolls back and the chest drops. The head moves forward of the shoulders. Each 2–3 cm of forward head adds load that the neck and upper back must hold.'},
+  {t:.4,p:{'R.sh.a':24,'R.sh.f':38,'R.sh.r':-8,'R.clav.e':7},ok:0,okl:'mouse too far out',cap:'Reach for the mouse: the arm drifts out and the shoulder lifts a little. For hours, this tires the upper trapezius and levator scapulae.'},
+  {t:.52,p:{'R.sh.a':10,'R.sh.f':42,'R.sh.r':6,'R.clav.e':0},ok:0,okl:'slumped at the desk',cap:'Slumped all afternoon: the Ease score drops and the neck and back rings stay red. The hip flexors stay short and the glutes switch off.'},
+  {t:.64,p:{'root.pitch':0,'B.hip.f':90,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':30,'B.clav.p':0,'B.el':82},ok:1,okl:'restacked',cap:'Restack: roll forward onto the sit bones and grow tall from the crown. Gravity goes through the spine again. The rings shrink.'},
+  {t:.76,p:{'B.sh.f':168,'B.sh.a':14,'B.el':8,'chest.f':-6,'neck.f':-6},ok:1,okl:'micro-break',cap:'Micro-break every 30 minutes: reach up and open the chest. Then try the counter moves below.'},
+  {t:.88,p:{'B.sh.f':30,'B.sh.a':10,'B.el':82,'chest.f':0,'neck.f':0},ok:1,okl:'stacked sitting',cap:'Back to stacked typing.'}],
  focus:['neck','shoulder','core','hip']};
 desk.extra=function(W,t,items){const D_=desk.geo;if(!D_)return;const{sy,sz,dy,dz,ey}=D_;
  // chair
@@ -1821,14 +1831,14 @@ desk.prepX=function(){const W=solve(desk,0);const pel=W.pelvis.p;const sy=W.Lthi
 const nurse={id:'nurse',group:'Daily life and work',name:'Nursing: bedside care',icon:'✚',dur:16,anchor:'ground',view:[96,8],props:['bed'],
  base:{'B.sh.a':6,'B.el':10,'B.hip.a':5},
  work:['erector','multifidus','gluteMax','hamstrings','vastLat','vastMed','biceps','trapMid','rhomboid','forearmFlex','deltPost'],stab:['rectusAbd','intOblique','QL','gluteMed','soleus','tibAnt','longusColli','serratus'],
- keys:[{t:0,p:{},cap:'At the bedside: feet hip-width and close to the bed. Stacked, the line of gravity drops between the feet.'},
-  {t:.12,p:{'root.pitch':48,'B.hip.f':48,'spine.f':18,'chest.f':16,'neck.f':-14,'B.sh.f':72,'B.el':22},cap:'Stoop: the legs stay straight and the back rounds. The trunk, head and arms now hang far in front of the feet.'},
-  {t:.26,p:{},cap:'The low back ring turns red: gravity pulls about half the body weight on a long lever. Many nurses do this dozens of times in a shift, so the back muscles and discs carry the strain.'},
-  {t:.4,p:{'root.pitch':34,'B.hip.f':64,'B.kn':42,'B.an':12,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':66,'B.el':24},cap:'Hinge instead: bend the knees, push the hips back and keep the spine long. The hips and thighs take the load. The back stays stacked.'},
-  {t:.52,p:{'B.el':62,'B.sh.f':48},cap:'Grip the draw sheet with the elbows bent and close to the body. Short levers ask less of the shoulders.'},
-  {t:.64,p:{'root.pitch':24,'B.hip.f':50,'B.kn':28,'B.an':8,'L.hip.a':12,'R.hip.a':0,'root.roll':-5,'B.el':70},cap:'Boost: the legs push and the weight shifts toward the head of the bed. The glutes and quads move the patient. The arms only guide.'},
-  {t:.78,p:{'root.pitch':0,'B.hip.f':0,'B.kn':0,'B.an':0,'B.hip.a':5,'root.roll':0,'B.sh.f':0,'B.el':10,'chest.f':-6},cap:'Stand and restack between patients: ears over shoulders over hips. Then use the counter moves to undo the forward load.'},
-  {t:.9,p:{'chest.f':0},cap:'Ready for the next patient.'}],
+ keys:[{t:0,p:{},ok:1,okl:'stacked at the bedside',cap:'At the bedside: feet hip-width and close to the bed. Stacked, the line of gravity drops between the feet.'},
+  {t:.12,p:{'root.pitch':48,'B.hip.f':48,'spine.f':18,'chest.f':16,'neck.f':-14,'B.sh.f':72,'B.el':22},ok:0,okl:'stooping, rounded back',cap:'Stoop: the legs stay straight and the back rounds. The trunk, head and arms now hang far in front of the feet.'},
+  {t:.26,p:{},ok:0,okl:'stooping, rounded back',cap:'The low back ring turns red: gravity pulls about half the body weight on a long lever. Many nurses do this dozens of times in a shift, so the back muscles and discs carry the strain.'},
+  {t:.4,p:{'root.pitch':34,'B.hip.f':64,'B.kn':42,'B.an':12,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':66,'B.el':24},ok:1,okl:'hip hinge',cap:'Hinge instead: bend the knees, push the hips back and keep the spine long. The hips and thighs take the load. The back stays stacked.'},
+  {t:.52,p:{'B.el':62,'B.sh.f':48},ok:1,okl:'elbows close',cap:'Grip the draw sheet with the elbows bent and close to the body. Short levers ask less of the shoulders.'},
+  {t:.64,p:{'root.pitch':24,'B.hip.f':50,'B.kn':28,'B.an':8,'L.hip.a':12,'R.hip.a':0,'root.roll':-5,'B.el':70},ok:1,okl:'legs do the work',cap:'Boost: the legs push and the weight shifts toward the head of the bed. The glutes and quads move the patient. The arms only guide.'},
+  {t:.78,p:{'root.pitch':0,'B.hip.f':0,'B.kn':0,'B.an':0,'B.hip.a':5,'root.roll':0,'B.sh.f':0,'B.el':10,'chest.f':-6},ok:1,okl:'restacked',cap:'Stand and restack between patients: ears over shoulders over hips. Then use the counter moves to undo the forward load.'},
+  {t:.9,p:{'chest.f':0},ok:1,okl:'stacked',cap:'Ready for the next patient.'}],
  focus:['core','hip','knee','shoulder']};
 nurse.extra=function(W,t,items){const G_=nurse.geo;if(!G_)return;const{by,bz}=G_;
  box(items,-105,105,by-14,by,bz,bz+92,'rgba(226,236,246,.96)','rgba(170,186,204,.95)','#dbe6f2');
@@ -1877,25 +1887,59 @@ function playCounter(id,keys){const c=COUNTER[id],a=EX.find(e=>e.id===id);const 
  const e=buildPlanEx(c.T,{R,blocks},'Counter: '+a.name);e.counterOf=id;cT=c.T;selectEx(e);sel=c.T;
  if(document.body.classList.contains('phone')){$('coach').hidden=true;syncSheet();fitCamera();}
  toast('Counter moves: '+c.why);}
+// SKI CLIFF DROP (freeride, as at a big resort): approach, load, pop, compact air, extend, absorb, ride away
+(function(){
+ const V=700,CH=350,TX=.268,VY=120,G=981,D_=5.9,TE=2.4/D_,TA=(VY+Math.sqrt(VY*VY+2*G*CH+0))/G;
+ // landing time: VY t - G t^2/2 = -CH - TX V t
+ const a=G/2,b=-(VY+TX*V),c=-CH;const tau=(-b+Math.sqrt(b*b-4*a*c))/(2*a);const TL=TE+tau/D_;
+ const sAt=t=>{if(t<TE)return 0;const u=(t-TE)*D_;if(t<TL)return VY*u-.5*G*u*u;return -CH-TX*V*u;};
+ const zE=t=>V*(TE-t)*D_;
+ const C={'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'spine.f':8,'B.sh.f':42,'B.sh.a':22,'B.el':68,'B.sh.r':10,'B.pole':-30,'neck.f':0};
+ const cliff={id:'cliff',group:'Skiing',name:'Cliff drop (freeride)',icon:'⛰',dur:D_,anchor:'ground',view:[96,10],props:['skis','poles','snow'],skiLen:[-75,105],
+  env:'mountain',slope:22,scroll:V,flow:t=>V*t*D_,drop:sAt,terr:(x,z,t)=>{const e=zE(t);return z<e?0:(-CH-TX*(z-e));},
+  vib:t=>t<TE?{f:12,a:.2}:t<TL?{f:0,a:0}:{f:22,a:.3+2.4*Math.exp(-(t-TL)*D_*9)},
+  base:Object.assign({'root.y':2.8},C),
+  work:['vastLat','vastMed','rectFem','gluteMax','hamstrings','gastroc','soleus','tibAnt','rectusAbd','erector'],stab:['intOblique','oblique','deltAnt','serratus','multifidus','peroneals','abdHallucis','tibPost','longusColli'],
+  keys:[{t:0,p:{},ok:1,okl:'centered approach',cap:'Approach: centered stance, shins on the boot tongues, hands forward where you can see them. Know the landing before you drop: scout it from below.'},
+   {t:.16,p:{'neck.f':-10},ok:1,okl:'eyes on the landing',cap:'Spot the landing: eyes up and ahead, not down at the tips. Pick a speed that carries you to the steep part of the landing.'},
+   {t:TE-.07,p:{'root.pitch':22,'B.hip.f':74,'B.kn':84,'B.an':38,'B.sh.f':56,'neck.f':-10},ok:1,okl:'load the spring',cap:'Load: sink into the ankles, knees and hips together, like a spring. The hips stay over the feet.'},
+   {t:TE-.01,p:{'root.pitch':10,'B.hip.f':24,'B.kn':24,'B.an':16,'B.sh.f':66,'B.el':55},ok:1,okl:'pop, hips over feet',cap:'Pop off the lip: extend the ankles, knees and hips at the same time. Hands forward. Do not throw the shoulders back.'},
+   {t:TE+.07,p:{'root.pitch':16,'B.hip.f':88,'B.kn':108,'B.an':36,'B.sh.f':72,'B.el':60,'neck.f':-14},ok:1,okl:'compact in the air',cap:'In the air: knees up, chest over the knees, hands forward. A compact body is easy to control. Keep your eyes on the landing.'},
+   {t:TL-.06,p:{'root.pitch':14,'B.hip.f':38,'B.kn':38,'B.an':22,'B.sh.f':66,'B.el':52,'neck.f':-8},ok:1,okl:'extend to the snow',cap:'Before touch-down: reach the legs toward the snow. Long legs give you room to absorb the impact.'},
+   {t:TL,p:{},ok:1,okl:'land on the steep',cap:'Touch-down on the steep landing: the slope turns the fall into speed down the hill. Landing on flat snow is much harder on the body.'},
+   {t:TL+.07,p:{'root.pitch':26,'B.hip.f':86,'B.kn':96,'B.an':40,'B.sh.f':72,'neck.f':-10},ok:1,okl:'absorb, hips over feet',cap:'Absorb: the ankles, knees and hips flex together with the hips over the feet. The quads and glutes get longer under load (eccentric). Do not sit back: it loads the knees and the skis shoot out.'},
+   {t:TL+.16,p:C,ok:1,okl:'hands forward, centered',cap:'Recover: hands forward, chest over the knees, shins on the boots. Stay centered.'},
+   {t:.88,p:{},ok:1,okl:'ride away centered',cap:'Ride away centered and in control. Look ahead for the next turn.'}],
+  focus:['knee','leg','hip','core']};
+ EX.splice(EX.findIndex(e=>e.id==='jump')+1,0,cliff);
+ cliff.extra=function(W,t,items){const y0=-sAt(t),e=zE(t);if(e<-260||e>260)return;
+  const F=(pts,fill,stroke,o)=>items.push(Object.assign({k:'face',pts,fill,stroke},o||{}));
+  for(let i=0;i<6;i++){const x0=-240+i*80,x1=x0+80,j=(i%2?14:-10);
+   F([[x0,y0+1,e],[x1,y0+1,e],[x1,y0-CH*.55+j,e+6],[x0,y0-CH*.5-j,e+5]],i%2?'rgba(58,62,72,.97)':'rgba(48,52,62,.97)','rgba(20,22,28,.9)',{z0:6,fx:1});
+   F([[x0,y0-CH*.5-j,e+5],[x1,y0-CH*.55+j,e+6],[x1,y0-CH,e+12],[x0,y0-CH,e+10]],i%2?'rgba(44,48,58,.97)':'rgba(66,70,82,.97)','rgba(20,22,28,.9)',{z0:6,fx:1});}
+  F([[-240,y0+2,e-8],[240,y0+2,e-8],[240,y0+2,e+2],[-240,y0+2,e+2]],'rgba(245,250,255,.95)','rgba(255,255,255,.9)',{z0:7,fx:1});
+  for(const x of[-170,-60,90,200])items.push({k:'ball',c:[x,y0-CH+10,e+26],r:14,col:'#4a505c',shade:true,fx:1});};
+ COUNTER.cliff={T:'vastLat',k:['quad','fold','calf'],why:'lengthen the quads, back and calves after landings'};
+})();
 // teaching movements: gravity and ease
 EX.push({id:'stack',group:'Gravity and ease',name:'Stacked vs slumped posture',icon:'⇣',dur:12,anchor:'ground',view:[80,6],props:[],
  base:{'B.sh.a':6,'B.el':8},
  work:['splenius','semispinalis','scm','longusColli','trapUpper','levScap','erector','multifidus','rectusAbd','soleus','gastroc','tibAnt','gluteMax','hamstrings'],stab:['intOblique','QL','iliopsoas'],
- keys:[{t:0,p:{},cap:'Stacked: ears over shoulders over hips over ankles. The line of gravity passes close to each joint, so the muscles only fine-tune.'},
-  {t:.25,p:{'neck.f':24,'chest.f':16,'spine.f':6,'B.clav.p':8,'root.pitch':-5,'B.hip.f':-5,'B.sh.f':12},cap:'Slumping: the head drifts forward and the chest drops. Watch the neck and low back rings grow.'},
-  {t:.45,p:{},cap:'Slumped: gravity now pulls the head and trunk forward. The neck and back muscles must hold this all day, and the breath gets shallow.'},
-  {t:.62,p:{'neck.f':0,'chest.f':0,'spine.f':0,'B.clav.p':0,'root.pitch':0,'B.hip.f':0,'B.sh.f':0},cap:'Restack: grow tall from the crown, let the ribs float over the pelvis. The rings shrink and the Ease score rises.'},
-  {t:.85,p:{},cap:'Stacked again: less effort leaves more energy for movement, breath and connection.'}]});
+ keys:[{t:0,p:{},ok:1,okl:'stacked posture',cap:'Stacked: ears over shoulders over hips over ankles. The line of gravity passes close to each joint, so the muscles only fine-tune.'},
+  {t:.25,p:{'neck.f':24,'chest.f':16,'spine.f':6,'B.clav.p':8,'root.pitch':-5,'B.hip.f':-5,'B.sh.f':12},ok:0,okl:'slumping',cap:'Slumping: the head drifts forward and the chest drops. Watch the neck and low back rings grow.'},
+  {t:.45,p:{},ok:0,okl:'slumped posture',cap:'Slumped: gravity now pulls the head and trunk forward. The neck and back muscles must hold this all day, and the breath gets shallow.'},
+  {t:.62,p:{'neck.f':0,'chest.f':0,'spine.f':0,'B.clav.p':0,'root.pitch':0,'B.hip.f':0,'B.sh.f':0},ok:1,okl:'restacked',cap:'Restack: grow tall from the crown, let the ribs float over the pelvis. The rings shrink and the Ease score rises.'},
+  {t:.85,p:{},ok:1,okl:'stacked posture',cap:'Stacked again: less effort leaves more energy for movement, breath and connection.'}]});
 EX.push({id:'skistance',group:'Gravity and ease',name:'Ski stance: centered vs back seat',icon:'⛷',dur:12,anchor:'ground',view:[88,8],props:['skis','poles','snow'],skiLen:[-70,95],
  env:'mountain',slope:14,cord:true,scroll:200,vib:()=>({f:12,a:.15}),
  base:{'spine.f':8,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.sh.r':10,'root.y':2.8,'B.pole':-30},
  work:['vastLat','vastMed','rectFem','gluteMax','hamstrings','tibAnt','gastroc','soleus','erector','rectusAbd','iliopsoas'],stab:['intOblique','multifidus','peroneals','tibPost','abdHallucis'],
- keys:[{t:0,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30},cap:'Centered: shins lean into the boot tongues, hips over the feet. The line of gravity drops through the boots. The quads stay calm and the skis grip along their length.'},
-  {t:.2,p:{},cap:'Hold centered. This is the stance that lets the ski do the work.'},
-  {t:.38,p:{'root.pitch':5,'B.hip.f':70,'B.kn':80,'B.an':12},cap:'Back seat: ankles open, hips drop behind the feet. The quads must hold the body up against gravity, and the ski tips lose grip.'},
-  {t:.55,p:{},cap:'Feel it: the knee and hip load rings grow red. This is why back-seat skiing burns the thighs.'},
-  {t:.7,p:{'root.pitch':20,'B.hip.f':40,'B.kn':48,'B.an':38},cap:'Too far forward: the tails go light and the calves and shins strain.'},
-  {t:.85,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30},cap:'Back to centered: flex the ankles, knees and hips together. Ease returns.'}],
+ keys:[{t:0,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30},ok:1,okl:'centered stance',cap:'Centered: shins lean into the boot tongues, hips over the feet. The line of gravity drops through the boots. The quads stay calm and the skis grip along their length.'},
+  {t:.2,p:{},ok:1,okl:'centered stance',cap:'Hold centered. This is the stance that lets the ski do the work.'},
+  {t:.38,p:{'root.pitch':5,'B.hip.f':70,'B.kn':80,'B.an':12},ok:0,okl:'back seat',cap:'Back seat: ankles open, hips drop behind the feet. The quads must hold the body up against gravity, and the ski tips lose grip.'},
+  {t:.55,p:{},ok:0,okl:'back seat',cap:'Feel it: the knee and hip load rings grow red. This is why back-seat skiing burns the thighs.'},
+  {t:.7,p:{'root.pitch':20,'B.hip.f':40,'B.kn':48,'B.an':38},ok:0,okl:'too far forward',cap:'Too far forward: the tails go light and the calves and shins strain.'},
+  {t:.85,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30},ok:1,okl:'centered stance',cap:'Back to centered: flex the ankles, knees and hips together. Ease returns.'}],
  focus:['knee','leg','hip','foot']});
 EX.find(e=>e.id==='stack').focus=['neck','core','foot','hip'];
 
@@ -2103,7 +2147,7 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-1630';
+const BUILD='2026-11-17-1650';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2216,7 +2260,7 @@ function updateUI(){
   if($('capC').textContent!==cue)$('capC').textContent=cue;
   const x=`<span class="rp">${IP._rep?(b.reps>1?'Rep '+IP._rep+' of '+b.reps:'')+(IP._sd||''):'Get ready'}</span><span>${b.src}</span><span>Dose: ${b.dose}</span>${b.next?`<span>Next: ${b.next}</span>`:''}`;
   if($('capX').innerHTML!==x)$('capX').innerHTML=x;$('capP').style.width=clamp((phase-b.t0)/(b.t1-b.t0),0,1)*100+'%';if(!document.body.classList.contains('follow')){document.body.classList.add('follow');layoutCam();}}
- else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=IP._cap;if($('capC').textContent!==cap)$('capC').textContent=cap;if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
+ else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=(IP._ok===0?'✕ AVOID — ':IP._ok===1?'✓ ':'')+IP._cap;if($('capC').textContent!==cap)$('capC').textContent=cap;{const c=$('cap').classList;c.toggle('vBad',IP._ok===0);c.toggle('vGood',IP._ok===1);}if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
  if(!scrubbing)$('tl').value=Math.round(phase*1000);
  if(++uiTick%3)return;
  for(const r of rows){const a=MUSK[r.id+'L'],b=MUSK[r.id+'R'];const ca=STATECOL[a.state],cb=STATECOL[b.state];r.dL.style.background=ca;r.dR.style.background=cb;
@@ -2231,7 +2275,7 @@ function loop(now){
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
  else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}
+ RT=now/1000;BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawVerdict(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
