@@ -782,7 +782,7 @@ function fitCamera(){
 }
 let camArea={x0:0,x1:0,y0:0,y1:0};
 function layoutCam(){
- const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(B.contains('follow')?160:96):120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?56:VH*.46):0;x0=0;x1=VW;y0=B.contains('xpl')?14:B.contains('follow')?150:96;y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
+ const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?56:VH*.46):0;x0=0;x1=VW;y0=B.contains('xpl')?14:B.contains('follow')?150:96;y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
  camArea={x0,x1,y0,y1};cam.cx=(x0+x1)/2;cam.cy=(y0+y1)/2+8;
  const b=cam.box||[100,200,100];const horiz=Math.hypot(b[0],b[2]);
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
@@ -1781,6 +1781,16 @@ function drawGravHUD(){const G=GR;if(!G)return;const ph=document.body.classList.
   const worst=G.J.slice().sort((a,b)=>b.f-a.f)[0];const cue=worst&&worst.f>.25?GCUE[worst.k.replace(/[LR]$/,'')]:'Stacked and easy: gravity goes through the bones. The muscles only fine-tune.';
   ctx.fillStyle='#e9d5ff';ctx.font='600 10.5px Inter,system-ui,sans-serif';wrapText(cue,x+10,yy+4,w-20,13,2);}}
 function wrapText(t,x,y,mw,lh,max){const ws=t.split(' ');let line='',n=0;for(const w_ of ws){const tl=line?line+' '+w_:w_;if(ctx.measureText(tl).width>mw&&line){ctx.fillText(line,x,y);y+=lh;line=w_;if(++n>=max-1){}}else line=tl;}ctx.fillText(line,x,y);}
+function drawCountdown(){if(!ex.events||!ex.events.length)return;const sp=Math.max(speed,.05);const ph=document.body.classList.contains('phone');
+ let nx=null,dtn=1e9,last=null,dtl=1e9;for(const e of ex.events){const d=((e.t-phase)%1+1)%1;if(d<dtn){dtn=d;nx=e;}const b=((phase-e.t)%1+1)%1;if(b<dtl){dtl=b;last=e;}}
+ const secN=dtn*ex.dur/sp,secL=dtl*ex.dur/sp;const cx=(camArea.x0+camArea.x1)/2,cy=camArea.y1-(ph?70:90);ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+ if(secL<.55){const a=1-secL/.55;const sz=(ph?34:52)*(1+.25*(1-a));ctx.globalAlpha=a;ctx.font=`900 ${sz}px Inter,system-ui,sans-serif`;ctx.lineWidth=6;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.strokeText(last.f,cx,cy);
+  ctx.fillStyle=/IMPACT/.test(last.f)?'#ff5e5e':'#7ef9ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=24;ctx.fillText(last.f,cx,cy);ctx.restore();return;}
+ if(secN<3.2){const r=ph?26:34;const f=1-secN/3.2;ctx.fillStyle='rgba(6,12,24,.78)';ctx.beginPath();ctx.arc(cx,cy,r+10,0,7);ctx.fill();
+  ctx.lineWidth=5;ctx.strokeStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke();const col=/impact/i.test(nx.l)?'#ff8080':'#7ef9ff';ctx.strokeStyle=col;ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+f*2*Math.PI);ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`800 ${ph?18:24}px "JetBrains Mono",monospace`;ctx.fillText(secN<1?secN.toFixed(1):Math.ceil(secN)+'',cx,cy+1);
+  ctx.font=`800 ${ph?10:12}px Inter,system-ui,sans-serif`;ctx.fillStyle=col;ctx.fillText((nx.l+' in').toUpperCase(),cx,cy-r-20);}
+ ctx.restore();}
 function drawVerdict(W){const P=W._P;if(!P||P._ok==null)return;const bad=P._ok===0;const ph=document.body.classList.contains('phone');
  // screen tint
  const g=ctx.createRadialGradient(VW/2,VH/2,Math.min(VW,VH)*.3,VW/2,VH/2,Math.max(VW,VH)*.75);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,bad?'rgba(220,30,30,.38)':'rgba(30,200,120,.12)');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
@@ -1910,8 +1920,9 @@ function playCounter(id,keys){const c=COUNTER[id],a=EX.find(e=>e.id===id);const 
    {t:TL+.07,p:{'root.pitch':26,'B.hip.f':86,'B.kn':96,'B.an':40,'B.sh.f':72,'neck.f':-10},ok:1,okl:'absorb, hips over feet',cap:'Absorb: the ankles, knees and hips flex together with the hips over the feet. The quads and glutes get longer under load (eccentric). Do not sit back: it loads the knees and the skis shoot out.'},
    {t:TL+.16,p:C,ok:1,okl:'hands forward, centered',cap:'Recover: hands forward, chest over the knees, shins on the boots. Stay centered.'},
    {t:.88,p:{},ok:1,okl:'ride away centered',cap:'Ride away centered and in control. Look ahead for the next turn.'}],
-  focus:['knee','leg','hip','core']};
+  focus:['knee','leg','hip','core'],events:[{t:TE,l:'Takeoff',f:'POP!'},{t:TL,l:'Landing impact',f:'IMPACT!'}]};
  EX.splice(EX.findIndex(e=>e.id==='jump')+1,0,cliff);
+ {const j=EX.find(e=>e.id==='jump');if(j)j.events=[{t:.3,l:'Takeoff',f:'JUMP!'},{t:.8,l:'Landing impact',f:'IMPACT!'}];}
  cliff.extra=function(W,t,items){const y0=-sAt(t),e=zE(t);if(e<-260||e>260)return;
   const F=(pts,fill,stroke,o)=>items.push(Object.assign({k:'face',pts,fill,stroke},o||{}));
   for(let i=0;i<6;i++){const x0=-240+i*80,x1=x0+80,j=(i%2?14:-10);
@@ -1920,6 +1931,52 @@ function playCounter(id,keys){const c=COUNTER[id],a=EX.find(e=>e.id===id);const 
   F([[-240,y0+2,e-8],[240,y0+2,e-8],[240,y0+2,e+2],[-240,y0+2,e+2]],'rgba(245,250,255,.95)','rgba(255,255,255,.9)',{z0:7,fx:1});
   for(const x of[-170,-60,90,200])items.push({k:'ball',c:[x,y0-CH+10,e+26],r:14,col:'#4a505c',shade:true,fx:1});};
  COUNTER.cliff={T:'vastLat',k:['quad','fold','calf'],why:'lengthen the quads, back and calves after landings'};
+})();
+// SLAM DUNK: approach, penultimate step, two-foot plant, arm swing, takeoff, dunk, landing
+(function(){
+ const D_=3.2,TJ=.42,TL=.72,TD=.555,G=981,T=(TL-TJ)*D_,V0=G*T/2;
+ const lift=t=>{if(t<TJ||t>TL)return 0;const u=(t-TJ)*D_;return V0*u-.5*G*u*u;};
+ const vel=t=>t<.34?420:t<TJ?260:t<TL?160:t<.8?60:0;
+ const zOf=t=>{let z=0;const n=60;for(let i=0;i<n;i++){const a=t+(TD-t)*i/n,b=t+(TD-t)*(i+1)/n;z+=vel((a+b)/2)*(b-a)*D_;}return z;}; // distance still to travel until the dunk
+ const dunk={id:'dunk',group:'Cardio and sport',name:'Slam dunk',icon:'🏀',dur:D_,anchor:'ground',view:[100,8],props:['court'],lift,
+  base:{'B.sh.a':10},
+  work:['gluteMax','vastLat','vastMed','rectFem','gastroc','soleus','hamstrings','deltAnt','lats','pec','triceps','serratus'],stab:['rectusAbd','erector','gluteMed','tibAnt','peroneals','forearmFlex','intOblique','abdHallucis'],
+  keys:[{t:0,p:{'L.hip.f':38,'L.kn':40,'L.an':10,'R.hip.f':-14,'R.kn':30,'R.an':-10,'L.sh.f':-20,'L.el':80,'R.sh.f':50,'R.el':100,'root.pitch':8},ok:1,okl:'smooth approach',cap:'Approach: a few fast, relaxed strides. The ball is secure in the hand.'},
+   {t:.12,p:{'L.hip.f':-14,'L.kn':30,'L.an':-10,'R.hip.f':38,'R.kn':40,'R.an':10,'L.sh.f':30,'R.sh.f':40},ok:1,okl:'build speed',cap:'Build speed. The eyes find the rim.'},
+   {t:.24,p:{'L.hip.f':52,'L.kn':50,'L.an':18,'R.hip.f':-24,'R.kn':40,'R.an':-4,'root.pitch':4,'R.sh.f':45},ok:1,okl:'long penultimate step',cap:'Penultimate step: a long, low step lowers the hips. It turns run speed into a jump.'},
+   {t:.34,p:{'B.hip.f':78,'B.kn':88,'B.an':32,'root.pitch':30,'spine.f':10,'L.sh.f':-45,'L.el':20,'R.sh.f':-20,'R.el':80},ok:1,okl:'plant and load',cap:'Plant both feet. Hips back, knees over the toes, arms swing back. The quads, glutes and calves stretch under load and store energy.'},
+   {t:TJ,p:{'B.hip.f':0,'B.kn':0,'B.an':-30,'root.pitch':0,'spine.f':0,'L.sh.f':150,'L.el':10,'R.sh.f':165,'R.el':60,'neck.f':-12},ok:1,okl:'triple extension',cap:'Takeoff: ankles, knees and hips extend together (triple extension) while the arms swing up. The arm swing adds height.'},
+   {t:.5,p:{'B.hip.f':14,'B.kn':30,'B.an':-20,'R.sh.f':178,'R.el':78,'L.sh.f':140},ok:1,okl:'cock the ball',cap:'Rising: the ball goes back behind the head, ready to slam.'},
+   {t:TD,p:{'R.sh.f':128,'R.el':12,'R.wr':-40,'B.hip.f':20,'B.kn':40},ok:1,okl:'slam',cap:'Dunk: the lats, chest and triceps snap the arm down and push the ball through the rim.'},
+   {t:.63,p:{'R.sh.f':90,'L.sh.f':90,'B.hip.f':30,'B.kn':34,'B.an':6,'R.wr':0},ok:1,okl:'spot the floor',cap:'Coming down: let go of the rim, hands out for balance, eyes on the floor.'},
+   {t:TL,p:{'B.hip.f':20,'B.kn':22,'B.an':6},ok:1,okl:'land on both feet',cap:'Landing: both feet, ball of the foot first.'},
+   {t:.79,p:{'B.hip.f':62,'B.kn':72,'B.an':30,'root.pitch':24,'B.sh.f':40,'B.el':30},ok:1,okl:'soft landing',cap:'Absorb: hips back, knees over the toes. Do not let the knees cave in. The quads and glutes work eccentrically.'},
+   {t:.9,p:{'B.hip.f':0,'B.kn':0,'B.an':0,'root.pitch':0,'B.sh.f':0,'B.el':10,'neck.f':0,'L.sh.f':-10,'R.sh.f':40,'R.el':90},ok:1,okl:'recover',cap:'Recover and stand tall.'}],
+  focus:['knee','leg','hip','shoulder'],
+  events:[{t:TJ,l:'Takeoff',f:'JUMP!'},{t:TD,l:'Dunk',f:'SLAM!'},{t:TL,l:'Landing impact',f:'IMPACT!'}]};
+ dunk.prepX=function(){const W=solve(dunk,TD);const h=wp(W,'Rhand',[0,-8,2]);dunk.rim=[h[0],h[1]-10,h[2]];dunk.zz=zOf;};
+ dunk.extra=function(W,t,items){const r=dunk.rim;if(!r)return;const dz=t<=TD?zOf(t):-zOf2(t);const c=[r[0],r[1],r[2]+dz];
+  const F=(pts,fill,stroke,o)=>items.push(Object.assign({k:'face',pts,fill,stroke},o||{}));
+  // court
+  F([[-260,0,-300+dz*0],[260,0,-300],[260,0,500],[-260,0,500]],'rgba(176,122,70,.28)','rgba(0,0,0,0)',{z0:-60,fx:1});
+  for(const z of[-200,-100,0,100,200,300])items.push(L([-240,.2,z-((t*D_*80)%100)],[240,.2,z-((t*D_*80)%100)],.6,'rgba(255,255,255,.18)',{fx:1}));
+  // paint and free-throw line move with the hoop
+  F([[-245/2,.3,c[2]-580+38],[245/2,.3,c[2]-580+38],[245/2,.3,c[2]+38],[-245/2,.3,c[2]+38]],'rgba(200,60,40,.22)','rgba(255,255,255,.55)',{z0:-50,fx:1});
+  // backboard, pole, rim, net
+  const bz=c[2]+38,by=c[1]-15;
+  F([[-91,by,bz],[91,by,bz],[91,by+105,bz],[-91,by+105,bz]],'rgba(220,235,250,.28)','rgba(255,255,255,.9)',{z0:-4,fx:1});
+  F([[-30,by+8,bz-.5],[30,by+8,bz-.5],[30,by+53,bz-.5],[-30,by+53,bz-.5]],'rgba(0,0,0,0)','rgba(255,90,60,.9)',{z0:-3,fx:1});
+  items.push(L([0,0,bz+90],[0,by+60,bz+90],7,'#3a4250',{fx:1}),L([0,by+60,bz+90],[0,by+60,bz],5,'#3a4250',{fx:1}));
+  const shake=Math.exp(-Math.max(0,(t-TD))*D_*6)*(t>TD?6:0)*Math.sin((t-TD)*D_*40);
+  let p0=null;for(let i=0;i<=24;i++){const a=i/24*2*Math.PI;const p1=[c[0]+23*Math.cos(a),c[1]-Math.max(0,shake*Math.sin(a)*.3)-(t>TD&&t<TD+.08?3:0),c[2]+23*Math.sin(a)];if(p0)items.push(L(p0,p1,1.8,'#ff6a1a',{fx:1}));p0=p1;}
+  for(let i=0;i<12;i++){const a=i/12*2*Math.PI;const sw=Math.sin(RT*3+i)*1.5+shake;items.push(L([c[0]+23*Math.cos(a),c[1],c[2]+23*Math.sin(a)],[c[0]+13*Math.cos(a)+sw,c[1]-42,c[2]+13*Math.sin(a)],.6,'rgba(255,255,255,.8)',{fx:1}));}
+  // ball: in the hand, then through the net, then bounce
+  let bp;if(t<=TD){bp=wp(W,'Rhand',[0,-9,3]);}else{const u=(t-TD)*D_;const fall=Math.min(u*u*G*.5+40*u,c[1]-12);const y=c[1]-8-fall;const hb=Math.max(12,y);bp=[c[0],hb,c[2]];if(y<12){const u2=u-Math.sqrt(2*(c[1]-20)/G);const bounce=Math.abs(Math.sin(u2*5))*80*Math.exp(-u2*1.5);bp=[c[0],12+bounce,c[2]-u2*30];}}
+  items.push({k:'ball',c:bp,r:12,col:'#e8742c',shade:true,fx:1});
+  items.push({k:'ball',c:[r[0],r[1]+20,r[2]],r:.01,col:'#000000'});};
+ function zOf2(t){let z=0;const n=40;for(let i=0;i<n;i++){const a=TD+(t-TD)*i/n,b=TD+(t-TD)*(i+1)/n;z+=vel((a+b)/2)*(b-a)*D_;}return z;}
+ EX.splice(EX.findIndex(e=>e.id==='box')+1,0,dunk);
+ COUNTER.dunk={T:'gastroc',k:['calf','quad','fold'],why:'lengthen the calves, quads and back after jumping'};
 })();
 // teaching movements: gravity and ease
 EX.push({id:'stack',group:'Gravity and ease',name:'Stacked vs slumped posture',icon:'⇣',dur:12,anchor:'ground',view:[80,6],props:[],
@@ -2147,7 +2204,7 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-1650';
+const BUILD='2026-11-17-1710';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2161,7 +2218,7 @@ const CONFIG={
  book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:'',
  // allFree: true opens every feature (Pro and Coach) for everyone and hides the Go Pro button. Set it to false to turn on the paid plans.
  allFree:true};
-const FREE_EX=new Set(['yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
+const FREE_EX=new Set(['dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
 const has=f=>CONFIG.allFree||(TIERS[TIER]||0)>=(TIERS[f]||0);
@@ -2275,7 +2332,7 @@ function loop(now){
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
  else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawVerdict(W);
+ RT=now/1000;BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawVerdict(W);drawCountdown();
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);

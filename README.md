@@ -1,6 +1,6 @@
 # Muscle Lab
 
-A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 19 activities.
+A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 20 activities.
 
 ### ▶ [Open Muscle Lab](https://stevenwsharp-ctrl.github.io/muscle-lab/)
 
@@ -10,13 +10,14 @@ A 3D muscle lab that runs in the browser. You watch about 60 muscles on each sid
 
 - **Activities:**
   - Arm raises, pull-up, push-up, squat
-  - Running on asphalt, trail or track, jump rope, boxing
+  - Running on asphalt, trail or track, jump rope, boxing, and a slam dunk (approach, penultimate step, plant, takeoff, dunk, landing)
   - Skiing on groomers, moguls and powder, ski jumping, and a freeride cliff drop (approach, load, pop, compact air, extend, absorb, ride away)
   - Piloting a boat in rough seas
   - Daily life and work: desk life (sitting and typing) and nursing (bedside care)
 - **Yoga mode:** 26 poses and a sun salutation, with Sanskrit names. Pick up to three focus areas (hips, hamstrings, shoulders, spine, core, legs, balance, neck, feet, calm, or the muscle you picked in the coach). The flow follows a class arc: arrive, warm up, sun salutation, standing poses, balance, backbend, seated poses, cool down and rest. One-sided poses play on the left side, then on the right side. Short flows are free; full flows are Pro. Share a flow with a link.
 - **Breath option:** a breath circle and lungs and a diaphragm that move on the body. Paces: calm 4–6, even 5–5, box 4–4–4–4 and relax 4–7–8. In yoga, the breath follows the poses: inhale to lift or open, exhale to fold, twist or lower.
 - **Share anything:** the 🔗 Share button copies a link to what you see now: an activity (`#act-desk`), its counter moves (`#counter-desk`), a muscle in the coach (`#muscle-soleus`), a plan, one exercise, a yoga flow or one yoga pose (`#pose-tree`).
+- **Countdowns:** in the slam dunk, cliff drop and ski jumping, a ring counts down to the takeoff, the dunk and the landing impact, then flashes JUMP!, POP!, SLAM! or IMPACT!.
 - **Proper vs avoid:** in lessons that show a wrong form (back seat, slumping, stooping), a large red "✕ AVOID" badge and a red screen edge show the wrong part. A green "✓ PROPER" badge shows the correct part.
 - **Counter moves:** each activity has a "↺ Counter it" row. It plays moves that undo the load of that activity, for example a chest opener and a neck reset after desk life.
 - **Both sides and all angles:** one-sided exercises play on the left side, then on the right side. The ↔↕ Sweep view swings the camera left-right and up-down.
