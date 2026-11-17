@@ -1,6 +1,6 @@
 # Muscle Lab
 
-A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 16 activities.
+A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 18 activities.
 
 ### ▶ [Open Muscle Lab](https://stevenwsharp-ctrl.github.io/muscle-lab/)
 
@@ -13,6 +13,9 @@ A 3D muscle lab that runs in the browser. You watch about 60 muscles on each sid
   - Running on asphalt, trail or track, jump rope, boxing
   - Skiing on groomers, moguls and powder, and ski jumping
   - Piloting a boat in rough seas
+  - Daily life and work: desk life (sitting and typing) and nursing (bedside care)
+- **Counter moves:** each activity has a "↺ Counter it" row. It plays moves that undo the load of that activity, for example a chest opener and a neck reset after desk life.
+- **Both sides and all angles:** one-sided exercises play on the left side, then on the right side. The ↔↕ Sweep view swings the camera left-right and up-down.
   - Two gravity lessons: stacked vs slumped posture, and centered vs back-seat ski stance
 - **Muscle colors:**
   - Red: shortening under load
@@ -33,8 +36,8 @@ A 3D muscle lab that runs in the browser. You watch about 60 muscles on each sid
 
 | Plan | What it includes |
 |---|---|
-| **Free** | 7 activities, the Muscle coach with plans for every muscle, the Gravity and Ease layer, sharing, and Zoom anatomy |
-| **Pro** | All 16 activities, the physiology views, saved plans, and printing plans or saving them as PDF |
+| **Free** | 9 activities, the Muscle coach with plans for every muscle, the Gravity and Ease layer, sharing, and Zoom anatomy |
+| **Pro** | All 18 activities, the physiology views, saved plans, and printing plans or saving them as PDF |
 | **Coach** | Everything in Pro, plus your name, title and booking link on every plan you share, and branded printed plans |
 
 ### How to set up payment

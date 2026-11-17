@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Muscle Lab — 3D muscles, gravity and movement coach</title>
 <meta name="description" content="A movement plan in 3D: watch which muscles work, oppose and stabilize, from the feet to the neck.">
-<meta property="og:title" content="Fibwave Muscle Lab — movement plan">
+<meta property="og:title" content="Muscle Lab — movement plan">
 <meta property="og:description" content="Watch the plan in 3D slow motion: the muscles that work, oppose and stabilize, from the feet to the neck.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@600;700&display=swap">
@@ -69,6 +69,9 @@ button.b.on{background:rgba(94,224,255,.18);border-color:rgba(94,224,255,.6)}
  .ps-by{text-align:right;font-size:11px}.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin:10px 0}.ps-tip{background:#f6f0e2;padding:6px 8px;border-radius:6px}
  #printSheet ol{padding-left:18px}#printSheet li{margin:8px 0;break-inside:avoid}.ps-l{font:700 9.5px Arial;letter-spacing:.12em;text-transform:uppercase;color:#a3741f}.ps-m{font-size:14px;font-weight:700}.ps-m span{font-weight:400;color:#555}.ps-d{font-style:italic}.ps-c{color:#444;font-size:11px}
  .ps-foot{margin-top:14px;border-top:1px solid #ccc;padding-top:6px;font-size:10px;color:#555}}
+#ctr{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:7px;font-size:11px;color:var(--dim)}#ctr:empty{display:none}
+#ctr .cb{font:inherit;font-size:11px;padding:3px 9px;border-radius:12px;border:1px solid rgba(52,211,153,.45);background:rgba(52,211,153,.10);color:#a7f3d0;cursor:pointer}#ctr .cb:hover{background:rgba(52,211,153,.22)}#ctr .cb.all{border-color:#34d399;color:#06281c;background:#34d399;font-weight:700}#ctr .cb.bk{border-color:rgba(126,249,255,.4);background:rgba(126,249,255,.08);color:#cffafe}#ctr .ct{font-weight:700;color:#6ee7b7}
+body.phone #ctr{margin-top:4px}body.phone #ctr .cb{font-size:10.5px;padding:2px 7px}
 #capX{display:none;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px;font-size:11.5px;color:var(--dim)}
 #capX span{padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06)}#capX .rp{background:rgba(94,224,255,.18);color:var(--acc);font-weight:700}
 #capPW{display:none;height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}#capP{display:block;height:100%;width:0;background:linear-gradient(90deg,#5ee0ff,#ff4fd8)}
@@ -164,8 +167,8 @@ body.phone #zBig{display:none}
  <div class="chd"><b>⭐ Muscle Lab plans</b><button class="b" id="payX" aria-label="Close">✕</button></div>
  <div class="csub" id="payNeed" style="color:#ffd84d"></div>
  <div class="tiers">
-  <div class="tier"><div class="tn">Free</div><div class="tp">$0</div><ul><li>7 activities, including running, skiing and posture</li><li>Muscle coach with plans for every muscle</li><li>Gravity and Ease layer</li><li>Share plans and exercises</li><li>Zoom anatomy</li></ul></div>
-  <div class="tier hot"><div class="tn">Pro</div><div class="tp" id="pPro"></div><ul><li>All 16 activities: pull-up, push-up, boxing, moguls, powder, ski jumping, boating …</li><li>Physiology views: sarcomere, length-tension, pennation, ground force, vibration</li><li>Save your plans</li><li>Print or save plans as PDF</li></ul><button class="b on" id="buyPro">Get Pro — monthly</button><button class="b" id="buyProY">Get Pro — yearly</button></div>
+  <div class="tier"><div class="tn">Free</div><div class="tp">$0</div><ul><li>9 activities, including desk life, nursing, running, skiing and posture</li><li>Muscle coach with plans for every muscle</li><li>Gravity and Ease layer</li><li>Share plans and exercises</li><li>Zoom anatomy</li></ul></div>
+  <div class="tier hot"><div class="tn">Pro</div><div class="tp" id="pPro"></div><ul><li>All 18 activities: pull-up, push-up, boxing, moguls, powder, ski jumping, boating …</li><li>Physiology views: sarcomere, length-tension, pennation, ground force, vibration</li><li>Save your plans</li><li>Print or save plans as PDF</li></ul><button class="b on" id="buyPro">Get Pro — monthly</button><button class="b" id="buyProY">Get Pro — yearly</button></div>
   <div class="tier"><div class="tn">Coach</div><div class="tp" id="pCoach"></div><ul><li>Everything in Pro</li><li>Your name, title and booking link on every plan you share</li><li>Branded printable plans for clients</li><li>For physical therapists, yoga teachers, ski and sports coaches</li></ul><button class="b on" id="buyCoach">Get Coach</button></div>
  </div>
  <div class="code"><span class="csub" style="margin:0">Already paid? Enter your code:</span><input id="payCode" placeholder="Code" aria-label="Unlock code"><button class="b" id="payGo">Unlock</button></div>
@@ -173,8 +176,8 @@ body.phone #zBig{display:none}
 </div></div>
 
 <div id="left" class="panel">
-  <a href="https://stevenwsharp-ctrl.github.io/fibwave/" style="color:var(--dim);font-size:11.5px;text-decoration:none;display:block;margin-bottom:6px">◀ Fibwave</a><h1>Muscle Lab</h1>
-  <div class="sub">Fibwave Health Laboratory</div>
+  <h1>Muscle Lab</h1>
+  <div class="sub">3D muscles · gravity · movement coach</div>
     <div id="exList"></div>
 </div>
 
@@ -185,7 +188,7 @@ body.phone #zBig{display:none}
   <div class="grp" style="margin:8px 0;flex-wrap:wrap"><button class="b cg on" data-g="wake">Wake it up (underactive)</button><button class="b cg" data-g="calm">Calm it down (overactive)</button></div>
   <div id="cOut"></div>
 </div>
-<div id="cap" class="panel"><div class="t" id="capT"></div><div class="c" id="capC"></div><div id="capX"></div><div class="prog" id="capPW"><i id="capP"></i></div></div>
+<div id="cap" class="panel"><div class="t" id="capT"></div><div class="c" id="capC"></div><div id="capX"></div><div id="ctr"></div><div class="prog" id="capPW"><i id="capP"></i></div></div>
 
 <div id="right" class="panel">
   <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Muscles in this movement</h2><button class="b" id="rZoom" style="font-size:11px;padding:3px 7px">⊕ Zoom</button></div>
@@ -215,7 +218,7 @@ body.phone #zBig{display:none}
   </div>
   <div class="grp" id="surfG" style="display:none"><span class="lbl">Surface</span><button class="b sf on" data-s="road">Asphalt</button><button class="b sf" data-s="trail">Trail</button><button class="b sf" data-s="track">Track</button></div>
   <div class="grp pm"><span class="lbl">View</span>
-    <button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
+    <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
   <div class="grp"><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button></div>
@@ -573,10 +576,10 @@ function interp(ex,t){
  const a=K[i],b=K[(i+1)%n];const t1=(i+1<n)?b.t:1;
  if(ex.cr){const u=clamp((t-a.t)/((t1-a.t)||1),0,1);const k0=K[(i-1+n)%n].P,k1=a.P,k2=b.P,k3=K[(i+2)%n].P;const P={};
   for(const k of ex.keyList){const p0=k0[k]||0,p1=k1[k]||0,p2=k2[k]||0,p3=k3[k]||0;P[k]=.5*(2*p1+(-p0+p2)*u+(2*p0-5*p1+4*p2-p3)*u*u+(-p0+3*p1-3*p2+p3)*u*u*u);}
-  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;return P;}
+  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;return P;}
  let u=clamp((t-a.t)/((t1-a.t)||1),0,1);const e=u*u*(3-2*u);
  const P={};for(const k of ex.keyList){const va=a.P[k]||0,vb=b.P[k]||0;P[k]=va+(vb-va)*e;}
- P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;return P;
+ P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;return P;
 }
 // push-up: find body tilt so hands and toes both touch the floor; keep hands from sliding
 function pitchSolve(P){let lo=10,hi=89.5,W;
@@ -614,6 +617,7 @@ function prep(ex){
  const ks=new Set();ex.K.forEach(k=>Object.keys(k.P).forEach(x=>ks.add(x)));ex.keyList=[...ks];
  ex.workSet=new Set(ex.work);ex.stabSet=new Set(ex.stab||[]);
  if(ex.anchor==='pushup')solve(ex,0);
+ if(ex.prepX)ex.prepX();
  if(ex.props.includes('bag')){ // place the bag where the punches land
   const best={L:{z:-1e9,x:0,t:0},R:{z:-1e9,x:0,t:0}};
   for(let i=0;i<200;i++){const t=i/200,W=solve(ex,t);for(const S of['L','R']){const g=wp(W,S+'hand',[0,-4,1.5]);if(g[2]>best[S].z)best[S]={z:g[2],x:g[0],t};}}
@@ -705,6 +709,7 @@ function buildScene(ex,W,t,simT,opt){
    if(k<.25)continue;const j=(i*37%11)/11-.5;
    items.push({k:'ball',c:[side*(18+90*a)+j*24,hs+110*a*k-80*a*a+j*8,-15-200*a+j*30],r:3.5+11*a,col:'#f4f8ff',alpha:(1-a)*.85*k,fx:1});}}
  if(pr.includes('boat'))boatItems(ex,W,t,items);
+ if(ex.extra)ex.extra(W,t,items);
  if(ex.env==='mountain'||(ex.env==='run'&&runSurf==='trail')){const sp=ex.flow?ex.flow(t):simT*(ex.scroll||0);const snowy=ex.env==='mountain';const y0=ex.drop?-ex.drop(t):0;
   for(let i=0;i<14;i++){const side=snowy?(i%2?1:-1):-1;const x=side*(snowy?245:150)+side*((i*37)%(snowy?70:120));const z=((((i*97)%480)-240-sp)%480+720)%480-240;
    items.push({k:'tree',c:[x,y0+(ex.terr?ex.terr(x,z,t):0),z],h:(snowy?95:140)+(i*23)%55,snowy});}}
@@ -722,7 +727,7 @@ function shade(h,f,a){const[r,g,b]=hexRGB(h);const t=f<1?[r*f,g*f,b*f]:[r+(255-r
 
 let cv,ctx,dpr=1,VW=0,VH=0;
 const cam={yaw:0,pitch:8,zoom:1,s:2,target:[0,100,0],M:I3,Dp:700,cx:0,cy:0};
-let ex=EX[3],phase=0,simT=0,playing=true,speed=.25,orbit=false,showLabels=true,showBody=true,layer='all',anat=false,sel=null,hover=null,hits=[],mouse=null;
+let sweep=true,ex=EX[3],phase=0,simT=0,playing=true,speed=.25,orbit=false,showLabels=true,showBody=true,layer='all',anat=false,sel=null,hover=null,hits=[],mouse=null;
 
 function proj(p){const q=ap(cam.M,sub(p,cam.target));const k=cam.Dp/(cam.Dp-q[2]);const s=cam.s*cam.zoom*k;return[cam.cx+q[0]*s,cam.cy-q[1]*s,q[2],s];}
 
@@ -1438,13 +1443,17 @@ function buildPlan(T,goal){
  const more=sc.filter(x=>x.inT||x.stT).sort((a,b)=>(b.inT-a.inT)||(b.met.rom-a.met.rom)).map(x=>x.k);
  return{R,blocks,more,goal};}
 const REPS=2,READY=1.2;
+const MIRNEG=new Set(['root.yaw','root.roll','root.x','spine.s','spine.t','chest.s','chest.t','neck.s','neck.t']);
+function mirP(P){const o={};for(const k in P){let k2=k;if(k.startsWith('L.'))k2='R.'+k.slice(2);else if(k.startsWith('R.'))k2='L.'+k.slice(2);o[k2]=MIRNEG.has(k)?-P[k]:P[k];}return o;}
+function isAsym(m){return m.K.some(k=>Object.keys(k.P).some(x=>(MIRNEG.has(x)&&Math.abs(k.P[x])>.5)||(x.startsWith('L.')&&Math.abs((k.P[x]||0)-(k.P['R.'+x.slice(2)]||0))>.5)));}
+const mirCap=t=>t.replace(/\b(left|right|Left|Right)\b/g,w=>({left:'right',right:'left',Left:'Right',Right:'Left'})[w]);
 function buildPlanEx(T,plan,title){
  const parts=plan.blocks;parts.forEach(b=>prep(b.m));const bd=parts.map(b=>READY+REPS*b.m.dur);const total=bd.reduce((a,b)=>a+b,0);
- const ks=new Set();parts.forEach(b=>b.m.keyList.forEach(k=>ks.add(k)));const KL=[...ks];const full=P0=>{const P={};for(const kk of KL)P[kk]=P0[kk]||0;return P;};
+ const ks=new Set();parts.forEach(b=>b.m.keyList.forEach(k=>{ks.add(k);Object.keys(mirP({[k]:1})).forEach(x=>ks.add(x));}));const KL=[...ks];const full=P0=>{const P={};for(const kk of KL)P[kk]=P0[kk]||0;return P;};
  let off=0;const K=[],blocks=[];
  parts.forEach((b,i)=>{const m=b.m;const pre=(parts.length>1?`${i+1}/${parts.length} · ${b.label} — `:'')+`${m.name} (${m.src}). `;
   K.push({t:off,P:full(m.K[0].P),cap:pre+'Get ready.',cue:'Get ready: '+m.name,rep:0,bi:i});
-  for(let r=0;r<REPS;r++){const base=off+(READY+r*m.dur)/total;for(const k of m.K)K.push({t:base+k.t*m.dur/total,P:full(k.P),cap:pre+k.cap,cue:k.cap,rep:r+1,bi:i});}
+  const asym=isAsym(m);for(let r=0;r<REPS;r++){const base=off+(READY+r*m.dur)/total;const mr=asym&&r%2===1;const sd=asym?(mr?' · right side':' · left side'):'';for(const k of m.K)K.push({t:base+k.t*m.dur/total,P:full(mr?mirP(k.P):k.P),cap:pre+(mr?mirCap(k.cap):k.cap),cue:mr?mirCap(k.cap):k.cap,rep:r+1,bi:i,sd});}
   blocks.push({t0:off,t1:off+bd[i]/total,r1:off+READY/total,ws:new Set(m.work),ss:new Set(m.stab.filter(x=>!m.work.includes(x))),i,name:m.name,src:m.src,dose:m.dose,label:b.label});off+=bd[i]/total;});
  blocks.forEach((b,i)=>b.next=blocks[i+1]?blocks[i+1].name:null);
  const work=[...new Set(parts.flatMap(b=>b.m.work))],stab=[...new Set(parts.flatMap(b=>b.m.stab))].filter(x=>!work.includes(x));
@@ -1521,11 +1530,11 @@ function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');cl
 async function sharePlan(i){if(i!=null&&cPlan.blocks[i])return shareMove(cPlan.blocks[i].k);const url=shareURL(cT,cGoal,i);const d=MDEFK[cT];
  const text=(i!=null?`${cPlan.blocks[i].m.name} — `:'')+`my ${cGoal==='wake'?'wake-up':'calm-down'} plan for the ${d.name.toLowerCase()} (Muscle Lab)`;
  const box=$('cShare');box.hidden=false;const inp=box.querySelector('input');inp.value=url;
- try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Fibwave Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
+ try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied — paste it in a text or email');}catch(e){inp.select();toast('Copy the link below');}}
 async function shareMove(k){const m=MOVES[k];const url=baseShareURL()+'#move-'+cT+'-'+k;const text=`${m.name} (${m.src}) — for the ${MDEFK[cT].name.toLowerCase()} · Muscle Lab`;
  const box=$('cShare');box.hidden=false;const inp=box.querySelector('input');inp.value=url;
- try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Fibwave Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
+ try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied — paste it in a text or email');}catch(e){inp.select();toast('Copy the link below');}}
 function readHash(){
  let hs=location.hash;try{hs=decodeURIComponent(hs);}catch(_){}
@@ -1650,10 +1659,10 @@ function gravityCalc(W){
  if(turning){const fc=mix(W.Lfoot.p,W.Rfoot.p,.5);gv=norm(mix(gv,norm(sub(fc,COM)),.7));}
  const y0=ex.drop?-ex.drop(phase):0;const gy=(x,z)=>y0+(ex.terr?ex.terr(x,z,phase):0)+(ex.powder?0:0);
  const sup={};for(const S of['L','R']){const pts=['heel','ball','toe'].map(k=>cpt(W,S,k));const mn=Math.min(...pts.map(p=>p[1]-gy(p[0],p[2])));sup[S]=mn<(ex.props.includes('skis')?6:2.5);}
- const hands=ex.anchor==='bar'?'bar':ex.anchor==='pushup'?'push':null;
+ const hands=ex.anchor==='bar'?'bar':ex.anchor==='pushup'?'push':null;const seat=!!ex.seat;
  const mom=(J,f)=>{let v=[0,0,0];for(const s of segs)if(f(s))v=add(v,cross(sub(s.p,J),mulS(gv,s.m)));return Math.hypot(v[0],v[1],v[2])*BW*GACC/100;};
  const J=[];const SS=['L','R'].filter(S=>sup[S]);
- if(!hands&&SS.length){const avg=b=>mulS(SS.reduce((a,S)=>add(a,W[S+b].p),[0,0,0]),1/SS.length);
+ if(!hands&&!seat&&SS.length){const avg=b=>mulS(SS.reduce((a,S)=>add(a,W[S+b].p),[0,0,0]),1/SS.length);
   J.push({k:'ankle',pt:avg('foot'),M:mom(avg('foot'),s=>!(s.tag==='foot'&&sup[s.S]))});
   J.push({k:'knee',pt:avg('shin'),M:mom(avg('shin'),s=>!((s.tag==='foot'||s.tag==='shank')&&sup[s.S]))});
   J.push({k:'hip',pt:avg('thigh'),M:mom(avg('thigh'),s=>!((s.tag==='foot'||s.tag==='shank'||s.tag==='thigh')&&sup[s.S]))});}
@@ -1666,6 +1675,7 @@ function gravityCalc(W){
  // base of support and line of gravity
  let bos=[];for(const S of SS){const m=S==='L'?1:-1;for(const v of[[3.5,-8,-5],[-3.5,-8,-5],[4.5,-8,11],[-4,-8,11]])bos.push(wp(W,S+'foot',[v[0]*m,v[1],v[2]]));bos.push(cpt(W,S,'toe'));}
  if(hands==='push')for(const S of['L','R'])bos.push(cpt(W,S,'palm'));
+ if(seat)for(const v of[[-16,0,-10],[16,0,-10],[-16,0,22],[16,0,22]])bos.push(add(ex.seatC,v));
  const t=(y0-COM[1])/(gv[1]||-1);const P=add(COM,mulS(gv,t));
  let hull=[],ins=false,marg=0;if(bos.length>=3){hull=convexHull(bos.map(p=>[p[0],p[2]]));[ins,marg]=inPoly([P[0],P[2]],hull);}
  let fa=null;if(SS.length&&!hands){const fw=norm(ap(W[SS[0]+'foot'].R,[0,0,1]));const fc=mulS(SS.reduce((a,S)=>add(a,mix(cpt(W,S,'heel'),cpt(W,S,'toe'),.45)),[0,0,0]),1/SS.length);fa=dot3(sub(P,fc),fw);}
@@ -1715,6 +1725,102 @@ function drawGravHUD(){const G=GR;if(!G)return;const ph=document.body.classList.
   ctx.fillStyle='#e9d5ff';ctx.font='600 10.5px Inter,system-ui,sans-serif';wrapText(cue,x+10,yy+4,w-20,13,2);}}
 function wrapText(t,x,y,mw,lh,max){const ws=t.split(' ');let line='',n=0;for(const w_ of ws){const tl=line?line+' '+w_:w_;if(ctx.measureText(tl).width>mw&&line){ctx.fillText(line,x,y);y+=lh;line=w_;if(++n>=max-1){}}else line=tl;}ctx.fillText(line,x,y);}
 function drawVignette(){const g=ctx.createRadialGradient(VW/2,VH/2,Math.min(VW,VH)*.35,VW/2,VH/2,Math.max(VW,VH)*.75);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);}
+// daily life and work
+(function(){
+const F=(items,pts,fill,stroke,o)=>items.push(Object.assign({k:'face',pts,fill,stroke},o||{}));
+const box=(items,x0,x1,y0,y1,z0,z1,top,side,edge)=>{F(items,[[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],top,edge);F(items,[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]],side,edge);};
+// DESK LIFE
+const desk={id:'desk',group:'Daily life and work',name:'Desk life: sitting and typing',icon:'⌨',dur:16,anchor:'ground',view:[118,8],props:['desk'],seat:true,
+ base:{'B.hip.f':90,'B.kn':90,'B.hip.a':6,'B.sh.f':30,'B.sh.a':10,'B.el':82,'B.sh.r':6},
+ work:['splenius','semispinalis','trapUpper','levScap','erector','scalenes','forearmFlex','forearmExt','deltAnt','multifidus'],stab:['rectusAbd','longusColli','rhomboid','trapMid','iliopsoas','pecMinor'],
+ keys:[{t:0,p:{},cap:'Stacked sitting: the sit bones carry the weight, the ribs float over the pelvis, the ears are over the shoulders. The elbows hang by your sides. The neck muscles only fine-tune.'},
+  {t:.14,p:{},cap:'Type with soft wrists. The forearm muscles work in small, fast bursts.'},
+  {t:.28,p:{'root.pitch':-9,'B.hip.f':81,'spine.f':12,'chest.f':16,'neck.f':20,'B.sh.f':42,'B.clav.p':8,'B.el':72},cap:'Slump: the pelvis rolls back and the chest drops. The head moves forward of the shoulders. Each 2–3 cm of forward head adds load that the neck and upper back must hold.'},
+  {t:.4,p:{'R.sh.a':24,'R.sh.f':38,'R.sh.r':-8,'R.clav.e':7},cap:'Reach for the mouse: the arm drifts out and the shoulder lifts a little. For hours, this tires the upper trapezius and levator scapulae.'},
+  {t:.52,p:{'R.sh.a':10,'R.sh.f':42,'R.sh.r':6,'R.clav.e':0},cap:'Slumped all afternoon: the Ease score drops and the neck and back rings stay red. The hip flexors stay short and the glutes switch off.'},
+  {t:.64,p:{'root.pitch':0,'B.hip.f':90,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':30,'B.clav.p':0,'B.el':82},cap:'Restack: roll forward onto the sit bones and grow tall from the crown. Gravity goes through the spine again. The rings shrink.'},
+  {t:.76,p:{'B.sh.f':168,'B.sh.a':14,'B.el':8,'chest.f':-6,'neck.f':-6},cap:'Micro-break every 30 minutes: reach up and open the chest. Then try the counter moves below.'},
+  {t:.88,p:{'B.sh.f':30,'B.sh.a':10,'B.el':82,'chest.f':0,'neck.f':0},cap:'Back to stacked typing.'}],
+ focus:['neck','shoulder','core','hip']};
+desk.extra=function(W,t,items){const D_=desk.geo;if(!D_)return;const{sy,sz,dy,dz,ey}=D_;
+ // chair
+ box(items,-22,22,sy-5,sy,sz-16,sz+26,'rgba(52,64,84,.95)','rgba(30,38,52,.95)','#56657d');
+ F(items,[[-20,sy+6,sz-19],[20,sy+6,sz-19],[20,sy+44,sz-23],[-20,sy+44,sz-23]],'rgba(52,64,84,.88)','#56657d',{z0:-8});
+ items.push(L([0,sy-5,sz+4],[0,8,sz+4],3.5,'#3a4250'));for(let a=0;a<5;a++){const c=Math.cos(a*1.2566),s_=Math.sin(a*1.2566);items.push(L([0,8,sz+4],[c*26,3,sz+4+s_*26],2.6,'#3a4250'),{k:'ball',c:[c*26,2.5,sz+4+s_*26],r:2.4,col:'#1e2430',shade:true});}
+ // desk
+ box(items,-75,75,dy-3,dy,dz,dz+72,'rgba(176,136,92,.95)','rgba(120,90,60,.95)','#c9a274');
+ for(const x of[-71,71])for(const z of[dz+4,dz+68])items.push(L([x,0,z],[x,dy-3,z],3,'#5b4630'));
+ // keyboard, mouse
+ const kz=(W.Lhand.p[2]+W.Rhand.p[2])/2;box(items,-21,21,dy,dy+1.6,kz-6,kz+9,'#1b2230','#111722','#3d4a60');
+ for(let r=0;r<3;r++)items.push(L([-18,dy+1.8,kz-3+r*4],[18,dy+1.8,kz-3+r*4],.7,'rgba(126,249,255,.35)'));
+ const mh=wp(W,'Rhand',[0,-6,0]);items.push({k:'ball',c:[mh[0],Math.max(dy+2.2,mh[1]-2),mh[2]],r:2.6,col:'#2a3140',shade:true});
+ // monitor
+ const mz=dz+52;box(items,-6,6,dy,dy+1,mz-4,mz+6,'#2a3140','#2a3140');items.push(L([0,dy,mz+2],[0,ey-14,mz+2],2.6,'#2a3140'));
+ F(items,[[-30,ey-16,mz],[30,ey-16,mz],[30,ey+18,mz],[-30,ey+18,mz]],'rgba(14,20,32,.98)','#4b5a72',{z0:-4});
+ F(items,[[-27,ey-13,mz-.6],[27,ey-13,mz-.6],[27,ey+15,mz-.6],[-27,ey+15,mz-.6]],'rgba(94,224,255,.16)','rgba(126,249,255,.5)',{z0:-5});};
+desk.prepX=function(){const W=solve(desk,0);const pel=W.pelvis.p;const sy=W.Lthigh.p[1]-8.5;const hy=Math.min(wp(W,'Lhand',[0,-5,0])[1],wp(W,'Rhand',[0,-5,0])[1]);
+ const hz=(W.Lhand.p[2]+W.Rhand.p[2])/2;const ey=wp(W,'head',[0,10,1.5])[1];
+ desk.geo={sy,sz:pel[2],dy:hy-3.5,dz:hz-24,ey};desk.seatC=[pel[0],0,pel[2]];};
+// NURSING
+const nurse={id:'nurse',group:'Daily life and work',name:'Nursing: bedside care',icon:'✚',dur:16,anchor:'ground',view:[96,8],props:['bed'],
+ base:{'B.sh.a':6,'B.el':10,'B.hip.a':5},
+ work:['erector','multifidus','gluteMax','hamstrings','vastLat','vastMed','biceps','trapMid','rhomboid','forearmFlex','deltPost'],stab:['rectusAbd','intOblique','QL','gluteMed','soleus','tibAnt','longusColli','serratus'],
+ keys:[{t:0,p:{},cap:'At the bedside: feet hip-width and close to the bed. Stacked, the line of gravity drops between the feet.'},
+  {t:.12,p:{'root.pitch':48,'B.hip.f':48,'spine.f':18,'chest.f':16,'neck.f':-14,'B.sh.f':72,'B.el':22},cap:'Stoop: the legs stay straight and the back rounds. The trunk, head and arms now hang far in front of the feet.'},
+  {t:.26,p:{},cap:'The low back ring turns red: gravity pulls about half the body weight on a long lever. Many nurses do this dozens of times in a shift, so the back muscles and discs carry the strain.'},
+  {t:.4,p:{'root.pitch':34,'B.hip.f':64,'B.kn':42,'B.an':12,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':66,'B.el':24},cap:'Hinge instead: bend the knees, push the hips back and keep the spine long. The hips and thighs take the load. The back stays stacked.'},
+  {t:.52,p:{'B.el':62,'B.sh.f':48},cap:'Grip the draw sheet with the elbows bent and close to the body. Short levers ask less of the shoulders.'},
+  {t:.64,p:{'root.pitch':24,'B.hip.f':50,'B.kn':28,'B.an':8,'L.hip.a':12,'R.hip.a':0,'root.roll':-5,'B.el':70},cap:'Boost: the legs push and the weight shifts toward the head of the bed. The glutes and quads move the patient. The arms only guide.'},
+  {t:.78,p:{'root.pitch':0,'B.hip.f':0,'B.kn':0,'B.an':0,'B.hip.a':5,'root.roll':0,'B.sh.f':0,'B.el':10,'chest.f':-6},cap:'Stand and restack between patients: ears over shoulders over hips. Then use the counter moves to undo the forward load.'},
+  {t:.9,p:{'chest.f':0},cap:'Ready for the next patient.'}],
+ focus:['core','hip','knee','shoulder']};
+nurse.extra=function(W,t,items){const G_=nurse.geo;if(!G_)return;const{by,bz}=G_;
+ box(items,-105,105,by-14,by,bz,bz+92,'rgba(226,236,246,.96)','rgba(170,186,204,.95)','#dbe6f2');
+ F(items,[[-105,by+.4,bz+6],[105,by+.4,bz+6],[105,by+.4,bz+86],[-105,by+.4,bz+86]],'rgba(126,200,255,.18)','rgba(126,200,255,.35)');
+ for(const x of[-100,100])for(const z of[bz+5,bz+87]){items.push(L([x,0,z],[x,by-14,z],3,'#7a8798'));items.push({k:'ball',c:[x,3,z],r:3,col:'#2a3140',shade:true});}
+ for(const x of[-105,105])items.push(L([x,by-14,bz+46],[x,by+34,bz+46],4,'#8f9cad'));
+ let p0=null;for(let x=-60;x<=40;x+=20){const p1=[x,by+22,bz+90];if(p0)items.push(L(p0,p1,1.6,'#c9d4e1'));items.push(L([x,by,bz+90],p1,1.1,'#aab6c4'));p0=p1;}
+ // patient (shifts toward the head of the bed during the boost)
+ const u=t<.6?0:t<.76?(t-.6)/.16:t<.92?1:1-(t-.92)/.08;const sx=-6*u*u*(3-2*u);const pz=bz+48,py=by+9;
+ items.push({k:'ball',c:[-78+sx,py+2,pz],r:9,col:'#e8c9a8',shade:true});
+ items.push(L([-66+sx,py,pz],[-20+sx,py,pz],26,'#a0bee1',{shade:true}));
+ for(const dz_ of[-6,6])items.push(L([-20+sx,py-1,pz+dz_],[62+sx,py-2,pz+dz_],11,'#96b4d7',{shade:true}));
+ F(items,[[-96,by+20,pz-14],[-86,by+20,pz-14],[-86,by+12,pz+14],[-96,by+12,pz+14]],'rgba(255,255,255,.9)','#dfe7f0');};
+nurse.prepX=function(){let by=1e9,hz=0;for(let i=0;i<60;i++){const t_=i/60,W=solve(nurse,t_);for(const S of['L','R']){const h=wp(W,S+'hand',[0,-6,0]);if(h[1]<by){by=h[1];hz=h[2];}}}
+ nurse.geo={by:by-2,bz:Math.max(hz-28,22)};};
+EX.push(desk,nurse);
+})();
+// counter moves: undo the load of each activity
+const COUNTER={
+ lat:{T:'deltLat',k:['crossbody','neck'],why:'release the delts and the upper trapezius'},
+ front:{T:'deltAnt',k:['opener','ytw'],why:'open the chest and wake up the back of the shoulder'},
+ over:{T:'trapUpper',k:['neck','fold'],why:'let the neck and shoulders down'},
+ pull:{T:'lats',k:['opener','sky','ytw'],why:'lengthen the lats and the chest, wake up the lower trapezius'},
+ push:{T:'pec',k:['row','ytw','scap'],why:'pull back what the push-up pushes forward'},
+ squat:{T:'vastLat',k:['quad','calf','fold'],why:'lengthen the quads, calves and hamstrings'},
+ rope:{T:'gastroc',k:['calf','fold','quad'],why:'lengthen the calves after many fast jumps'},
+ box:{T:'pec',k:['row','ytw','cloud'],why:'pull the shoulders back and turn the other way'},
+ run:{T:'rectFem',k:['quad','calf','sidelunge'],why:'open the hip flexors and calves, add side-to-side motion'},
+ ski:{T:'vastLat',k:['quad','fold','cloud'],why:'lengthen the quads and back, rotate the spine'},
+ jump:{T:'vastLat',k:['quad','fold','crane'],why:'lengthen the quads, reset balance'},
+ mogul:{T:'vastLat',k:['quad','fold','cloud'],why:'lengthen the quads and back, rotate the spine'},
+ powder:{T:'vastLat',k:['quad','fold','cloud'],why:'lengthen the quads and back, rotate the spine'},
+ boat:{T:'erector',k:['neck','sky','cloud'],why:'release the neck and back after hours of bracing'},
+ stack:{T:'splenius',k:['neck','opener','sky'],why:'restack the head and open the chest'},
+ skistance:{T:'vastLat',k:['quad','calf','fold'],why:'lengthen the quads and calves'},
+ desk:{T:'pecMinor',k:['opener','neck','ytw','quad'],why:'open the chest, reset the neck, wake up the upper back, lengthen the hip flexors'},
+ nurse:{T:'erector',k:['sky','opener','fold','crane'],why:'extend and side-bend the spine, open the chest, reset balance'}};
+function renderCounter(){const el=$('ctr');if(!el)return;let h='';
+ if(ex.counterOf){const a=EX.find(e=>e.id===ex.counterOf);h=`<span class="ct">↺ Counter for ${a.name}</span><button class="cb bk" data-back="1">◀ Back to the activity</button>`;}
+ else{const c=COUNTER[ex.id];if(c){h=`<span class="ct">↺ Counter it</span>`+c.k.filter(k=>MOVES[k]).map(k=>`<button class="cb" data-k="${k}" title="${MOVES[k].src}">${MOVES[k].name}</button>`).join('')+`<button class="cb all" data-all="1">▶ Play all</button>`;}}
+ el.innerHTML=h;el.title=ex.counterOf?'':(COUNTER[ex.id]?'Counter moves: '+COUNTER[ex.id].why:'');
+ el.querySelectorAll('.cb').forEach(b=>b.onclick=()=>{if(b.dataset.back){const a=EX.find(e=>e.id===ex.counterOf);selectEx(a);return;}
+  const id=ex.id;playCounter(id,b.dataset.all?COUNTER[id].k:[b.dataset.k]);});}
+function playCounter(id,keys){const c=COUNTER[id],a=EX.find(e=>e.id===id);const R=rolesFor(c.T);
+ const blocks=keys.filter(k=>MOVES[k]).map(k=>({m:MOVES[k],label:'Counter for '+a.name.split(':')[0].toLowerCase(),k}));
+ const e=buildPlanEx(c.T,{R,blocks},'Counter: '+a.name);e.counterOf=id;cT=c.T;selectEx(e);sel=c.T;
+ if(document.body.classList.contains('phone')){$('coach').hidden=true;syncSheet();fitCamera();}
+ toast('Counter moves: '+c.why);}
 // teaching movements: gravity and ease
 EX.push({id:'stack',group:'Gravity and ease',name:'Stacked vs slumped posture',icon:'⇣',dur:12,anchor:'ground',view:[80,6],props:[],
  base:{'B.sh.a':6,'B.el':8},
@@ -1748,7 +1854,7 @@ const CONFIG={
  // In each Stripe Payment Link: "After payment" → redirect to  https://stevenwsharp-ctrl.github.io/muscle-lab/?unlock=<code>
  unlock:{pro:'pro-7Q4K9X',coach:'coach-3M8T2V'},
  book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:''};
-const FREE_EX=new Set(['lat','front','squat','run','ski','stack','skistance','explore','coach']);
+const FREE_EX=new Set(['lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
 const has=f=>(TIERS[TIER]||0)>=(TIERS[f]||0);
@@ -1817,8 +1923,9 @@ let rows=[],uiTick=0,lastT=0;
 function buildZTabs(){const t=$('zTabs');t.innerHTML='';const ord=[...ex.focus,...REGORDER.filter(r=>!ex.focus.includes(r))];
  for(const r of ord){const b=document.createElement('button');b.className='b'+(r===zReg?' on':'');b.textContent=REG[r].name;b.onclick=()=>{zReg=r;TRACE.ids=[];buildZTabs();};t.appendChild(b);}}
 const $=id=>document.getElementById(id);
+function setSweep(v){sweep=v;const b=$('sweep');if(b)b.classList.toggle('on',v);if(ex)ex._sw=null;}
 function selectEx(e){
- ex=e;prep(ex);phase=0;sel=null;hover=null;document.body.classList.remove('movesOpen');
+ ex=e;prep(ex);setTimeout(renderCounter,0);phase=0;sel=null;hover=null;document.body.classList.remove('movesOpen');
  document.querySelectorAll('.ex').forEach(b=>b.classList.toggle('on',b.dataset.id===ex.id));
  cam.yaw=ex.view[0];cam.pitch=ex.view[1];cam.zoom=1;fitCamera();
  zReg=ex.focus[0];buildZTabs();TRK.L=[];TRK.R=[];COMTRAIL.length=0;TRACE.ids=[];$('surfG').style.display=ex.id==='run'?'flex':'none';
@@ -1844,7 +1951,7 @@ function updateUI(){
   const t=(n>1?`Block ${b.i+1} of ${n} · ${b.label} · `:'')+b.name;if($('capT').textContent!==t)$('capT').textContent=t;
   let cue=IP._cue||'';if(!IP._rep){const s_=Math.max(1,Math.ceil((b.r1-phase)*ex.dur/Math.max(speed,.01)));cue='Get ready: '+b.name+' … '+s_;}
   if($('capC').textContent!==cue)$('capC').textContent=cue;
-  const x=`<span class="rp">${IP._rep?'Rep '+IP._rep+' of '+REPS:'Get ready'}</span><span>${b.src}</span><span>Dose: ${b.dose}</span>${b.next?`<span>Next: ${b.next}</span>`:''}`;
+  const x=`<span class="rp">${IP._rep?'Rep '+IP._rep+' of '+REPS+(IP._sd||''):'Get ready'}</span><span>${b.src}</span><span>Dose: ${b.dose}</span>${b.next?`<span>Next: ${b.next}</span>`:''}`;
   if($('capX').innerHTML!==x)$('capX').innerHTML=x;$('capP').style.width=clamp((phase-b.t0)/(b.t1-b.t0),0,1)*100+'%';if(!document.body.classList.contains('follow')){document.body.classList.add('follow');layoutCam();}}
  else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=IP._cap;if($('capC').textContent!==cap)$('capC').textContent=cap;if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
  if(!scrubbing)$('tl').value=Math.round(phase*1000);
@@ -1860,6 +1967,7 @@ function loop(now){
  const prevP=phase;if(playing&&!scrubbing){phase=(phase+dt*speed/ex.dur)%1;simT+=dt*speed;}
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
+ else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
  RT=now/1000;const W=solve(ex,phase);updateMuscles(W);updateTracks(W,dt);render(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
@@ -1891,7 +1999,8 @@ function init(){
  $('tl').addEventListener('input',e=>{scrubbing=true;phase=e.target.value/1000;});
  $('tl').addEventListener('change',()=>{scrubbing=false;});
  document.querySelectorAll('.sp').forEach(b=>b.onclick=()=>{speed=+b.dataset.s;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x===b));});
- document.querySelectorAll('.vw').forEach(b=>b.onclick=()=>{cam.yaw=+b.dataset.y;cam.pitch=+b.dataset.p;orbit=false;$('orbit').classList.remove('on');});
+ document.querySelectorAll('.vw').forEach(b=>b.onclick=()=>{cam.yaw=+b.dataset.y;cam.pitch=+b.dataset.p;orbit=false;$('orbit').classList.remove('on');setSweep(false);});
+ $('sweep').onclick=()=>setSweep(!sweep);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
  $('tLab').onclick=()=>{showLabels=!showLabels;$('tLab').classList.toggle('on',showLabels);};
  document.querySelectorAll('.ly').forEach(b=>b.onclick=()=>{layer=b.dataset.l;document.querySelectorAll('.ly').forEach(x=>x.classList.toggle('on',x===b));});
@@ -1917,7 +2026,7 @@ function init(){
   if(ptrs.has(e.pointerId)){ptrs.set(e.pointerId,[e.clientX,e.clientY]);
    if(ptrs.size===2){const p=[...ptrs.values()];const d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);cam.zoom=clamp(zoom0*d/pinch0,.4,4);moved=true;return;}
    const dx=e.clientX-down[0],dy=e.clientY-down[1];if(Math.abs(dx)+Math.abs(dy)>4)moved=true;
-   if(moved){cam.yaw=down[2]-dx*.4;cam.pitch=clamp(down[3]+dy*.3,-15,75);orbit=false;$('orbit').classList.remove('on');}}
+   if(moved){cam.yaw=down[2]-dx*.4;cam.pitch=clamp(down[3]+dy*.3,-15,75);orbit=false;$('orbit').classList.remove('on');setSweep(false);}}
   else hover=pick(e.clientX,e.clientY);});
  const up=e=>{ptrs.delete(e.pointerId);cv.classList.remove('drag');if(!moved&&down){const id=pick(e.clientX,e.clientY);sel=id;if(id&&!$('coach').hidden)openCoach(id);if(id&&innerWidth<=1000){$('right').classList.add('show');$('tMus').classList.add('on');}}down=null;};
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
