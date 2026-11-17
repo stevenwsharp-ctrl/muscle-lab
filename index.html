@@ -80,6 +80,8 @@ body.phone #ctr{margin-top:4px}body.phone #ctr .cb{font-size:10.5px;padding:2px 
 .pk.on{background:#7ef9ff;color:#03202a;border-color:#7ef9ff;font-weight:700}.pk.m{border-color:rgba(255,79,216,.35);background:rgba(255,79,216,.08);color:#ffe0f7}.pk.m.on{background:#ff4fd8;color:#2a0020}
 #cMus{font-size:12px;padding:4px 6px}
 #pkBack{display:none}
+body.yoga #coach > #pick,body.yoga #coach > .csub,body.yoga #coach > #cMus,body.yoga #coach > .grp,body.yoga #pkBack{display:none!important}
+.ypose{padding:7px 9px;margin:3px 0;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:12.5px}.ypose:hover{border-color:rgba(126,249,255,.4);background:rgba(126,249,255,.06)}
 body.phone #pkBack{display:inline-block}
 body.phone #coach > .csub{display:none}
 body.phone:not(.pick) #pick{display:none}
@@ -242,7 +244,7 @@ body.phone #zBig{display:none}
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button></div>
 </div>
 
 <script>
@@ -597,10 +599,10 @@ function interp(ex,t){
  const a=K[i],b=K[(i+1)%n];const t1=(i+1<n)?b.t:1;
  if(ex.cr){const u=clamp((t-a.t)/((t1-a.t)||1),0,1);const k0=K[(i-1+n)%n].P,k1=a.P,k2=b.P,k3=K[(i+2)%n].P;const P={};
   for(const k of ex.keyList){const p0=k0[k]||0,p1=k1[k]||0,p2=k2[k]||0,p3=k3[k]||0;P[k]=.5*(2*p1+(-p0+p2)*u+(2*p0-5*p1+4*p2-p3)*u*u+(-p0+3*p1-3*p2+p3)*u*u*u);}
-  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;return P;}
+  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;return P;}
  let u=clamp((t-a.t)/((t1-a.t)||1),0,1);const e=u*u*(3-2*u);
  const P={};for(const k of ex.keyList){const va=a.P[k]||0,vb=b.P[k]||0;P[k]=va+(vb-va)*e;}
- P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;return P;
+ P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;return P;
 }
 // push-up: find body tilt so hands and toes both touch the floor; keep hands from sliding
 function pitchSolve(P){let lo=10,hi=89.5,W;
@@ -618,9 +620,26 @@ function solvePush(ex,P){
   const st=clamp(-g/sl,-25,25);P['L.sh.f']+=st;P['R.sh.f']+=st;W=pitchSolve(P);
  }
  return W;}
+function floorPts(W){const p=(b,v)=>wp(W,b,v),a=[];
+ for(const S of['L','R']){const m=S==='L'?1:-1;
+  a.push({p:cpt(W,S,'heel'),k:'foot'},{p:cpt(W,S,'ball'),k:'foot'},{p:cpt(W,S,'toe'),k:'foot'},{p:p(S+'foot',[0,-1,-5]),k:'foot'},{p:p(S+'foot',[0,-2,6]),k:'foot'},{p:cpt(W,S,'palm'),k:'palm'},
+   {p:p(S+'shin',[0,-2,5]),k:'knee'},{p:p(S+'shin',[0,-22,4.5]),k:'knee'},{p:p(S+'shin',[0,-36,3.5]),k:'knee'},{p:p(S+'shin',[0,-20,-5]),k:'leg'},
+   {p:p(S+'fore',[0,-3,-2.5]),k:'arm'},{p:p(S+'fore',[0,-16,-2]),k:'arm'},{p:p(S+'upper',[0,-15,-4]),k:'arm'},
+   {p:p(S+'thigh',[0,-22,-7.5]),k:'leg'},{p:p(S+'thigh',[0,-22,7.5]),k:'leg'},{p:p(S+'thigh',[m*6,-22,0]),k:'leg'},{p:p('pelvis',[6*m,-9,-4]),k:'seat'},{p:p('chest',[11*m,12,0]),k:'body'});}
+ a.push({p:p('pelvis',[0,1,-10]),k:'seat'},{p:p('pelvis',[0,-2,9]),k:'body'},{p:p('spine',[0,6,-9]),k:'body'},{p:p('spine',[0,6,11]),k:'body'},{p:p('chest',[0,14,-11]),k:'body'},{p:p('chest',[0,12,12]),k:'body'},{p:p('chest',[0,25,-9]),k:'body'},
+  {p:p('head',[0,10,-8.5]),k:'head'},{p:p('head',[0,10,11.5]),k:'head'},{p:p('head',[0,20.5,1.5]),k:'head'});return a;}
+function fitArms(P,fit){const gap=d=>{const Q=Object.assign({},P);Q['L.sh.f']=(Q['L.sh.f']||0)+d;Q['R.sh.f']=(Q['R.sh.f']||0)+d;const W=fk(Q);let pm=1e9,om=1e9;for(const c of floorPts(W)){const y=c.p[1];if(c.k==='palm'){if(y<pm)pm=y;}else if(c.k!=='arm'&&y<om)om=y;}return pm-om;};
+ let d0=0,g0=gap(0);if(Math.abs(g0)<.3)return;let d1=g0>0?8:-8,g1=gap(d1);
+ for(let i=0;i<6;i++){const sl=(g1-g0)/((d1-d0)||1e-3);if(Math.abs(sl)<1e-4)break;const d2=clamp(d1-g1/sl,-80,80);d0=d1;g0=g1;d1=d2;g1=gap(d1);if(Math.abs(g1)<.3)break;}
+ P['L.sh.f']=(P['L.sh.f']||0)+d1*fit;P['R.sh.f']=(P['R.sh.f']||0)+d1*fit;}
+let BR=null,BRAPPLY=false;
 function solve(ex,t){
 const P=interp(ex,t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
+ if(BRAPPLY&&BR){const b=BR.lvl;P['chest.f']=(P['chest.f']||0)-3.5*b;P['spine.f']=(P['spine.f']||0)-1.2*b;P['neck.f']=(P['neck.f']||0)+1.5*b;for(const S of['L','R'])P[S+'.clav.e']=(P[S+'.clav.e']||0)+1.6*b;}
+ if(ex.anchor==='floor'&&(P.fit||0)>.02)fitArms(P,clamp(P.fit,0,1));
  const W=ex.anchor==='pushup'?solvePush(ex,P):fk(P);
+ if(ex.anchor==='floor'){let mn=1e9;for(const c of floorPts(W))if(c.p[1]<mn)mn=c.p[1];const fl=clamp(P['anc.fl']||0,0,1);
+  const A=mix(mix(cpt(W,'L','heel'),cpt(W,'R','heel'),.5),W.pelvis.p,fl);shiftW(W,[-A[0],-mn+(P['root.y']||0),-A[2]]);W._P=P;return W;}
  let d;
  if(ex.anchor==='bar'){const a=mix(cpt(W,'L','grip'),cpt(W,'R','grip'),.5);d=sub(ex.bar,a);}
  else{
@@ -634,7 +653,7 @@ const P=interp(ex,t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
 function prep(ex){
  if(ex.K)return;
  let cur=expand(ex.base||{});
- let lc='';ex.K=ex.keys.map(k=>{cur=Object.assign({},cur,expand(k.p||{}));lc=k.cap||lc;return{t:k.t,P:cur,cap:lc};});
+ let lc='';ex.K=ex.keys.map(k=>{cur=Object.assign({},cur,expand(k.p||{}));lc=k.cap||lc;return{t:k.t,P:cur,cap:lc,br:k.br};});
  const ks=new Set();ex.K.forEach(k=>Object.keys(k.P).forEach(x=>ks.add(x)));ex.keyList=[...ks];
  ex.workSet=new Set(ex.work);ex.stabSet=new Set(ex.stab||[]);
  if(ex.anchor==='pushup')solve(ex,0);
@@ -1469,17 +1488,17 @@ function mirP(P){const o={};for(const k in P){let k2=k;if(k.startsWith('L.'))k2=
 function isAsym(m){return m.K.some(k=>Object.keys(k.P).some(x=>(MIRNEG.has(x)&&Math.abs(k.P[x])>.5)||(x.startsWith('L.')&&Math.abs((k.P[x]||0)-(k.P['R.'+x.slice(2)]||0))>.5)));}
 const mirCap=t=>t.replace(/\b(left|right|Left|Right)\b/g,w=>({left:'right',right:'left',Left:'Right',Right:'Left'})[w]);
 function buildPlanEx(T,plan,title){
- const parts=plan.blocks;parts.forEach(b=>prep(b.m));const bd=parts.map(b=>READY+REPS*b.m.dur);const total=bd.reduce((a,b)=>a+b,0);
+ const parts=plan.blocks;parts.forEach(b=>prep(b.m));const RPb=b=>b.reps||REPS,RDb=b=>b.ready!=null?b.ready:READY;const bd=parts.map(b=>RDb(b)+RPb(b)*b.m.dur);const total=bd.reduce((a,b)=>a+b,0);
  const ks=new Set();parts.forEach(b=>b.m.keyList.forEach(k=>{ks.add(k);Object.keys(mirP({[k]:1})).forEach(x=>ks.add(x));}));const KL=[...ks];const full=P0=>{const P={};for(const kk of KL)P[kk]=P0[kk]||0;return P;};
  let off=0;const K=[],blocks=[];
  parts.forEach((b,i)=>{const m=b.m;const pre=(parts.length>1?`${i+1}/${parts.length} · ${b.label} — `:'')+`${m.name} (${m.src}). `;
-  K.push({t:off,P:full(m.K[0].P),cap:pre+'Get ready.',cue:'Get ready: '+m.name,rep:0,bi:i});
-  const asym=isAsym(m);for(let r=0;r<REPS;r++){const base=off+(READY+r*m.dur)/total;const mr=asym&&r%2===1;const sd=asym?(mr?' · right side':' · left side'):'';for(const k of m.K)K.push({t:base+k.t*m.dur/total,P:full(mr?mirP(k.P):k.P),cap:pre+(mr?mirCap(k.cap):k.cap),cue:mr?mirCap(k.cap):k.cap,rep:r+1,bi:i,sd});}
-  blocks.push({t0:off,t1:off+bd[i]/total,r1:off+READY/total,ws:new Set(m.work),ss:new Set(m.stab.filter(x=>!m.work.includes(x))),i,name:m.name,src:m.src,dose:m.dose,label:b.label});off+=bd[i]/total;});
+  K.push({t:off,P:full(m.K[0].P),cap:pre+(b.ready?'Move into the start.':'Get ready.'),cue:(b.ready?'Next: ':'Get ready: ')+m.name,rep:0,bi:i});
+  const asym=isAsym(m);for(let r=0;r<RPb(b);r++){const base=off+(RDb(b)+r*m.dur)/total;const mr=asym&&r%2===1;const sd=asym?(mr?' · right side':' · left side'):'';for(const k of m.K)K.push({t:base+k.t*m.dur/total,P:full(mr?mirP(k.P):k.P),cap:pre+(mr?mirCap(k.cap):k.cap),cue:mr?mirCap(k.cap):k.cap,rep:r+1,bi:i,sd,br:k.br});}
+  blocks.push({reps:RPb(b),t0:off,t1:off+bd[i]/total,r1:off+RDb(b)/total,ws:new Set(m.work),ss:new Set(m.stab.filter(x=>!m.work.includes(x))),i,name:m.name,src:m.src,dose:m.dose,label:b.label});off+=bd[i]/total;});
  blocks.forEach((b,i)=>b.next=blocks[i+1]?blocks[i+1].name:null);
  const work=[...new Set(parts.flatMap(b=>b.m.work))],stab=[...new Set(parts.flatMap(b=>b.m.stab))].filter(x=>!work.includes(x));
  const z=REG2ZOOM[plan.R.reg]||'shoulder';
- return{id:'coach',name:title,icon:'🎯',dur:total,anchor:'ground',view:[22,8],props:[],K,keyList:KL,work,stab,workSet:new Set(work),stabSet:new Set(stab),blocks,
+ return{id:'coach',name:title,icon:'🎯',dur:total,anchor:parts.some(b=>b.m.anchor==='floor')?'floor':'ground',view:[22,8],props:[],K,keyList:KL,work,stab,workSet:new Set(work),stabSet:new Set(stab),blocks,
   focus:[z,...['shoulder','core','hip','foot','neck'].filter(r=>r!==z)],coach:plan.R};}
 function coachRole(id){const R=ex.coach;if(!R)return null;return id===R.T?'target':R.syn.includes(id)?'syn':R.ant.includes(id)?'ant':R.stab.includes(id)?'stab':R.chain.includes(id)?'chain':null;}
 function drawChainPath(W){const R=ex.coach;if(!R||!R.path.length)return;const S=Math.sin(cam.yaw*D)>=0?'L':'R';
@@ -1495,7 +1514,7 @@ function drawChainPath(W){const R=ex.coach;if(!R||!R.path.length)return;const S=
    ========================================================= */
 let cGoal='wake',cT=null,cPlan=null;
 function chip(id,role){const d=MDEFK[id];return`<span class="chip" data-id="${id}" style="border-color:${ROLECOL[role]};color:${role==='target'?ROLECOL.target:'var(--txt)'}">${d.short}</span>`;}
-function openCoach(T){cT=T||cT||'deltLat';$('coach').hidden=false;$('cMus').value=cT;renderCoach();syncSheet();}
+function openCoach(T){exitYoga();cT=T||cT||'deltLat';$('coach').hidden=false;$('cMus').value=cT;renderCoach();syncSheet();}
 function detectPhone(){const coarse=matchMedia('(pointer:coarse)').matches;const small=Math.min(screen.width,screen.height)<=820;
  const ua=/iPhone|iPod|Android.+Mobile|Windows Phone/i.test(navigator.userAgent);return(coarse&&small)||ua||innerWidth<=640;}
 let PICKSET=null,pickReg=null;
@@ -1512,6 +1531,7 @@ function syncSheet(){document.body.classList.toggle('noSheet',$('coach').hidden)
 function applyPhone(){const ph=detectPhone();const was=document.body.classList.contains('phone');document.body.classList.toggle('phone',ph);
  if(ph&&!was){zOn=false;document.body.classList.add('zhide');document.body.classList.remove('zoomOpen');$('tZoom').classList.remove('on');}syncSheet();}
 function renderCoach(){
+ if(document.body.classList.contains('yoga'))return renderYoga();
  const T=cT,d=MDEFK[T];cPlan=buildPlan(T,cGoal);if($('cMus').value!==T)$('cMus').value=T;const R=cPlan.R;
  const tip=COMP[T]||`The muscles that share its job (${listNames(R.syn.slice(0,3))||'its helpers'}) can take over. Move slowly, so the ${d.short.toLowerCase()} does the work.`;
  let h=(document.body.classList.contains('shared')?`<div class="sban"><div><b>Shared movement plan</b><div class="csub" style="margin:0">${/#move-/.test(decodeURIComponent(location.hash))?'The exercise repeats. Tap 🎯 Coach mode to explore any muscle.':'The plan plays once. Then coach mode opens: click any muscle.'}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"><button class="b" id="replayShare">▶ Replay plan</button><button class="b" id="exploreShare">🎯 Coach mode</button><button class="b" id="exitShare">Full Muscle Lab</button></div></div>${ctaHTML()}`:'')+`<div class="ctgt"><div class="cn" style="color:${ROLECOL.target}">${d.name}</div><div>${d.does}</div>
@@ -1552,7 +1572,7 @@ function playPlan(blocks,title,hash){const e=buildPlanEx(cT,{R:cPlan.R,blocks},t
 const EXPLORE={id:'explore',name:'Muscle coach — click any muscle',icon:'🎯',dur:6,anchor:'ground',view:[20,6],props:[],explore:true,
  base:{'B.sh.a':24,'B.el':10,'B.hip.a':4,'B.sh.r':-10},
  keys:[{t:0,p:{},cap:'Coach mode: click any muscle on the body. The coach shows what works with it, what opposes it, its chain from the feet to the head, and a plan.'},{t:.5,p:{'chest.f':-2,'B.clav.e':2},cap:''}],work:[],stab:[]};
-function enterExplore(){if(document.body.classList.contains('phone')){document.body.classList.remove('sheetMini');$('cMin').textContent='▾';}
+function enterExplore(){exitYoga();if(document.body.classList.contains('phone')){document.body.classList.remove('sheetMini');$('cMin').textContent='▾';}
  EXPLORE.focus=[REG2ZOOM[regionOf(cT)]||'shoulder','core','foot','neck','shoulder','hip','knee','leg'].filter((v,i,a)=>a.indexOf(v)===i);
  prep(EXPLORE);selectEx(EXPLORE);EXPLORE.coach=(cPlan&&cPlan.R.T===cT)?cPlan.R:rolesFor(cT);sel=cT;anat=true;$('tAnat').classList.add('on');$('coach').hidden=false;renderCoach();syncSheet();}
 const planHash=(T,g,i)=>'#plan-'+T+'-'+g+(i!=null?'-'+(i+1):'');
@@ -1569,6 +1589,7 @@ async function shareMove(k){const m=MOVES[k];const url=baseShareURL()+'#move-'+c
  try{await navigator.clipboard.writeText(url);toast('Link copied — paste it in a text or email');}catch(e){inp.select();toast('Copy the link below');}}
 function readHash(){
  let hs=location.hash;try{hs=decodeURIComponent(hs);}catch(_){}
+ if(readYogaHash(hs))return true;
  const mv=hs.match(/#move-([A-Za-z]+)-([A-Za-z0-9]+)/);
  if(mv&&MDEFK[mv[1]]&&ACTS[mv[1]]&&MOVES[mv[2]]){cT=mv[1];document.body.classList.add('shared');openCoach(cT);const m=MOVES[mv[2]];
   playPlan([{m,label:'For the '+MDEFK[cT].short.toLowerCase(),k:mv[2]}],m.name);ex.playOnce=false;ex.loopMove=true;anat=true;$('tAnat').classList.add('on');
@@ -1585,8 +1606,9 @@ function initCoach(){
  $('coachX').onclick=()=>{$('coach').hidden=true;syncSheet();fitCamera();};
  $('cMin').onclick=()=>{const m=document.body.classList.toggle('sheetMini');$('coach').scrollTop=0;$('cMin').textContent=m?'▴':'▾';syncSheet();};
  const list=$('exList');const h2=document.createElement('h2');h2.className='gh';h2.textContent='Muscle coach';
- const b=document.createElement('button');b.className='ex';b.dataset.id='explore';b.innerHTML='<span class="i">🎯</span>Train one muscle';b.onclick=()=>{cT=sel||cT;enterExplore();};
- const h3=document.createElement('h2');h3.className='gh';h3.textContent='Activities';list.prepend(h2,b,h3);
+ const b=document.createElement('button');b.className='ex';b.dataset.id='explore';b.innerHTML='<span class="i">🎯</span>Train one muscle';b.onclick=()=>{exitYoga();cT=sel||cT;enterExplore();};
+ const by=document.createElement('button');by.className='ex';by.dataset.id='yoga';by.innerHTML='<span class="i">🧘</span>Yoga flow';by.onclick=()=>enterYoga();
+ const h3=document.createElement('h2');h3.className='gh';h3.textContent='Activities';list.prepend(h2,b,by,h3);
 }
 
 /* =========================================================
@@ -1690,7 +1712,8 @@ function gravityCalc(W){
  if(turning){const fc=mix(W.Lfoot.p,W.Rfoot.p,.5);gv=norm(mix(gv,norm(sub(fc,COM)),.7));}
  const y0=ex.drop?-ex.drop(phase):0;const gy=(x,z)=>y0+(ex.terr?ex.terr(x,z,phase):0)+(ex.powder?0:0);
  const sup={};for(const S of['L','R']){const pts=['heel','ball','toe'].map(k=>cpt(W,S,k));const mn=Math.min(...pts.map(p=>p[1]-gy(p[0],p[2])));sup[S]=mn<(ex.props.includes('skis')?6:2.5);}
- const hands=ex.anchor==='bar'?'bar':ex.anchor==='pushup'?'push':null;const seat=!!ex.seat;
+ const hands=ex.anchor==='bar'?'bar':ex.anchor==='pushup'?'push':null;let seat=!!ex.seat;let flc=[];
+ if(ex.anchor==='floor'){flc=floorPts(W).filter(c=>c.p[1]-y0<2.5&&c.k!=='foot');if(flc.some(c=>c.k!=='palm'))seat=true;}
  const mom=(J,f)=>{let v=[0,0,0];for(const s of segs)if(f(s))v=add(v,cross(sub(s.p,J),mulS(gv,s.m)));return Math.hypot(v[0],v[1],v[2])*BW*GACC/100;};
  const J=[];const SS=['L','R'].filter(S=>sup[S]);
  if(!hands&&!seat&&SS.length){const avg=b=>mulS(SS.reduce((a,S)=>add(a,W[S+b].p),[0,0,0]),1/SS.length);
@@ -1706,11 +1729,12 @@ function gravityCalc(W){
  // base of support and line of gravity
  let bos=[];for(const S of SS){const m=S==='L'?1:-1;for(const v of[[3.5,-8,-5],[-3.5,-8,-5],[4.5,-8,11],[-4,-8,11]])bos.push(wp(W,S+'foot',[v[0]*m,v[1],v[2]]));bos.push(cpt(W,S,'toe'));}
  if(hands==='push')for(const S of['L','R'])bos.push(cpt(W,S,'palm'));
- if(seat)for(const v of[[-16,0,-10],[16,0,-10],[-16,0,22],[16,0,22]])bos.push(add(ex.seatC,v));
+ if(seat&&ex.seatC)for(const v of[[-16,0,-10],[16,0,-10],[-16,0,22],[16,0,22]])bos.push(add(ex.seatC,v));
+ for(const c of flc)bos.push(c.p);
  const t=(y0-COM[1])/(gv[1]||-1);const P=add(COM,mulS(gv,t));
  let hull=[],ins=false,marg=0;if(bos.length>=3){hull=convexHull(bos.map(p=>[p[0],p[2]]));[ins,marg]=inPoly([P[0],P[2]],hull);}
  let fa=null;if(SS.length&&!hands){const fw=norm(ap(W[SS[0]+'foot'].R,[0,0,1]));const fc=mulS(SS.reduce((a,S)=>add(a,mix(cpt(W,S,'heel'),cpt(W,S,'toe'),.45)),[0,0,0]),1/SS.length);fa=dot3(sub(P,fc),fw);}
- return{COM,gv,P,y0,hull,ins,marg,J,ease,fa,air:!SS.length&&!hands,turning};}
+ return{COM,gv,P,y0,hull,ins,marg,J,ease,fa,air:!SS.length&&!hands&&!flc.length,turning};}
 const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
 let GR=null;
 function drawGravity(W){
@@ -1875,6 +1899,189 @@ EX.push({id:'skistance',group:'Gravity and ease',name:'Ski stance: centered vs b
 EX.find(e=>e.id==='stack').focus=['neck','core','foot','hip'];
 
 /* =========================================================
+   YOGA MODE — pose library, flow builder, breath
+   Sequence arc: centering, warm-up, sun salutation, standing, balance, backbend, seated, cool-down, rest.
+   Breath rule: inhale to lift, open or extend; exhale to fold, twist or lower.
+   ========================================================= */
+const PACES={calm:{n:'Calm 4 in · 6 out',s:[4,0,6,0]},even:{n:'Even 5 · 5',s:[5,0,5,0]},box:{n:'Box 4 · 4 · 4 · 4',s:[4,4,4,4]},relax:{n:'Relax 4 · 7 · 8',s:[4,7,8,0]}};
+let breathOn=false,bPace='calm';
+const cyc=()=>PACES[bPace].s.reduce((a,b)=>a+b,0);
+function breathAt(sec){const[a,b,c,d]=PACES[bPace].s;const T=a+b+c+d;let x=((sec%T)+T)%T;const e=u=>u*u*(3-2*u);
+ if(x<a)return{ph:'Inhale',lvl:e(x/a),left:a-x};x-=a;if(x<b)return{ph:'Hold',lvl:1,left:b-x};x-=b;if(x<c)return{ph:'Exhale',lvl:1-e(x/c),left:c-x};x-=c;return{ph:'Hold',lvl:0,left:d-x};}
+function breathCalc(){if(!breathOn||!ex||!ex.K)return null;const IP=interp(ex,phase);const segSec=(IP._seg||0)*ex.dur/Math.max(speed,.05);const u=IP._u||0;const e=v=>v*v*(3-2*v);
+ if(IP._br==='in')return{ph:'Inhale',lvl:e(u),left:segSec*(1-u)};
+ if(IP._br==='out')return{ph:'Exhale',lvl:1-e(u),left:segSec*(1-u)};
+ if(IP._br==='cyc'){const n=Math.max(1,Math.round(segSec/cyc()));const loc=u*n,k=Math.floor(loc);const b=breathAt((loc-k)*cyc());b.n=n;b.k=Math.min(n,k+1);return b;}
+ return breathAt(RT);}
+// pose library. steps: [delta pose, breath ('in' | 'out' | 'cyc'), caption, breaths for cyc]
+const YB={stand:{},table:{'root.pitch':76,'B.hip.f':76,'B.kn':90,'B.an':-55,'B.sh.f':76,fit:1,'anc.fl':.6},
+ seat:{'B.hip.f':90,'B.sh.f':4,'B.sh.a':8,fit:.6,'anc.fl':1},
+ cross:{'B.hip.f':60,'B.hip.a':70,'B.hip.r':-135,'B.kn':150,'B.an':-5,'B.sh.f':35,'B.sh.a':12,'B.el':55,'anc.fl':1},
+ supine:{'root.pitch':-90,'B.sh.a':18,'B.an':-20,'anc.fl':1},
+ prone:{'root.pitch':90,'B.an':-60,'B.sh.f':10,'B.sh.a':20,'B.el':20,'anc.fl':1}};
+const YOGA={
+ easySeat:{name:'Easy seat',sk:'Sukhasana',cat:'center',start:'cross',tags:['hips','spine','breath'],work:['multifidus','erector','longusColli'],stab:['rectusAbd','intOblique','gluteMed'],str:['adductors','piriformis'],
+  steps:[[{},'in','Inhale: sit tall on the sit bones. The crown grows up.'],[{},'cyc','Breathe here. Let the belly soften on the inhale and the ribs settle on the exhale.',4],[{},'out','Exhale: soften the shoulders.']]},
+ catCow:{name:'Cat and cow',sk:'Marjaryasana · Bitilasana',cat:'warm',start:'table',tags:['spine','neck','core'],work:['erector','multifidus','rectusAbd','serratus'],stab:['deltAnt','triceps','gluteMax'],str:['rectusAbd','erector','splenius'],
+  steps:[[{'spine.f':-14,'chest.f':-12,'neck.f':-20},'in','Inhale, cow: the belly drops, the chest moves forward, look up. The erectors shorten.'],[{'spine.f':16,'chest.f':16,'neck.f':26},'out','Exhale, cat: round the spine up and tuck the chin. The abs shorten.'],
+   [{'spine.f':-14,'chest.f':-12,'neck.f':-20},'in','Inhale, cow.'],[{'spine.f':16,'chest.f':16,'neck.f':26},'out','Exhale, cat.'],[{'spine.f':0,'chest.f':0,'neck.f':0},'in','Inhale: back to a flat table.']]},
+ child:{name:"Child's pose",sk:'Balasana',cat:'warm',start:'table',tags:['spine','hips','rest','shoulders'],work:[],stab:['multifidus'],str:['erector','lats','gluteMax','tibAnt','extDigLong'],
+  steps:[[{'root.pitch':88,'spine.f':16,'chest.f':10,'B.hip.f':150,'B.kn':150,'B.an':-70,'B.sh.f':168,'neck.f':8,'B.hip.a':10},'out','Exhale: sit the hips back to the heels. Reach the arms forward. The back body lengthens.'],[{},'cyc','Rest. Breathe into the back of the ribs.',4],[{'root.pitch':76,'spine.f':0,'chest.f':0,'B.hip.f':76,'B.kn':90,'B.an':-55,'B.sh.f':76,'neck.f':0,'B.hip.a':0},'in','Inhale: come back to the table.']]},
+ sunA:{name:'Sun salutation A',sk:'Surya Namaskar A',cat:'sun',start:'stand',tags:['full','spine','hamstrings','shoulders','legs'],work:['deltAnt','serratus','trapLower','erector','gluteMax','triceps','pec','rectusAbd','vastLat'],stab:['multifidus','intOblique','tibAnt','abdHallucis'],str:['hamstrings','gastroc','soleus','lats','rectusAbd'],
+  steps:[[{'B.sh.f':172,'B.sh.a':12,'chest.f':-6,'neck.f':-8},'in','Inhale: sweep the arms up.'],
+   [{'root.pitch':72,'B.hip.f':44,'spine.f':22,'chest.f':12,'neck.f':18,'B.kn':10,'B.sh.f':76,'B.sh.a':6},'out','Exhale: fold forward from the hips.'],
+   [{'root.pitch':80,'B.hip.f':78,'spine.f':0,'chest.f':0,'neck.f':-12,'B.kn':4,'B.sh.f':66},'in','Inhale: halfway lift. Long spine, look forward.'],
+   [{'root.pitch':74,'B.hip.f':0,'B.kn':0,'neck.f':-4,'B.sh.f':74,'B.an':0,fit:1},'out','Exhale: step back to plank. The abs, serratus and triceps hold the line.'],
+   [{'root.pitch':72,'spine.f':-16,'chest.f':-18,'B.hip.f':-8,'neck.f':-10,'B.sh.f':30,'B.el':40,'B.an':-60},'in','Inhale: lower the hips and lift the chest into cobra.'],
+   [{'root.pitch':126,'spine.f':4,'chest.f':4,'B.hip.f':96,'B.an':28,'B.sh.f':172,'B.el':4,'neck.f':0},'out','Exhale: lift the hips into downward dog.'],
+   [{},'cyc','Downward dog: the calves and hamstrings lengthen. Press the floor away.',3],
+   [{'root.pitch':80,'spine.f':0,'chest.f':0,'B.hip.f':78,'B.kn':4,'B.an':0,'neck.f':-12,'B.sh.f':66,fit:0},'in','Inhale: step forward, halfway lift.'],
+   [{'root.pitch':72,'B.hip.f':44,'spine.f':22,'chest.f':12,'neck.f':18,'B.kn':10,'B.sh.f':76},'out','Exhale: fold.'],
+   [{'root.pitch':0,'B.hip.f':0,'spine.f':0,'chest.f':-6,'neck.f':-8,'B.kn':0,'B.sh.f':172,'B.sh.a':12},'in','Inhale: rise up, arms overhead.'],
+   [{'chest.f':0,'neck.f':0,'B.sh.f':0,'B.sh.a':8},'out','Exhale: arms down. Stand in mountain pose.']]},
+ chair:{name:'Chair',sk:'Utkatasana',cat:'stand',start:'stand',tags:['legs','core','shoulders','feet'],work:['vastLat','vastMed','rectFem','gluteMax','erector','deltAnt','soleus','tibAnt'],stab:['adductors','rectusAbd','trapLower','abdHallucis'],str:['soleus','gastroc'],
+  steps:[[{'root.pitch':30,'B.hip.f':88,'B.kn':90,'B.an':34,'B.sh.f':168,'chest.f':-4},'out','Exhale: sit back as if into a chair. Arms up beside the ears. Weight in the heels.'],[{},'cyc','Hold. The quads and glutes work against gravity; the shins lean into it.',3],[{'root.pitch':0,'B.hip.f':0,'B.kn':0,'B.an':0,'B.sh.f':0,'chest.f':0},'in','Inhale: press up to standing.']]},
+ warrior1:{name:'Warrior I',sk:'Virabhadrasana I',cat:'stand',start:'stand',tags:['hips','legs','shoulders'],work:['vastLat','vastMed','gluteMax','deltAnt','serratus','trapLower','erector'],stab:['gluteMed','adductors','intOblique','peroneals','tibPost'],str:['iliopsoas','rectFem','gastroc','soleus','lats'],
+  steps:[[{'L.hip.f':62,'L.kn':66,'L.an':4,'R.hip.f':-44,'R.an':40,'R.hip.r':-35,'B.sh.f':172,'chest.f':-6},'in','Inhale: step the right foot back. Bend the front knee over the ankle. Arms up. The back hip flexor lengthens.'],
+   [{},'cyc','Hold. Hips face forward. The back heel stays down.',3],[{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'R.hip.r':0,'B.sh.f':0,'chest.f':0},'out','Exhale: step forward to stand.']]},
+ warrior2:{name:'Warrior II',sk:'Virabhadrasana II',cat:'stand',start:'stand',seq:2,tags:['hips','legs','shoulders','feet'],work:['deltLat','supraspinatus','trapLower','gluteMed','gluteMax','adductors','vastLat','vastMed','peroneals','tibPost'],stab:['QL','intOblique','longusColli','infraspinatus'],str:['adductors','gracilis'],
+  steps:[[{'L.hip.a':32,'L.hip.r':-45,'L.hip.f':35,'L.kn':70,'L.an':20,'R.hip.a':28,'B.sh.a':90,'B.el':2,'neck.t':70},'in','Inhale: step wide. Arms out to the sides. Bend the front knee and look over the front hand.'],
+   [{},'cyc','Hold. The side deltoids hold the arms level; the glutes and quads hold the legs.',3],[{'L.hip.a':0,'L.hip.r':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.a':0,'B.sh.a':8,'B.el':0,'neck.t':0},'out','Exhale: come back to stand.']]},
+ reverse:{name:'Reverse warrior',sk:'Viparita Virabhadrasana',cat:'stand',start:'stand',seq:3,tags:['spine','hips','shoulders'],work:['QL','oblique','intOblique','gluteMed','vastLat','deltLat'],stab:['adductors','peroneals'],str:['lats','oblique','QL','intOblique'],
+  steps:[[{'L.hip.a':32,'L.hip.r':-45,'L.hip.f':35,'L.kn':70,'L.an':20,'R.hip.a':28,'B.sh.a':90,'neck.t':70},'out','Exhale: warrior II stance.'],
+   [{'spine.s':-18,'chest.s':-16,'L.sh.a':165,'R.sh.a':28,'neck.t':20},'in','Inhale: the front arm reaches up and back. The side of the waist lengthens.'],[{},'cyc','Hold. The front knee stays bent.',3],
+   [{'spine.s':0,'chest.s':0,'L.hip.a':0,'L.hip.r':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.a':0,'B.sh.a':8,'neck.t':0},'out','Exhale: come back to stand.']]},
+ sideAngle:{name:'Extended side angle',sk:'Utthita Parsvakonasana',cat:'stand',start:'stand',seq:4,tags:['hips','spine','legs','shoulders'],work:['gluteMed','vastLat','vastMed','oblique','deltLat','serratus'],stab:['QL','adductors','peroneals','tibPost'],str:['adductors','lats','QL','oblique'],
+  steps:[[{'L.hip.a':34,'L.hip.r':-45,'L.hip.f':40,'L.kn':78,'L.an':24,'R.hip.a':30,'B.sh.a':90,'neck.t':60},'in','Inhale: warrior II.'],
+   [{'root.roll':24,'spine.s':16,'chest.s':10,'L.sh.a':25,'R.sh.a':168,'neck.t':-30},'out','Exhale: lean over the front thigh. The top arm reaches over the ear. One long line from the back heel to the fingers.'],[{},'cyc','Hold. Turn the chest up.',3],
+   [{'root.roll':0,'spine.s':0,'chest.s':0,'L.hip.a':0,'L.hip.r':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.a':0,'B.sh.a':8,'neck.t':0},'in','Inhale: come up to stand.']]},
+ triangle:{name:'Triangle',sk:'Trikonasana',cat:'stand',start:'stand',seq:5,tags:['hamstrings','hips','spine'],work:['QL','oblique','intOblique','gluteMed','tfl','deltLat'],stab:['peroneals','abdHallucis','splenius','supraspinatus'],str:['hamstrings','adductors','QL','oblique'],
+  steps:[[{'B.hip.a':22,'L.hip.r':-40,'B.sh.a':90},'in','Inhale: wide stance, front foot out, arms out to the sides.'],[{'spine.s':25,'chest.s':25,'root.roll':12,'neck.t':-50,'neck.f':-10},'out','Exhale: reach forward and tip down over the front leg. Both legs stay straight.'],
+   [{},'cyc','Hold. The lateral line lengthens from the foot to the hand.',3],[{'spine.s':0,'chest.s':0,'root.roll':0,'neck.t':0,'neck.f':0,'B.hip.a':0,'L.hip.r':0,'B.sh.a':8},'in','Inhale: come up.']]},
+ pyramid:{name:'Pyramid',sk:'Parsvottanasana',cat:'stand',start:'stand',seq:6,tags:['hamstrings','feet','balance'],work:['erector','gluteMed'],stab:['peroneals','tibPost','abdHallucis','intOblique'],str:['hamstrings','gastroc','soleus'],
+  steps:[[{'L.hip.f':24,'L.an':-24,'R.hip.f':-24,'R.an':24,'R.hip.r':-30},'in','Inhale: step the right foot back. Both legs straight.'],
+   [{'root.pitch':72,'L.hip.f':96,'R.hip.f':48,'spine.f':10,'chest.f':8,'neck.f':10,'B.sh.f':72},'out','Exhale: hinge forward over the front leg. The front hamstrings and calf lengthen.'],[{},'cyc','Hold. Hips square, spine long.',3],
+   [{'root.pitch':0,'L.hip.f':0,'L.an':0,'R.hip.f':0,'R.an':0,'R.hip.r':0,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':0},'in','Inhale: rise and step forward.']]},
+ wideFold:{name:'Wide-legged forward fold',sk:'Prasarita Padottanasana',cat:'stand',start:'stand',seq:7,tags:['hamstrings','hips','spine'],work:['erector'],stab:['peroneals','tibPost','abdHallucis'],str:['hamstrings','adductors','gracilis','erector'],
+  steps:[[{'B.hip.a':30,'B.sh.a':12},'in','Inhale: step the feet wide.'],[{'root.pitch':82,'B.hip.f':82,'spine.f':16,'chest.f':12,'neck.f':16,'B.sh.f':80,fit:.8,'anc.fl':0},'out','Exhale: fold forward, hands to the floor.'],[{},'cyc','Hold. The inner legs and hamstrings lengthen.',3],
+   [{'root.pitch':0,'B.hip.f':0,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':0,fit:0,'B.hip.a':0,'B.sh.a':8},'in','Inhale: come up with a long spine.']]},
+ goddess:{name:'Goddess',sk:'Utkata Konasana',cat:'stand',start:'stand',seq:8,tags:['hips','legs','shoulders'],work:['vastLat','vastMed','gluteMax','gluteMed','adductors','deltLat','trapLower','infraspinatus'],stab:['rectusAbd','erector','peroneals'],str:['adductors','gracilis'],
+  steps:[[{'B.hip.a':40,'B.hip.r':-45,'B.sh.a':10},'in','Inhale: step wide, toes out.'],[{'B.hip.f':50,'B.kn':88,'B.an':22,'B.sh.a':90,'B.el':90,'B.sh.r':-80},'out','Exhale: bend the knees over the toes. Cactus arms.'],[{},'cyc','Hold. The knees track over the toes.',3],
+   [{'B.hip.f':0,'B.kn':0,'B.an':0,'B.hip.a':0,'B.hip.r':0,'B.sh.a':8,'B.el':0,'B.sh.r':0},'in','Inhale: press up.']]},
+ crescent:{name:'Crescent lunge',sk:'Ashta Chandrasana',cat:'stand',start:'stand',seq:1,tags:['hips','legs','balance','core'],work:['vastLat','vastMed','gluteMax','deltAnt','serratus','gastroc'],stab:['gluteMed','intOblique','abdHallucis','flexHalLong'],str:['iliopsoas','rectFem'],
+  steps:[[{'L.hip.f':70,'L.kn':80,'L.an':10,'R.hip.f':-40,'R.kn':12,'R.an':-12,'B.sh.f':172},'in','Inhale: step the right foot far back, heel lifted. Arms up.'],[{},'cyc','Hold. Lift the back thigh. The back hip flexor lengthens.',3],
+   [{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.kn':0,'R.an':0,'B.sh.f':0},'out','Exhale: step forward to stand.']]},
+ lowLunge:{name:'Low lunge',sk:'Anjaneyasana',cat:'warm',start:'stand',tags:['hips','legs','shoulders'],work:['gluteMax','vastLat','deltAnt','serratus'],stab:['gluteMed','intOblique'],str:['iliopsoas','rectFem','tibAnt'],
+  steps:[[{'L.hip.f':80,'L.kn':80,'R.hip.f':-15,'R.kn':76,'R.an':-50,'B.sh.f':40,'anc.fl':.3},'out','Exhale: step the right foot back and lower the knee.'],[{'B.sh.f':172,'chest.f':-6},'in','Inhale: arms up. The hips sink forward. The front of the back hip opens.'],[{},'cyc','Hold.',3],
+   [{'L.hip.f':0,'L.kn':0,'R.hip.f':0,'R.kn':0,'R.an':0,'B.sh.f':0,'chest.f':0,'anc.fl':0},'out','Exhale: step forward and stand.']]},
+ tree:{name:'Tree',sk:'Vrksasana',cat:'balance',start:'stand',tags:['balance','hips','feet'],work:['gluteMed','gluteMin','peroneals','tibPost','abdHallucis','flexDigBrev','serratus'],stab:['QL','intOblique','multifidus','longusColli'],str:['adductors'],
+  steps:[[{'L.hip.f':42,'L.hip.a':44,'L.hip.r':-60,'L.kn':128,'L.an':-20},'out','Exhale: weight onto the right foot. Place the left sole on the inner right leg.'],[{'B.sh.f':170,'B.sh.a':16},'in','Inhale: grow the branches. Arms up.'],[{},'cyc','Balance. The standing foot makes tiny corrections.',3],
+   [{'L.hip.f':0,'L.hip.a':0,'L.hip.r':0,'L.kn':0,'L.an':0,'B.sh.f':0,'B.sh.a':8},'out','Exhale: lower the leg and arms.']]},
+ warrior3:{name:'Warrior III',sk:'Virabhadrasana III',cat:'balance',start:'stand',tags:['balance','legs','core','hamstrings'],work:['gluteMax','hamstrings','erector','gluteMed','deltAnt','trapLower'],stab:['peroneals','tibPost','abdHallucis','intOblique','multifidus'],str:['hamstrings'],
+  steps:[[{'B.sh.f':172},'in','Inhale: arms up. Weight onto the right foot.'],[{'root.pitch':84,'R.hip.f':84,'R.kn':4,'L.hip.f':0,'L.an':0},'out','Exhale: tip forward like a T. The back leg lifts as the chest lowers.'],[{},'cyc','Balance. The standing glute and hamstrings hold the whole body.',3],
+   [{'root.pitch':0,'R.hip.f':0,'R.kn':0,'B.sh.f':0},'in','Inhale: come up together.']]},
+ dancer:{name:'Dancer',sk:'Natarajasana',cat:'balance',start:'stand',tags:['balance','hips','shoulders','chest'],work:['gluteMax','hamstrings','erector','deltAnt','gluteMed'],stab:['peroneals','tibPost','abdHallucis','intOblique'],str:['rectFem','iliopsoas','pec','deltAnt'],
+  steps:[[{'L.hip.f':-10,'L.kn':112,'L.an':-30,'L.sh.f':-30,'L.el':10,'R.sh.f':150},'in','Inhale: hold the left foot behind you. Right arm up.'],[{'root.pitch':34,'R.hip.f':34,'L.hip.f':-30,'chest.f':-8},'out','Exhale: kick the foot into the hand and tip forward. The front of the hip and the chest open.'],[{},'cyc','Balance.',3],
+   [{'root.pitch':0,'R.hip.f':0,'L.hip.f':0,'L.kn':0,'L.an':0,'L.sh.f':0,'L.el':0,'R.sh.f':0,'chest.f':0},'in','Inhale: come back to stand.']]},
+ bridge:{name:'Bridge',sk:'Setu Bandha Sarvangasana',cat:'back',start:'supine',tags:['chest','spine','legs','hips'],work:['gluteMax','hamstrings','erector','multifidus','adductors'],stab:['vastMed','rectusAbd','deltPost'],str:['iliopsoas','rectFem','rectusAbd','pec'],
+  steps:[[{'B.hip.f':48,'B.kn':128,'B.an':-12,'B.sh.a':10},'out','Exhale: bend the knees, feet flat.'],[{'root.pitch':-122,'B.hip.f':-6,'B.kn':118,'B.an':8,'neck.f':32,'B.sh.f':-30,'B.sh.a':8},'in','Inhale: press the feet down and lift the hips. The glutes and hamstrings shorten.'],[{},'cyc','Hold. The front of the hips opens.',3],
+   [{'root.pitch':-90,'B.hip.f':48,'B.kn':128,'B.an':-12,'neck.f':0,'B.sh.f':0},'out','Exhale: roll down one vertebra at a time.']]},
+ locust:{name:'Locust',sk:'Salabhasana',cat:'back',start:'prone',tags:['spine','neck','shoulders','core'],work:['erector','multifidus','gluteMax','hamstrings','trapMid','trapLower','deltPost','semispinalis'],stab:['rhomboid','rectusAbd'],str:['rectusAbd','pec'],
+  steps:[[{'B.sh.f':-24,'B.sh.a':10,'B.el':0},'out','Exhale: arms by the sides, forehead down.'],[{'spine.f':-12,'chest.f':-12,'neck.f':-8,'B.hip.f':-14,'B.sh.f':-38},'in','Inhale: lift the chest, arms and legs. The whole back body works against gravity.'],[{},'cyc','Hold. Look down so the neck stays long.',3],
+   [{'spine.f':0,'chest.f':0,'neck.f':0,'B.hip.f':0,'B.sh.f':-24},'out','Exhale: lower down.']]},
+ cobra:{name:'Cobra',sk:'Bhujangasana',cat:'back',start:'prone',tags:['spine','chest','core'],work:['erector','multifidus','semispinalis','trapLower','triceps'],stab:['gluteMax','serratus'],str:['rectusAbd','pec','iliopsoas'],
+  steps:[[{'B.sh.f':40,'B.el':100,'B.sh.a':12,fit:1},'out','Exhale: hands under the shoulders.'],[{'root.pitch':70,'spine.f':-24,'chest.f':-22,'B.hip.f':-20,'neck.f':-10},'in','Inhale: lift the chest. The back muscles do the work; the hands only guide.'],[{},'cyc','Hold. Shoulders down, away from the ears.',3],
+   [{'root.pitch':90,'spine.f':0,'chest.f':0,'B.hip.f':0,'neck.f':0},'out','Exhale: lower down.']]},
+ seatedFold:{name:'Seated forward fold',sk:'Paschimottanasana',cat:'floor',start:'seat',tags:['hamstrings','spine','calm'],work:[],stab:['iliopsoas','rectusAbd'],str:['hamstrings','gastroc','erector','gluteMax'],
+  steps:[[{'B.sh.f':172,'chest.f':-4,fit:0},'in','Inhale: legs long, arms up, spine tall.'],[{'root.pitch':46,'B.hip.f':136,'spine.f':20,'chest.f':14,'neck.f':16,'B.sh.f':160},'out','Exhale: fold forward from the hips toward the feet.'],[{},'cyc','Hold. Let the back body lengthen with each exhale.',4],
+   [{'root.pitch':0,'B.hip.f':90,'spine.f':0,'chest.f':0,'neck.f':0,'B.sh.f':4,fit:.6},'in','Inhale: roll up.']]},
+ butterfly:{name:'Bound angle',sk:'Baddha Konasana',cat:'floor',start:'seat',tags:['hips','calm'],work:['erector'],stab:['multifidus'],str:['adductors','gracilis','piriformis'],
+  steps:[[{'B.hip.f':44,'B.hip.a':70,'B.hip.r':-140,'B.kn':135,'B.an':-20,'B.sh.f':42,'B.el':30,fit:0},'out','Exhale: soles of the feet together, knees out.'],[{'root.pitch':18,'spine.f':10,'B.hip.f':54},'out','Exhale: hinge forward a little. The inner thighs lengthen.'],[{},'cyc','Hold.',4],
+   [{'root.pitch':0,'spine.f':0,'B.hip.f':90,'B.hip.a':0,'B.hip.r':0,'B.kn':0,'B.an':0,'B.sh.f':4,'B.el':0,fit:.6},'in','Inhale: legs long.']]},
+ seatedTwist:{name:'Seated twist',sk:'Ardha Matsyendrasana',cat:'floor',start:'seat',tags:['spine','hips','neck'],work:['oblique','intOblique','multifidus','erector'],stab:['QL'],str:['gluteMax','piriformis','oblique'],
+  steps:[[{'L.hip.f':112,'L.kn':120,'L.hip.a':-12,'L.an':10,fit:0},'out','Exhale: bend the left knee up, foot by the right knee.'],[{'B.sh.f':30,'chest.f':-4},'in','Inhale: sit tall.'],[{'spine.t':22,'chest.t':22,'neck.t':30,'R.sh.f':40,'R.sh.a':-10,'R.el':80,'L.sh.f':-20,'L.sh.a':20},'out','Exhale: twist to the left. The obliques turn the ribs; the deep spine muscles turn each segment.'],
+   [{},'cyc','Hold. Inhale to grow tall, exhale to turn.',3],[{'spine.t':0,'chest.t':0,'neck.t':0,'L.hip.f':90,'L.kn':0,'L.hip.a':0,'L.an':0,'B.sh.f':4,'B.sh.a':8,'B.el':0,'chest.f':0,fit:.6},'in','Inhale: unwind.']]},
+ supineTwist:{name:'Supine twist',sk:'Supta Matsyendrasana',cat:'cool',start:'supine',tags:['spine','hips','calm','chest'],work:[],stab:[],str:['gluteMax','piriformis','oblique','pec','erector'],
+  steps:[[{'L.hip.f':90,'L.kn':90,'B.sh.a':86},'out','Exhale: hug the left knee up. Arms out in a T.'],[{'root.roll':-32,'L.hip.a':-30,'spine.t':16,'chest.t':16,'neck.t':-40},'out','Exhale: let the knee fall across to the right. Look to the left.'],[{},'cyc','Rest in the twist. Breathe into the ribs.',4],
+   [{'root.roll':0,'L.hip.a':0,'spine.t':0,'chest.t':0,'neck.t':0,'L.hip.f':0,'L.kn':0,'B.sh.a':18},'in','Inhale: come back to center.']]},
+ kneesChest:{name:'Knees to chest',sk:'Apanasana',cat:'cool',start:'supine',tags:['spine','hips','calm'],work:[],stab:[],str:['erector','gluteMax','multifidus'],
+  steps:[[{'B.hip.f':118,'B.kn':128,'B.sh.f':60,'B.el':80},'out','Exhale: hug both knees in. The low back lengthens.'],[{},'cyc','Rock gently side to side.',3],[{'B.hip.f':0,'B.kn':0,'B.sh.f':0,'B.el':0},'in','Inhale: legs long.']]},
+ savasana:{name:'Final rest',sk:'Savasana',cat:'rest',start:'supine',tags:['calm','breath'],work:[],stab:[],str:[],
+  steps:[[{'B.hip.a':10,'B.hip.r':-20,'B.sh.a':26,'B.sh.r':-20},'out','Exhale: let the whole body be heavy. The floor holds you; no muscle has to work against gravity.'],[{},'cyc','Rest. Let the breath be natural.',6],[{},'in','Inhale: deepen the breath. Move the fingers and toes.']]}
+};
+const YCAT=['center','warm','sun','stand','balance','back','floor','cool','rest'];
+const YCATNAME={center:'Arrive',warm:'Warm up',sun:'Sun salutation',stand:'Standing',balance:'Balance',back:'Backbend',floor:'Seated',cool:'Cool down',rest:'Rest'};
+const YFOCUS=[['hips','Hips'],['hamstrings','Hamstrings and back body'],['shoulders','Shoulders and chest'],['spine','Spine and back'],['core','Core'],['legs','Legs and strength'],['balance','Balance'],['neck','Neck and upper back'],['feet','Feet and ankles'],['calm','Calm and sleep']];
+const YMUS={hips:['gluteMax','gluteMed','piriformis','iliopsoas','adductors','tfl'],hamstrings:['hamstrings','gastroc','soleus','erector'],shoulders:['pec','pecMinor','deltAnt','lats','serratus','trapLower'],spine:['erector','multifidus','QL','oblique','intOblique'],
+ core:['rectusAbd','oblique','intOblique','iliopsoas'],legs:['vastLat','vastMed','rectFem','gluteMax'],balance:['gluteMed','peroneals','tibPost','abdHallucis'],neck:['splenius','scm','trapUpper','levScap','longusColli','semispinalis'],feet:['abdHallucis','flexDigBrev','tibPost','peroneals','soleus'],calm:[]};
+function makeYoga(k,hold){const d=YOGA[k];const[a,b,c,e]=PACES[bPace].s;const L={in:a+b,out:c+e,cyc:a+b+c+e};
+ const nB=s=>d.cat==='sun'||hold==null?(s[3]||3):d.cat==='rest'?hold+3:d.cat==='center'?Math.max(2,hold-1):hold;
+ const lens=d.steps.map(s=>s[1]==='cyc'?L.cyc*nB(s):L[s[1]]);
+ const dur=lens.reduce((x,y)=>x+y,0);let t=0;const keys=[{t:0,p:{},cap:d.steps[0][2],br:d.steps[0][1]}];
+ d.steps.forEach((st,i)=>{t+=lens[i];const nx=d.steps[i+1];keys.push({t:Math.min(t/dur,.999),p:st[0],cap:nx?nx[2]:st[2],br:nx?nx[1]:st[1]==='cyc'?'out':st[1]});});
+ const m={name:d.name+' · '+d.sk,src:'Yoga',yk:k,dur,anchor:'floor',props:[],view:[90,6],focus:['core','hip','shoulder','foot','neck'],base:Object.assign({},YB[d.start]),keys,work:d.work,stab:d.stab,cr:false,dose:''};
+ prep(m);m.dose=(d.cat==='sun'?'Flow with the breath':!d.steps.some(x=>x[1]==='cyc')?'2 rounds with the breath':Math.round((lens.find((x,i)=>d.steps[i][1]==='cyc')||0)/L.cyc)+' breaths')+(isAsym(m)?' · each side':'');return m;}
+for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);
+// flow builder
+let yFocus=new Set(['hips']),yLen='short',yFlow=null;
+function yScore(k){const d=YOGA[k];let s=0;const ms=new Set([...d.work,...d.str]);for(const f of yFocus){if(d.tags.includes(f))s+=3;for(const m of YMUS[f]||[])if(ms.has(m))s+=1;}if(yFocus.has('coach')&&cT){const R=rolesFor(cT);for(const m of[cT,...R.ant,...R.syn])if(ms.has(m))s+=2;}return s+(d.tags.includes('full')?.5:0);}
+function buildYoga(){const full=yLen==='full';const want={center:1,warm:full?2:1,sun:1,stand:full?4:2,balance:1,back:(full||yFocus.has('spine')||yFocus.has('shoulders'))?1:0,floor:full?2:1,cool:1,rest:1};
+ if(yFocus.has('balance'))want.balance++;if(yFocus.has('calm')){want.stand=Math.max(1,want.stand-1);want.floor++;want.back=0;}
+ const out=[];for(const c of YCAT){let ks=Object.keys(YOGA).filter(k=>YOGA[k].cat===c);ks.sort((a,b)=>yScore(b)-yScore(a));ks=ks.slice(0,want[c]);
+  if(c==='stand')ks.sort((a,b)=>(YOGA[a].seq||0)-(YOGA[b].seq||0));if(c==='warm'&&ks.includes('catCow'))ks=['catCow',...ks.filter(x=>x!=='catCow')];out.push(...ks);}
+ return out;}
+function yogaPlanEx(keys,title){const hold=yLen==='full'?5:3;const blocks=keys.map(k=>{const m=makeYoga(k,hold);const d=YOGA[k];return{m,label:YCATNAME[d.cat],k:'yg'+k,reps:(d.cat==='sun'?(yLen==='full'?3:2):(isAsym(m)?2:1)),ready:2.5};});
+ const reg=yFocus.has('neck')?'neck':yFocus.has('shoulders')?'shoulder':yFocus.has('legs')?'thigh':yFocus.has('feet')||yFocus.has('balance')?'foot':yFocus.has('hips')?'hip':'trunk';
+ const e=buildPlanEx(cT||'erector',{R:{reg},blocks},title);e.coach=null;e.id='yoga';e.yoga=true;return e;}
+function startYoga(keys,title,single){if(yLen==='full'&&!single&&!has('pro'))return openPay('pro');const e=yogaPlanEx(keys,title);selectEx(e);sel=null;
+ speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;setBreath(true);
+ if(document.body.classList.contains('phone')){document.body.classList.add('sheetMini');$('cMin').textContent='▴';$('coach').scrollTop=0;syncSheet();fitCamera();}
+ const t=fmtMin(e.dur);toast((single?'Pose':'Flow')+' · '+t+' · breathe with the circle');}
+const fmtMin=s=>s<90?Math.round(s)+' s':Math.round(s/60)+' min';
+function setBreath(v){breathOn=v;const b=$('tBreath');if(b)b.classList.toggle('on',v);const y=$('yBreath');if(y)y.checked=v;}
+function yogaIdle(){const e=yogaPlanEx(['easySeat'],'Yoga · easy seat');e.name='Yoga · breathe and choose a flow';return e;}
+function enterYoga(){const B=document.body.classList;B.remove('pick');B.add('yoga');PICKSET=null;$('coach').hidden=false;$('coach').querySelector('.chd b').textContent='🧘 Yoga';
+ if(B.contains('phone')){B.remove('sheetMini');$('cMin').textContent='▾';}selectEx(yogaIdle());setBreath(true);renderYoga();syncSheet();}
+function exitYoga(){const B=document.body.classList;if(!B.contains('yoga'))return;B.remove('yoga');$('coach').querySelector('.chd b').textContent='🎯 Muscle coach';}
+function renderYoga(){yFlow=buildYoga();const hold=yLen==='full'?5:3;let tot=0;const items=yFlow.map((k,i)=>{const m=makeYoga(k,hold);const d=YOGA[k];const r=d.cat==='sun'?(yLen==='full'?3:2):(isAsym(m)?2:1);tot+=m.dur*r+2.5;return{k,d,m,r};});
+ let lastC='',h=`<div class="csub" style="margin:2px 0 6px">Pick what to focus on. The flow follows a class arc: arrive, warm up, sun salutation, standing poses, balance, a backbend, seated poses, cool down, rest.</div><div class="pkrow" style="flex-wrap:wrap">`+
+  YFOCUS.map(([k,n])=>`<button class="pk${yFocus.has(k)?' on':''}" data-yf="${k}">${n}</button>`).join('')+(cT&&MDEFK[cT]?`<button class="pk m${yFocus.has('coach')?' on':''}" data-yf="coach">🎯 ${MDEFK[cT].short}</button>`:'')+`</div>
+  <div class="grp" style="margin:8px 0;flex-wrap:wrap;gap:6px"><button class="b${yLen==='short'?' on':''}" data-yl="short">Short</button><button class="b${yLen==='full'?' on':''}" data-yl="full">Full ${has('pro')?'':'🔒'}</button>
+  <label class="csub" style="display:flex;align-items:center;gap:5px;margin:0 0 0 6px"><input type="checkbox" id="yBreath" ${breathOn?'checked':''}> 🌬 Breath</label>
+  <select id="yPace" aria-label="Breath pace" style="font-size:12px;padding:3px 5px">${Object.entries(PACES).map(([k,v])=>`<option value="${k}"${k===bPace?' selected':''}>${v.n}</option>`).join('')}</select></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><button class="b on" id="yGo" style="font-weight:700">▶ Start flow · ${fmtMin(tot)}</button><button class="b" id="yShare">🔗 Share</button><button class="b" id="yBreathe">🌬 Breathe only</button></div>`;
+ for(const it of items){if(it.d.cat!==lastC){lastC=it.d.cat;h+=`<div class="csub" style="margin:8px 0 3px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-size:10.5px">${YCATNAME[lastC]}</div>`;}
+  const st=it.d.str.slice(0,3).map(x=>MDEFK[x]?MDEFK[x].short:x),wk=it.d.work.slice(0,3).map(x=>MDEFK[x]?MDEFK[x].short:x);
+  h+=`<div class="ypose" data-yk="${it.k}"><div><b>${it.d.name}</b> <span style="color:var(--dim)">${it.d.sk}</span></div><div class="csub" style="margin:1px 0 0">${it.m.dose}${it.r>1&&it.d.cat==='sun'?' · '+it.r+' rounds':''}${wk.length?' · <span style="color:#fca5a5">works</span> '+wk.join(', '):''}${st.length?' · <span style="color:#93c5fd">lengthens</span> '+st.join(', '):''}</div></div>`;}
+ h+=`<div class="csub" style="margin-top:10px">Inhale to lift, open or extend. Exhale to fold, twist or lower. Education only, not medical advice.</div>`;
+ $('cOut').innerHTML=h;const O=$('cOut');
+ O.querySelectorAll('[data-yf]').forEach(b=>b.onclick=()=>{const f=b.dataset.yf;if(yFocus.has(f))yFocus.delete(f);else{yFocus.add(f);if(yFocus.size>3)yFocus.delete([...yFocus][0]);}if(!yFocus.size)yFocus.add('hips');renderYoga();});
+ O.querySelectorAll('[data-yl]').forEach(b=>b.onclick=()=>{if(b.dataset.yl==='full'&&!has('pro'))return openPay('pro');yLen=b.dataset.yl;renderYoga();});
+ $('yBreath').onchange=e=>setBreath(e.target.checked);$('yPace').onchange=e=>{bPace=e.target.value;for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);renderYoga();};
+ $('yGo').onclick=()=>startYoga(yFlow,'Yoga flow: '+[...yFocus].map(f=>f==='coach'?MDEFK[cT].short:YFOCUS.find(x=>x[0]===f)[1]).join(' + '));
+ $('yShare').onclick=()=>shareYoga();
+ $('yBreathe').onclick=()=>{const L=yLen;yLen='short';const e=yogaPlanEx(['easySeat'],'Breathe: '+PACES[bPace].n);e.blocks[0].reps=1;yLen=L;selectEx(e);setBreath(true);speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;};
+ O.querySelectorAll('.ypose').forEach(b=>b.onclick=()=>startYoga([b.dataset.yk],YOGA[b.dataset.yk].name,true));}
+const yogaHash=()=>'#yoga-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
+async function shareYoga(){const url=baseShareURL()+yogaHash();const text='Yoga flow · Muscle Lab';
+ try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab yoga',text,url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+ try{await navigator.clipboard.writeText(url);toast('Link copied');}catch(_){prompt('Copy this link:',url);}}
+function readYogaHash(hs){const m=hs.match(/#yoga-([a-z.]*)-(short|full)(?:-(calm|even|box|relax))?/);if(!m)return false;
+ const fs=m[1].split('.').filter(f=>YMUS[f]);if(fs.length)yFocus=new Set(fs);yLen=m[2]==='full'&&has('pro')?'full':'short';if(m[3]){bPace=m[3];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}
+ enterYoga();document.body.classList.add('shared');startYoga(buildYoga(),'Yoga flow');return true;}
+// breath drawing: lungs + diaphragm on the body, and a breath circle
+function drawLungs(W){if(!BR)return;const b=BR.lvl;ctx.save();
+ for(const m of[1,-1]){const c=proj(wp(W,'chest',[6.2*m,15,.5]));const r=(7.2+2.4*b)*c[3];const g=ctx.createRadialGradient(c[0],c[1],r*.1,c[0],c[1],r*1.4);g.addColorStop(0,`rgba(140,240,255,${.20+.22*b})`);g.addColorStop(1,'rgba(140,240,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(c[0],c[1],r*.85,r*1.35,0,0,7);ctx.fill();ctx.strokeStyle=`rgba(170,245,255,${.25+.3*b})`;ctx.lineWidth=1;ctx.stroke();}
+ const a=proj(wp(W,'chest',[-11,4-2.6*b,1])),z=proj(wp(W,'chest',[11,4-2.6*b,1])),top=proj(wp(W,'chest',[0,9-3.5*b,1]));
+ ctx.strokeStyle=`rgba(255,200,120,${.45+.3*b})`;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.quadraticCurveTo(top[0],top[1]-(top[1]-a[1])*.6,z[0],z[1]);ctx.stroke();ctx.restore();}
+function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains('phone');const R0=ph?26:34;const x=ph?VW-R0-18:camArea.x1-R0-30,y=ph?camArea.y0+R0+14:camArea.y0+R0+(document.body.classList.contains('follow')?60:30);const b=BR.lvl;
+ ctx.save();ctx.fillStyle='rgba(6,12,24,.72)';ctx.beginPath();ctx.arc(x,y,R0+8,0,7);ctx.fill();ctx.strokeStyle='rgba(126,249,255,.25)';ctx.lineWidth=1;ctx.stroke();
+ const g=ctx.createRadialGradient(x,y,2,x,y,R0);g.addColorStop(0,'rgba(170,250,255,.9)');g.addColorStop(1,'rgba(60,170,255,.25)');ctx.fillStyle=g;ctx.shadowColor='#7ef9ff';ctx.shadowBlur=14*b;ctx.beginPath();ctx.arc(x,y,R0*(.32+.68*b),0,7);ctx.fill();ctx.shadowBlur=0;
+ ctx.fillStyle='#fff';ctx.font=`700 ${ph?10:11.5}px Inter,system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(BR.ph,x,y-(ph?5:6));
+ ctx.font=`600 ${ph?9.5:10.5}px "JetBrains Mono",monospace`;ctx.fillStyle='#cfe3ff';ctx.fillText(BR.n?`${Math.ceil(BR.left)}s · ${BR.k}/${BR.n}`:Math.ceil(BR.left)+'s',x,y+(ph?7:8));ctx.textAlign='left';ctx.restore();}
+
+/* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 const CONFIG={
@@ -1885,7 +2092,7 @@ const CONFIG={
  // In each Stripe Payment Link: "After payment" → redirect to  https://stevenwsharp-ctrl.github.io/muscle-lab/?unlock=<code>
  unlock:{pro:'pro-7Q4K9X',coach:'coach-3M8T2V'},
  book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:''};
-const FREE_EX=new Set(['lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
+const FREE_EX=new Set(['yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
 const has=f=>(TIERS[TIER]||0)>=(TIERS[f]||0);
@@ -1982,7 +2189,7 @@ function updateUI(){
   const t=(n>1?`Block ${b.i+1} of ${n} · ${b.label} · `:'')+b.name;if($('capT').textContent!==t)$('capT').textContent=t;
   let cue=IP._cue||'';if(!IP._rep){const s_=Math.max(1,Math.ceil((b.r1-phase)*ex.dur/Math.max(speed,.01)));cue='Get ready: '+b.name+' … '+s_;}
   if($('capC').textContent!==cue)$('capC').textContent=cue;
-  const x=`<span class="rp">${IP._rep?'Rep '+IP._rep+' of '+REPS+(IP._sd||''):'Get ready'}</span><span>${b.src}</span><span>Dose: ${b.dose}</span>${b.next?`<span>Next: ${b.next}</span>`:''}`;
+  const x=`<span class="rp">${IP._rep?(b.reps>1?'Rep '+IP._rep+' of '+b.reps:'')+(IP._sd||''):'Get ready'}</span><span>${b.src}</span><span>Dose: ${b.dose}</span>${b.next?`<span>Next: ${b.next}</span>`:''}`;
   if($('capX').innerHTML!==x)$('capX').innerHTML=x;$('capP').style.width=clamp((phase-b.t0)/(b.t1-b.t0),0,1)*100+'%';if(!document.body.classList.contains('follow')){document.body.classList.add('follow');layoutCam();}}
  else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=IP._cap;if($('capC').textContent!==cap)$('capC').textContent=cap;if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
  if(!scrubbing)$('tl').value=Math.round(phase*1000);
@@ -1999,7 +2206,7 @@ function loop(now){
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
  else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;const W=solve(ex,phase);updateMuscles(W);updateTracks(W,dt);render(W);
+ RT=now/1000;BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -2012,7 +2219,7 @@ function pick(x,y){let best=null;
 function init(){
  cv=$('c');ctx=cv.getContext('2d');
  const list=$('exList');
- let lastG='';for(const e of EX){if(e.group!==lastG){lastG=e.group;const h=document.createElement('h2');h.className='gh';h.textContent=e.group;list.appendChild(h);}const b=document.createElement('button');b.className='ex';b.dataset.id=e.id;b.innerHTML=`<span class="i">${e.icon}</span>${e.name}`;b.onclick=()=>{if(!canEx(e))return openPay('pro');selectEx(e);};list.appendChild(b);}
+ let lastG='';for(const e of EX){if(e.group!==lastG){lastG=e.group;const h=document.createElement('h2');h.className='gh';h.textContent=e.group;list.appendChild(h);}const b=document.createElement('button');b.className='ex';b.dataset.id=e.id;b.innerHTML=`<span class="i">${e.icon}</span>${e.name}`;b.onclick=()=>{if(!canEx(e))return openPay('pro');exitYoga();selectEx(e);};list.appendChild(b);}
  initCoach();
  zcx=$('zc').getContext('2d');pcx=$('pc').getContext('2d');applyPhone();addEventListener('resize',applyPhone);
  if(innerWidth<=1000){zOn=false;document.body.classList.add('zhide');$('tZoom').classList.remove('on');}
@@ -2033,6 +2240,7 @@ function init(){
  document.querySelectorAll('.sp').forEach(b=>b.onclick=()=>{speed=+b.dataset.s;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x===b));});
  document.querySelectorAll('.vw').forEach(b=>b.onclick=()=>{cam.yaw=+b.dataset.y;cam.pitch=+b.dataset.p;orbit=false;$('orbit').classList.remove('on');setSweep(false);});
  $('sweep').onclick=()=>setSweep(!sweep);
+ $('tBreath').onclick=()=>setBreath(!breathOn);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
  $('tLab').onclick=()=>{showLabels=!showLabels;$('tLab').classList.toggle('on',showLabels);};
  document.querySelectorAll('.ly').forEach(b=>b.onclick=()=>{layer=b.dataset.l;document.querySelectorAll('.ly').forEach(x=>x.classList.toggle('on',x===b));});

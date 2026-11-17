@@ -14,6 +14,8 @@ A 3D muscle lab that runs in the browser. You watch about 60 muscles on each sid
   - Skiing on groomers, moguls and powder, and ski jumping
   - Piloting a boat in rough seas
   - Daily life and work: desk life (sitting and typing) and nursing (bedside care)
+- **Yoga mode:** 26 poses and a sun salutation, with Sanskrit names. Pick up to three focus areas (hips, hamstrings, shoulders, spine, core, legs, balance, neck, feet, calm, or the muscle you picked in the coach). The flow follows a class arc: arrive, warm up, sun salutation, standing poses, balance, backbend, seated poses, cool down and rest. One-sided poses play on the left side, then on the right side. Short flows are free; full flows are Pro. Share a flow with a link.
+- **Breath option:** a breath circle and lungs and a diaphragm that move on the body. Paces: calm 4–6, even 5–5, box 4–4–4–4 and relax 4–7–8. In yoga, the breath follows the poses: inhale to lift or open, exhale to fold, twist or lower.
 - **Counter moves:** each activity has a "↺ Counter it" row. It plays moves that undo the load of that activity, for example a chest opener and a neck reset after desk life.
 - **Both sides and all angles:** one-sided exercises play on the left side, then on the right side. The ↔↕ Sweep view swings the camera left-right and up-down.
   - Two gravity lessons: stacked vs slumped posture, and centered vs back-seat ski stance
