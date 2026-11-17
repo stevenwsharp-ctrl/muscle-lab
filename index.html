@@ -2102,6 +2102,11 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
+// version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
+const BUILD='2026-11-17-1630';
+(function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
+ fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
+  if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
 const CONFIG={
  brand:'Muscle Lab',
  price:{pro:'$6 / month or $39 / year',coach:'$19 / month'},
