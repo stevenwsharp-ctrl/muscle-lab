@@ -235,7 +235,7 @@ body.phone #zBig{display:none}
   <button class="b pm" id="step">Step ▸</button>
   <input type="range" id="tl" min="0" max="1000" value="0" aria-label="Timeline">
   <div class="grp"><span class="lbl">Speed</span>
-    <button class="b sp" data-s="1">1×</button><button class="b sp" data-s="0.5">½×</button><button class="b sp on" data-s="0.25">¼×</button><button class="b sp" data-s="0.1">⅒×</button>
+    <button class="b sp" data-s="1">1×</button><button class="b sp on" data-s="0.75">¾×</button><button class="b sp" data-s="0.5">½×</button><button class="b sp" data-s="0.25">¼×</button><button class="b sp" data-s="0.1">⅒×</button>
   </div>
   <div class="grp" id="surfG" style="display:none"><span class="lbl">Surface</span><button class="b sf on" data-s="road">Asphalt</button><button class="b sf" data-s="trail">Trail</button><button class="b sf" data-s="track">Track</button></div>
   <div class="grp pm"><span class="lbl">View</span>
@@ -748,7 +748,7 @@ function shade(h,f,a){const[r,g,b]=hexRGB(h);const t=f<1?[r*f,g*f,b*f]:[r+(255-r
 
 let cv,ctx,dpr=1,VW=0,VH=0;
 const cam={yaw:0,pitch:8,zoom:1,s:2,target:[0,100,0],M:I3,Dp:700,cx:0,cy:0};
-let sweep=true,ex=EX[3],phase=0,simT=0,playing=true,speed=.25,orbit=false,showLabels=true,showBody=true,layer='all',anat=false,sel=null,hover=null,hits=[],mouse=null;
+let sweep=true,ex=EX[3],phase=0,simT=0,playing=true,speed=.75,orbit=false,showLabels=true,showBody=true,layer='all',anat=false,sel=null,hover=null,hits=[],mouse=null;
 
 function proj(p){const q=ap(cam.M,sub(p,cam.target));const k=cam.Dp/(cam.Dp-q[2]);const s=cam.s*cam.zoom*k;return[cam.cx+q[0]*s,cam.cy-q[1]*s,q[2],s];}
 
@@ -1572,12 +1572,12 @@ function readHash(){
  const mv=hs.match(/#move-([A-Za-z]+)-([A-Za-z0-9]+)/);
  if(mv&&MDEFK[mv[1]]&&ACTS[mv[1]]&&MOVES[mv[2]]){cT=mv[1];document.body.classList.add('shared');openCoach(cT);const m=MOVES[mv[2]];
   playPlan([{m,label:'For the '+MDEFK[cT].short.toLowerCase(),k:mv[2]}],m.name);ex.playOnce=false;ex.loopMove=true;anat=true;$('tAnat').classList.add('on');
-  speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;return true;}const m=hs.match(/#plan-([A-Za-z]+)-(wake|calm)(?:-(\d+))?/);if(!m||!MDEFK[m[1]]||!ACTS[m[1]])return false;
+  speed=.75;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='0.75'));playing=true;return true;}const m=hs.match(/#plan-([A-Za-z]+)-(wake|calm)(?:-(\d+))?/);if(!m||!MDEFK[m[1]]||!ACTS[m[1]])return false;
  cT=m[1];cGoal=m[2];document.querySelectorAll('.cg').forEach(x=>x.classList.toggle('on',x.dataset.g===cGoal));
  document.body.classList.add('shared');openCoach(cT);
  const i=m[3]?(+m[3]-1):null;if(i!=null&&cPlan.blocks[i])playPlan([cPlan.blocks[i]],cPlan.blocks[i].m.name);else playPlan(cPlan.blocks,`Plan: ${MDEFK[cT].short} — ${cGoal==='wake'?'wake it up':'calm it down'}`);
  ex.playOnce=true;anat=true;$('tAnat').classList.add('on');
- speed=.5;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='0.5'));playing=true;return true;}
+ speed=.75;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='0.75'));playing=true;return true;}
 function initCoach(){
  const s=$('cMus');let h='';for(const r in REGION){h+=`<optgroup label="${REGNAME[r]}">`+REGION[r].map(id=>`<option value="${id}">${MDEFK[id].name}</option>`).join('')+'</optgroup>';}s.innerHTML=h;
  s.onchange=()=>{cT=s.value;renderCoach();};
