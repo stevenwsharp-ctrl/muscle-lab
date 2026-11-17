@@ -1577,14 +1577,14 @@ function enterExplore(){exitYoga();if(document.body.classList.contains('phone'))
  EXPLORE.focus=[REG2ZOOM[regionOf(cT)]||'shoulder','core','foot','neck','shoulder','hip','knee','leg'].filter((v,i,a)=>a.indexOf(v)===i);
  prep(EXPLORE);selectEx(EXPLORE);EXPLORE.coach=(cPlan&&cPlan.R.T===cT)?cPlan.R:rolesFor(cT);sel=cT;anat=true;$('tAnat').classList.add('on');$('coach').hidden=false;renderCoach();syncSheet();}
 const planHash=(T,g,i)=>'#plan-'+T+'-'+g+(i!=null?'-'+(i+1):'');
-const shareURL=(T,g,i)=>baseShareURL()+planHash(T,g,i);
+const shareURL=(T,g,i)=>baseShareURL()+planHash(T,g,i)+settingsStr();
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>el.classList.remove('on'),2200);}
 async function sharePlan(i){if(i!=null&&cPlan.blocks[i])return shareMove(cPlan.blocks[i].k);const url=shareURL(cT,cGoal,i);const d=MDEFK[cT];
  const text=(i!=null?`${cPlan.blocks[i].m.name} — `:'')+`my ${cGoal==='wake'?'wake-up':'calm-down'} plan for the ${d.name.toLowerCase()} (Muscle Lab)`;
  const box=$('cShare');box.hidden=false;const inp=box.querySelector('input');inp.value=url;
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied — paste it in a text or email');}catch(e){inp.select();toast('Copy the link below');}}
-async function shareMove(k){const m=MOVES[k];const url=baseShareURL()+'#move-'+cT+'-'+k;const text=`${m.name} (${m.src}) — for the ${MDEFK[cT].name.toLowerCase()} · Muscle Lab`;
+async function shareMove(k){const m=MOVES[k];const url=baseShareURL()+'#move-'+cT+'-'+k+settingsStr();const text=`${m.name} (${m.src}) — for the ${MDEFK[cT].name.toLowerCase()} · Muscle Lab`;
  const box=$('cShare');box.hidden=false;const inp=box.querySelector('input');inp.value=url;
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied — paste it in a text or email');}catch(e){inp.select();toast('Copy the link below');}}
@@ -2171,7 +2171,28 @@ function currentHash(){
  if(ex.explore)return'#muscle-'+(sel&&MDEFK[sel]?sel:cT);
  if(EX.includes(ex))return'#act-'+ex.id;return'';}
 function currentTitle(){if(ex.counterOf)return'Counter moves for '+EX.find(e=>e.id===ex.counterOf).name;if(ex.explore)return MDEFK[sel&&MDEFK[sel]?sel:cT].name+' · Muscle coach';return ex.name;}
-async function shareNow(){const h=currentHash();const url=baseShareURL()+h;const text=currentTitle()+' · Muscle Lab';
+// shared links carry the viewer settings after '&' in the #hash: speed, view, layers, toggles, breath, frame
+function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace};
+ if(!sweep||orbit){o.cy=Math.round(((cam.yaw%360)+360)%360);o.cp=Math.round(cam.pitch);}if(orbit)o.ob=1;if(Math.abs(cam.zoom-1)>.02)o.cz=+cam.zoom.toFixed(2);
+ if(ex.env==='run')o.rs=runSurf;if(!playing){o.pa=1;o.p=+phase.toFixed(3);}
+ return'&'+Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');}
+function applySettings(hs){const i=hs.indexOf('&');if(i<0)return;const q=new URLSearchParams(hs.slice(i+1));const on=k=>q.get(k)==='1';const B=document.body.classList;
+ if(q.has('s')){const v=+q.get('s');if(v>0&&v<=2){speed=v;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',+x.dataset.s===v));}}
+ if(q.has('sw'))setSweep(on('sw'));
+ if(q.has('ly')){const b=document.querySelector('.ly[data-l="'+q.get('ly')+'"]');if(b)b.click();}
+ if(q.has('an')&&on('an')!==anat)$('tAnat').click();
+ if(q.has('lb')&&on('lb')!==showLabels)$('tLab').click();
+ if(q.has('bd')&&on('bd')!==showBody)$('tBody').click();
+ if(q.has('gr')&&on('gr')!==showGrav)$('tGrav').click();
+ if(q.has('zm')&&!B.contains('phone')&&on('zm')!==zOn)$('tZoom').click();
+ if(q.has('bp')&&PACES[q.get('bp')]&&q.get('bp')!==bPace){bPace=q.get('bp');for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}
+ if(q.has('br'))setBreath(on('br'));
+ if(q.has('rs')){const b=document.querySelector('.sf[data-s="'+q.get('rs')+'"]');if(b)b.click();}
+ if(q.has('cy')){cam.yaw=+q.get('cy');cam.pitch=+(q.get('cp')||cam.pitch);}
+ if(on('ob')!==orbit&&q.has('ob'))$('orbit').click();
+ if(q.has('cz'))cam.zoom=clamp(+q.get('cz'),.3,4);
+ if(on('pa')){playing=false;$('play').textContent='▶ Play';if(q.has('p'))phase=clamp(+q.get('p'),0,.999);}}
+async function shareNow(){const h=currentHash()+settingsStr();const url=baseShareURL()+h;const text=currentTitle()+' · Muscle Lab';
  try{history.replaceState(null,'',h||location.pathname);}catch(_){}
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied: '+text);}catch(_){prompt('Copy this link:',url);}}
@@ -2182,7 +2203,7 @@ function readAnyHash(hs){let m;
  if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}enterYoga();startYoga([m[1]],YOGA[m[1]].name,true);return true;}
  return false;}
 const yogaHash=()=>'#yoga-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
-async function shareYoga(){const url=baseShareURL()+yogaHash();const text='Yoga flow · Muscle Lab';
+async function shareYoga(){const url=baseShareURL()+yogaHash()+settingsStr();const text='Yoga flow · Muscle Lab';
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab yoga',text,url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied');}catch(_){prompt('Copy this link:',url);}}
 function readYogaHash(hs){const m=hs.match(/#yoga-([a-z.]*)-(short|full)(?:-(calm|even|box|relax))?/);if(!m)return false;
@@ -2204,7 +2225,7 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-1710';
+const BUILD='2026-11-17-1745';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2357,7 +2378,7 @@ function init(){
  $('buyPro').onclick=()=>payBtn('pro');$('buyProY').onclick=()=>payBtn(CONFIG.pay.proYear?'proYear':'pro');$('buyCoach').onclick=()=>payBtn('coach');
  $('payGo').onclick=()=>{if(tryCode($('payCode').value))$('pay').hidden=true;else toast('That code does not match.');};
  buildPick();$('pkBack').onclick=enterPick;
- if(!readHash()){cT='deltLat';enterExplore();enterPick();}addEventListener('hashchange',readHash);
+ if(!readHash()){cT='deltLat';enterExplore();enterPick();}addEventListener('hashchange',()=>{readHash();applySettings(location.hash);});
  const setPlay=v=>{playing=v;$('play').textContent=v?'❚❚ Pause':'▶ Play';};
  $('play').onclick=()=>setPlay(!playing);
  $('step').onclick=()=>{setPlay(false);phase=(phase+.01)%1;};
@@ -2368,6 +2389,7 @@ function init(){
  $('sweep').onclick=()=>setSweep(!sweep);
  $('tBreath').onclick=()=>setBreath(!breathOn);
  $('tShare').onclick=shareNow;
+ setTimeout(()=>applySettings(location.hash),30);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
  $('tLab').onclick=()=>{showLabels=!showLabels;$('tLab').classList.toggle('on',showLabels);};
  document.querySelectorAll('.ly').forEach(b=>b.onclick=()=>{layer=b.dataset.l;document.querySelectorAll('.ly').forEach(x=>x.classList.toggle('on',x===b));});
