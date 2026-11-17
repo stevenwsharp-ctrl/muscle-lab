@@ -244,7 +244,7 @@ body.phone #zBig{display:none}
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <script>
@@ -1590,6 +1590,7 @@ async function shareMove(k){const m=MOVES[k];const url=baseShareURL()+'#move-'+c
 function readHash(){
  let hs=location.hash;try{hs=decodeURIComponent(hs);}catch(_){}
  if(readYogaHash(hs))return true;
+ if(readAnyHash(hs))return true;
  const mv=hs.match(/#move-([A-Za-z]+)-([A-Za-z0-9]+)/);
  if(mv&&MDEFK[mv[1]]&&ACTS[mv[1]]&&MOVES[mv[2]]){cT=mv[1];document.body.classList.add('shared');openCoach(cT);const m=MOVES[mv[2]];
   playPlan([{m,label:'For the '+MDEFK[cT].short.toLowerCase(),k:mv[2]}],m.name);ex.playOnce=false;ex.loopMove=true;anat=true;$('tAnat').classList.add('on');
@@ -2033,7 +2034,7 @@ function buildYoga(){const full=yLen==='full';const want={center:1,warm:full?2:1
 function yogaPlanEx(keys,title){const hold=yLen==='full'?5:3;const blocks=keys.map(k=>{const m=makeYoga(k,hold);const d=YOGA[k];return{m,label:YCATNAME[d.cat],k:'yg'+k,reps:(d.cat==='sun'?(yLen==='full'?3:2):(isAsym(m)?2:1)),ready:2.5};});
  const reg=yFocus.has('neck')?'neck':yFocus.has('shoulders')?'shoulder':yFocus.has('legs')?'thigh':yFocus.has('feet')||yFocus.has('balance')?'foot':yFocus.has('hips')?'hip':'trunk';
  const e=buildPlanEx(cT||'erector',{R:{reg},blocks},title);e.coach=null;e.id='yoga';e.yoga=true;return e;}
-function startYoga(keys,title,single){if(yLen==='full'&&!single&&!has('pro'))return openPay('pro');const e=yogaPlanEx(keys,title);selectEx(e);sel=null;
+function startYoga(keys,title,single){if(yLen==='full'&&!single&&!has('pro'))return openPay('pro');const e=yogaPlanEx(keys,title);if(single)e.yk1=keys[0];selectEx(e);sel=null;
  speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;setBreath(true);
  if(document.body.classList.contains('phone')){document.body.classList.add('sheetMini');$('cMin').textContent='▴';$('coach').scrollTop=0;syncSheet();fitCamera();}
  const t=fmtMin(e.dur);toast((single?'Pose':'Flow')+' · '+t+' · breathe with the circle');}
@@ -2062,6 +2063,23 @@ function renderYoga(){yFlow=buildYoga();const hold=yLen==='full'?5:3;let tot=0;c
  $('yShare').onclick=()=>shareYoga();
  $('yBreathe').onclick=()=>{const L=yLen;yLen='short';const e=yogaPlanEx(['easySeat'],'Breathe: '+PACES[bPace].n);e.blocks[0].reps=1;yLen=L;selectEx(e);setBreath(true);speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;};
  O.querySelectorAll('.ypose').forEach(b=>b.onclick=()=>startYoga([b.dataset.yk],YOGA[b.dataset.yk].name,true));}
+function currentHash(){
+ if(ex.counterOf)return'#counter-'+ex.counterOf;
+ if(ex.yoga){const bl=ex.blocks||[];if(bl.length===1&&ex.yk1)return'#pose-'+ex.yk1+'-'+bPace;return yogaHash();}
+ if(ex.blocks){const h=location.hash;if(/^#(plan|move)-/.test(h))return h;return planHash(cT,cGoal);}
+ if(ex.explore)return'#muscle-'+(sel&&MDEFK[sel]?sel:cT);
+ if(EX.includes(ex))return'#act-'+ex.id;return'';}
+function currentTitle(){if(ex.counterOf)return'Counter moves for '+EX.find(e=>e.id===ex.counterOf).name;if(ex.explore)return MDEFK[sel&&MDEFK[sel]?sel:cT].name+' · Muscle coach';return ex.name;}
+async function shareNow(){const h=currentHash();const url=baseShareURL()+h;const text=currentTitle()+' · Muscle Lab';
+ try{history.replaceState(null,'',h||location.pathname);}catch(_){}
+ try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab',text,url});toast('Shared');return;}}catch(e){if(e&&e.name==='AbortError')return;}
+ try{await navigator.clipboard.writeText(url);toast('Link copied: '+text);}catch(_){prompt('Copy this link:',url);}}
+function readAnyHash(hs){let m;
+ if((m=hs.match(/#act-([A-Za-z0-9]+)/))){const e=EX.find(x=>x.id===m[1]);if(!e)return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(e);syncSheet();fitCamera();return true;}
+ if((m=hs.match(/#counter-([A-Za-z0-9]+)/))){if(!COUNTER[m[1]])return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(EX.find(x=>x.id===m[1]));playCounter(m[1],COUNTER[m[1]].k);syncSheet();return true;}
+ if((m=hs.match(/#muscle-([A-Za-z]+)/))){if(!MDEFK[m[1]])return false;cT=m[1];document.body.classList.remove('pick');enterExplore();return true;}
+ if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}enterYoga();startYoga([m[1]],YOGA[m[1]].name,true);return true;}
+ return false;}
 const yogaHash=()=>'#yoga-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
 async function shareYoga(){const url=baseShareURL()+yogaHash();const text='Yoga flow · Muscle Lab';
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab yoga',text,url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
@@ -2091,16 +2109,18 @@ const CONFIG={
  pay:{pro:'',proYear:'',coach:''},
  // In each Stripe Payment Link: "After payment" → redirect to  https://stevenwsharp-ctrl.github.io/muscle-lab/?unlock=<code>
  unlock:{pro:'pro-7Q4K9X',coach:'coach-3M8T2V'},
- book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:''};
+ book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:'',
+ // allFree: true opens every feature (Pro and Coach) for everyone and hides the Go Pro button. Set it to false to turn on the paid plans.
+ allFree:true};
 const FREE_EX=new Set(['yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
-const has=f=>(TIERS[TIER]||0)>=(TIERS[f]||0);
+const has=f=>CONFIG.allFree||(TIERS[TIER]||0)>=(TIERS[f]||0);
 const canEx=e=>FREE_EX.has(e.id)||has('pro');
 function setTier(t){TIER=t;try{localStorage.setItem('ml_tier',t);}catch(_){}applyTier();}
 function tryCode(c){c=(c||'').trim();for(const t of['coach','pro'])if(c&&c===CONFIG.unlock[t]){setTier(t);toast(`Thank you! ${t==='coach'?'Coach':'Pro'} is unlocked on this device.`);return true;}return false;}
 function checkUnlock(){const q=new URLSearchParams(location.search);const u=q.get('unlock');if(u){tryCode(u);try{q.delete('unlock');const qs=q.toString();history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash);}catch(_){}}}
-function applyTier(){document.querySelectorAll('.ex').forEach(b=>{const e=EX.find(x=>x.id===b.dataset.id);if(!e)return;let l=b.querySelector('.lk');const lock=!canEx(e);if(lock&&!l){l=document.createElement('span');l.className='lk';l.textContent='🔒';b.appendChild(l);}if(!lock&&l)l.remove();});
+function applyTier(){{const t0=$('tPro');if(t0)t0.style.display=CONFIG.allFree?'none':'';}document.querySelectorAll('.ex').forEach(b=>{const e=EX.find(x=>x.id===b.dataset.id);if(!e)return;let l=b.querySelector('.lk');const lock=!canEx(e);if(lock&&!l){l=document.createElement('span');l.className='lk';l.textContent='🔒';b.appendChild(l);}if(!lock&&l)l.remove();});
  const tp=$('tPro');if(tp){tp.textContent=TIER==='free'?'⭐ Go Pro':TIER==='pro'?'⭐ Pro':'⭐ Coach';tp.classList.toggle('on',TIER!=='free');}if(!$('coach').hidden)renderCoach();}
 function openPay(need){const m=$('pay');m.hidden=false;$('payNeed').textContent=need==='coach'?'This is a Coach feature.':need==='pro'?'This is a Pro feature.':'';}
 function payBtn(k){const u=CONFIG.pay[k];if(u){window.open(u,'_blank','noopener');return;}
@@ -2241,6 +2261,7 @@ function init(){
  document.querySelectorAll('.vw').forEach(b=>b.onclick=()=>{cam.yaw=+b.dataset.y;cam.pitch=+b.dataset.p;orbit=false;$('orbit').classList.remove('on');setSweep(false);});
  $('sweep').onclick=()=>setSweep(!sweep);
  $('tBreath').onclick=()=>setBreath(!breathOn);
+ $('tShare').onclick=shareNow;
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
  $('tLab').onclick=()=>{showLabels=!showLabels;$('tLab').classList.toggle('on',showLabels);};
  document.querySelectorAll('.ly').forEach(b=>b.onclick=()=>{layer=b.dataset.l;document.querySelectorAll('.ly').forEach(x=>x.classList.toggle('on',x===b));});
