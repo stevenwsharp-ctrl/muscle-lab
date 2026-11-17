@@ -206,7 +206,7 @@ body.phone #zBig{display:none}
 
 <div id="coach" class="panel" hidden>
   <div class="chd"><b>🎯 Muscle coach</b><span><button class="b" id="pkBack" title="Pick another muscle">◀ Body parts</button> <button class="b ph" id="cMin" aria-label="Minimize">▾</button> <button class="b" id="coachX" aria-label="Close">✕</button></span></div>
-  <div id="pick"><div class="pk1">Tap a muscle on the body, or pick a body part:</div><div class="pkrow" id="pkParts"></div><div class="pkrow" id="pkMus"></div></div>
+  <div id="pick"><div class="pk1">Tap a muscle on the body, or pick a body part:</div><div class="pkrow" id="pkParts"></div><div class="pkrow" id="pkMus"></div><div class="pk1" style="margin-top:8px">Or watch an activity:</div><div class="pkrow" id="pkAct"></div></div>
   <div class="csub" style="margin-bottom:6px">Or choose from the full list:</div>
   <select id="cMus" aria-label="Muscle"></select>
   <div class="grp" style="margin:8px 0;flex-wrap:wrap"><button class="b cg on" data-g="wake">Wake it up (underactive)</button><button class="b cg" data-g="calm">Calm it down (overactive)</button></div>
@@ -1519,11 +1519,15 @@ function openCoach(T){exitYoga();cT=T||cT||'deltLat';$('coach').hidden=false;$('
 function detectPhone(){const coarse=matchMedia('(pointer:coarse)').matches;const small=Math.min(screen.width,screen.height)<=820;
  const ua=/iPhone|iPod|Android.+Mobile|Windows Phone/i.test(navigator.userAgent);return(coarse&&small)||ua||innerWidth<=640;}
 let PICKSET=null,pickReg=null;
-const PKPARTS=[['neck','Neck'],['shoulder','Shoulder'],['arm','Arm'],['trunk','Core and back'],['hip','Hip'],['thigh','Thigh'],['leg','Lower leg'],['foot','Foot']];
+const PKPARTS=[['all','All muscles'],['neck','Neck'],['shoulder','Shoulder'],['arm','Arm'],['trunk','Core and back'],['hip','Hip'],['thigh','Thigh'],['leg','Lower leg'],['foot','Foot']];
 function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<button class="pk${k===pickReg?' on':''}" data-r="${k}">${n}</button>`).join('');
- P.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{pickReg=pickReg===b.dataset.r?null:b.dataset.r;PICKSET=pickReg?new Set(REGION[pickReg]):null;buildPick();});
- const M=$('pkMus');M.innerHTML=pickReg?REGION[pickReg].map(id=>`<button class="pk m${id===cT&&!document.body.classList.contains('pick')?' on':''}" data-m="${id}">${MDEFK[id].short}</button>`).join(''):'';
+ const regList=r=>r==='all'?Object.values(REGION).flat():REGION[r];
+ P.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{pickReg=pickReg===b.dataset.r?null:b.dataset.r;PICKSET=pickReg&&pickReg!=='all'?new Set(REGION[pickReg]):null;buildPick();});
+ const M=$('pkMus');M.innerHTML=pickReg?regList(pickReg).map(id=>`<button class="pk m${id===cT&&!document.body.classList.contains('pick')?' on':''}" data-m="${id}">${MDEFK[id].short}</button>`).join(''):'';
  M.querySelectorAll('.pk').forEach(b=>b.onclick=()=>choosePicked(b.dataset.m));
+ const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
+  A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='yoga')return enterYoga();const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
+   const B=document.body.classList;B.remove('pick');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();});}
  if(document.body.classList.contains('pick')){document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');layoutCam();}}
 function choosePicked(id){const B=document.body.classList;B.remove('pick');$('coach').scrollTop=0;PICKSET=null;cT=id;if(ex.explore||B.contains('phone'))enterExplore();else openCoach(id);buildPick();layoutCam();}
 function enterPick(){const B=document.body.classList;if(!B.contains('phone'))return;B.add('pick');B.remove('sheetMini');PICKSET=pickReg?new Set(REGION[pickReg]):null;if(!ex.explore)enterExplore();$('coach').hidden=false;
@@ -2225,7 +2229,7 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-1745';
+const BUILD='2026-11-17-1755';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
