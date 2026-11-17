@@ -2,7 +2,9 @@
 
 A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 16 activities.
 
-**Live site:** https://stevenwsharp-ctrl.github.io/muscle-lab/
+### ▶ [Open Muscle Lab](https://stevenwsharp-ctrl.github.io/muscle-lab/)
+
+**Live site:** [stevenwsharp-ctrl.github.io/muscle-lab](https://stevenwsharp-ctrl.github.io/muscle-lab/)
 
 ## What it does
 
