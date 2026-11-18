@@ -95,6 +95,7 @@ body.phone.xpl #bot{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;
 body.phone .pk{font-size:13.5px;padding:8px 13px}
 
 #cap.vBad{border-color:rgba(248,113,113,.85);box-shadow:0 0 0 2px rgba(248,113,113,.35),0 10px 30px rgba(120,0,0,.35)}#cap.vBad .c{color:#fecaca}#cap.vGood{border-color:rgba(52,211,153,.6)}
+#legend [data-st]{cursor:pointer;border-radius:8px;padding:1px 4px;margin:0 -4px}#legend [data-st]:hover{background:rgba(255,255,255,.06)}#legend [data-st].on{background:rgba(126,249,255,.14);outline:1px solid rgba(126,249,255,.4)}
 #capX{display:none;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px;font-size:11.5px;color:var(--dim)}
 #capX span{padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06)}#capX .rp{background:rgba(94,224,255,.18);color:var(--acc);font-weight:700}
 #capPW{display:none;height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}#capP{display:block;height:100%;width:0;background:linear-gradient(90deg,#5ee0ff,#ff4fd8)}
@@ -225,10 +226,10 @@ body.phone #zBig{display:none}
   <canvas id="zc"></canvas><canvas id="pc"></canvas>
 </div>
 <div id="legend" class="panel">
-  <div><span class="dot" style="background:var(--con)"></span>Shortening under load (concentric)</div>
-  <div><span class="dot" style="background:var(--ecc)"></span>Lengthening under load (eccentric)</div>
-  <div><span class="dot" style="background:var(--iso)"></span>Holding / stabilizing (isometric)</div>
-  <div><span class="dot" style="background:var(--str)"></span>Stretching (relaxed opposite muscle)</div>
+  <div data-st="con" title="Click: show only these muscles"><span class="dot" style="background:var(--con)"></span>Shortening under load (concentric)</div>
+  <div data-st="ecc" title="Click: show only these muscles"><span class="dot" style="background:var(--ecc)"></span>Lengthening under load (eccentric)</div>
+  <div data-st="iso" title="Click: show only these muscles"><span class="dot" style="background:var(--iso)"></span>Holding / stabilizing (isometric)</div>
+  <div data-st="str" title="Click: show only these muscles"><span class="dot" style="background:var(--str)"></span>Stretching (relaxed opposite muscle)</div>
   <div><span class="dot" style="background:var(--idle)"></span>Resting</div>
 </div>
 
@@ -860,6 +861,7 @@ function drawMuscle(it,labels){
  const isSel=sel===mu.d.id,isHov=hover===mu.d.id;
  ctx.globalAlpha=Z?(mu.d.deep?.88:.97):anat?(mu.d.deep&&layer==='all'?.8:.97):(active?.96:.55);
  const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;else if(!Z&&ex.explore&&cT&&!document.body.classList.contains('pick')&&crole!=='target'&&mu.d.id!==cT)ctx.globalAlpha*=(crole&&crole!=='x'?.6:.32);
+ if(!Z&&CF!=='all'){if(st===CF){ctx.shadowColor=scol;ctx.shadowBlur=18;}else ctx.globalAlpha*=.25;}
  if(st==='con'||st==='ecc'){ctx.shadowColor=scol;ctx.shadowBlur=(anat||Z?14:10)*clamp(Math.abs(mu.v)*4,.3,1.2);}
  const g=ctx.createLinearGradient(mx-nx*hw,my-ny*hw,mx+nx*hw,my+ny*hw);
  g.addColorStop(0,shade(col,.4));g.addColorStop(.42,col);g.addColorStop(.6,shade(col,1.3));g.addColorStop(1,shade(col,.4));
@@ -1489,7 +1491,7 @@ function mirP(P){const o={};for(const k in P){let k2=k;if(k.startsWith('L.'))k2=
 function isAsym(m){return m.K.some(k=>Object.keys(k.P).some(x=>(MIRNEG.has(x)&&Math.abs(k.P[x])>.5)||(x.startsWith('L.')&&Math.abs((k.P[x]||0)-(k.P['R.'+x.slice(2)]||0))>.5)));}
 const mirCap=t=>t.replace(/\b(left|right|Left|Right)\b/g,w=>({left:'right',right:'left',Left:'Right',Right:'Left'})[w]);
 function buildPlanEx(T,plan,title){
- const parts=plan.blocks;parts.forEach(b=>prep(b.m));const RPb=b=>b.reps||REPS,RDb=b=>b.ready!=null?b.ready:READY;const bd=parts.map(b=>RDb(b)+RPb(b)*b.m.dur);const total=bd.reduce((a,b)=>a+b,0);
+ const parts=(CF!=='all'&&!plan.noCF&&MUSK[T+'L'])?plan.blocks.map(b=>Object.assign({},b,{m:tempoMove(b.m,T,CF)})):plan.blocks;parts.forEach(b=>prep(b.m));const RPb=b=>b.reps||REPS,RDb=b=>b.ready!=null?b.ready:READY;const bd=parts.map(b=>RDb(b)+RPb(b)*b.m.dur);const total=bd.reduce((a,b)=>a+b,0);
  const ks=new Set();parts.forEach(b=>b.m.keyList.forEach(k=>{ks.add(k);Object.keys(mirP({[k]:1})).forEach(x=>ks.add(x));}));const KL=[...ks];const full=P0=>{const P={};for(const kk of KL)P[kk]=P0[kk]||0;return P;};
  let off=0;const K=[],blocks=[];
  parts.forEach((b,i)=>{const m=b.m;const pre=(parts.length>1?`${i+1}/${parts.length} · ${b.label} — `:'')+`${m.name} (${m.src}). `;
@@ -1525,8 +1527,8 @@ function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<but
  P.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{pickReg=pickReg===b.dataset.r?null:b.dataset.r;PICKSET=pickReg&&pickReg!=='all'?new Set(REGION[pickReg]):null;buildPick();});
  const M=$('pkMus');M.innerHTML=pickReg?regList(pickReg).map(id=>`<button class="pk m${id===cT&&!document.body.classList.contains('pick')?' on':''}" data-m="${id}">${MDEFK[id].short}</button>`).join(''):'';
  M.querySelectorAll('.pk').forEach(b=>b.onclick=()=>choosePicked(b.dataset.m));
- const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
-  A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='yoga')return enterYoga();const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
+ const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button><button class="pk" data-a="bath">🛁 Bath yoga</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
+  A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='yoga'||id==='bath')return enterYoga(id);const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
    const B=document.body.classList;B.remove('pick');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();});}
  if(document.body.classList.contains('pick')){document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');layoutCam();}}
 function choosePicked(id){const B=document.body.classList;B.remove('pick');$('coach').scrollTop=0;PICKSET=null;cT=id;if(ex.explore||B.contains('phone'))enterExplore();else openCoach(id);buildPick();layoutCam();}
@@ -1543,6 +1545,7 @@ function renderCoach(){
   ${ANAT[T]?`<div class="ctip"><b>📍 Where:</b> ${whereText(T)} of the body · ${REGNAME[regionOf(T)]}<br><b style="color:#34d399">● Starts:</b> ${ANAT[T][0]}<br><b style="color:#5fb4ff">● Attaches:</b> ${ANAT[T][1]}</div>`:''}
   <div class="ctip" style="color:#fde68a"><b>Work with gravity:</b> ${GRAVTIP[regionOf(T)]||''}</div>
   <div class="ctip"><b>${cGoal==='wake'?'If it is underactive':'If it is overactive'}:</b> ${cGoal==='wake'?tip:`It often stays tight to protect a weak neighbor. Strengthen the opposing muscles and the chain, then lengthen it with slow breathing.`}</div></div>`;
+ h+=cfHTML();
  const sec=(t,ids,role,sub)=>ids.length?`<div class="csec"><div class="ch3"><span class="dot" style="background:${ROLECOL[role]}"></span>${t}</div>${sub?`<div class="csub">${sub}</div>`:''}<div>${ids.map(i=>chip(i,role)).join('')}</div></div>`:'';
  h+=sec('Works with it',R.syn,'syn','Same main job (synergists).');
  h+=sec('Opposes it',R.ant,'ant','Opposite job (antagonists). Balance them.');
@@ -1557,7 +1560,7 @@ function renderCoach(){
  if(more.length)h+=`<div class="ch3" style="margin-top:10px">More movements that use the ${d.short.toLowerCase()}</div><div>${more.map(k=>`<div class="cmrow"><button class="b cmore" data-k="${k}">▶ ${MOVES[k].name} <span class="src">${MOVES[k].src}</span></button><button class="b cmshr" data-k="${k}" title="Share this exercise for the ${d.short.toLowerCase()}">🔗</button></div>`).join('')}</div>`;
  h+=`</div><div class="cnote">Chain evidence: dissection studies support the superficial back line and the two functional lines strongly, and parts of the spiral and lateral lines (Wilke et al. 2016). Links from foot posture to the spine are still debated. This is education, not medical advice. If a movement hurts, stop and ask a physical therapist.</div>`;
  h+=brandFormHTML();
- $('cOut').innerHTML=h;wireCoachExtras();
+ $('cOut').innerHTML=h;wireCoachExtras();wireCF($('cOut'));
  if(document.body.classList.contains('shared')){const ps=$('cPlanSec'),tg=$('cOut').querySelector('.ctgt');if(ps&&tg)tg.after(ps);$('coach').scrollTop=0;}
  if(ex.explore){ex.coach=cPlan.R;const zr=REG2ZOOM[cPlan.R.reg];if(zr&&zr!==zReg){zReg=zr;TRACE.ids=[];buildZTabs();}}
  const rp=$('replayShare');if(rp)rp.onclick=()=>{if(!/^#(plan|move)-/.test(location.hash))try{history.replaceState(null,'',planHash(cT,cGoal));}catch(_){}readHash();};
@@ -1614,8 +1617,9 @@ function initCoach(){
  $('cMin').onclick=()=>{const m=document.body.classList.toggle('sheetMini');$('coach').scrollTop=0;$('cMin').textContent=m?'▴':'▾';syncSheet();};
  const list=$('exList');const h2=document.createElement('h2');h2.className='gh';h2.textContent='Muscle coach';
  const b=document.createElement('button');b.className='ex';b.dataset.id='explore';b.innerHTML='<span class="i">🎯</span>Train one muscle';b.onclick=()=>{exitYoga();cT=sel||cT;enterExplore();};
- const by=document.createElement('button');by.className='ex';by.dataset.id='yoga';by.innerHTML='<span class="i">🧘</span>Yoga flow';by.onclick=()=>enterYoga();
- const h3=document.createElement('h2');h3.className='gh';h3.textContent='Activities';list.prepend(h2,b,by,h3);
+ const by=document.createElement('button');by.className='ex';by.dataset.id='yoga';by.innerHTML='<span class="i">🧘</span>Yoga flow';by.onclick=()=>enterYoga('yoga');
+ const bb=document.createElement('button');bb.className='ex';bb.dataset.id='bath';bb.innerHTML='<span class="i">🛁</span>Bath yoga';bb.onclick=()=>enterYoga('bath');
+ const h3=document.createElement('h2');h3.className='gh';h3.textContent='Activities';list.prepend(h2,b,by,bb,h3);
 }
 
 /* =========================================================
@@ -1709,7 +1713,7 @@ function convexHull(P){P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o
 function inPoly(pt,H){let ins=true,md=1e9;for(let i=0;i<H.length;i++){const a=H[i],b=H[(i+1)%H.length];const ex_=b[0]-a[0],ez=b[1]-a[1];const c=ex_*(pt[1]-a[1])-ez*(pt[0]-a[0]);const l=Math.hypot(ex_,ez)||1;if(c<0)ins=false;md=Math.min(md,Math.abs(c)/l);}return[ins,md];}
 function gravityCalc(W){
  let gv=[0,-1,0];if(ex.env==='sea'){const d=ex.deck(phase);gv=ap(transpose(mm(rz(-d.roll*D),rx(d.pitch*D))),[0,-1,0]);}
- const segs=[];const A=(m,p,tag,S)=>segs.push({m,p,tag,S});
+ const segs=[];const A=(m,p,tag,S)=>segs.push({m:(ex.water&&p[1]<ex.water)?m*.1:m,p,tag,S});
  A(.0694,wp(W,'head',[0,10,1.5]),'head');const tr=.4346/4;
  A(tr,wp(W,'pelvis',[0,2,0]),'pel');A(tr,wp(W,'spine',[0,9,1]),'up');A(tr,wp(W,'chest',[0,8,2]),'up');A(tr,wp(W,'chest',[0,20,1]),'up');
  for(const S of['L','R']){A(.0271,mix(W[S+'upper'].p,W[S+'fore'].p,.5772),'arm',S);A(.0162,mix(W[S+'fore'].p,W[S+'hand'].p,.4574),'arm',S);A(.0061,mix(W[S+'hand'].p,wp(W,S+'hand',[0,-8,0]),.79),'arm',S);
@@ -1721,6 +1725,7 @@ function gravityCalc(W){
  const sup={};for(const S of['L','R']){const pts=['heel','ball','toe'].map(k=>cpt(W,S,k));const mn=Math.min(...pts.map(p=>p[1]-gy(p[0],p[2])));sup[S]=mn<(ex.props.includes('skis')?6:2.5);}
  const hands=ex.anchor==='bar'?'bar':ex.anchor==='pushup'?'push':null;let seat=!!ex.seat;let flc=[];
  if(ex.anchor==='floor'){flc=floorPts(W).filter(c=>c.p[1]-y0<2.5&&c.k!=='foot');if(flc.some(c=>c.k!=='palm'))seat=true;}
+ if(ex.water){seat=true;const pc=[W.pelvis.p[0],0,W.pelvis.p[2]];for(const v of[[-20,0,-34],[20,0,-34],[-20,0,40],[20,0,40]])flc.push({p:add(pc,v),k:'seat'});}
  const mom=(J,f)=>{let v=[0,0,0];for(const s of segs)if(f(s))v=add(v,cross(sub(s.p,J),mulS(gv,s.m)));return Math.hypot(v[0],v[1],v[2])*BW*GACC/100;};
  const J=[];const SS=['L','R'].filter(S=>sup[S]);
  if(!hands&&!seat&&SS.length){const avg=b=>mulS(SS.reduce((a,S)=>add(a,W[S+b].p),[0,0,0]),1/SS.length);
@@ -1780,7 +1785,7 @@ function drawGravHUD(){const G=GR;if(!G)return;const ph=document.body.classList.
  ctx.font='700 16px "JetBrains Mono",monospace';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(G.ease,gx,gy+1);ctx.textAlign='left';
  let bal=G.air?'Airborne: no base of support':G.ins?'Balanced over the base':'Line of gravity outside the base';
  if(G.fa!=null&&!G.air&&ex.env==='mountain')bal=G.fa<-5?'Back seat: behind the feet':G.fa>6?'Forward of the feet':'Centered fore-aft';
- ctx.font='600 10.5px Inter,system-ui,sans-serif';ctx.fillStyle=G.ins||G.air?'#cfe3ff':'#fca5a5';ctx.fillText(bal,x+64,y+38);ctx.fillStyle='#7d8ca3';ctx.fillText(ph?'':(G.turning?'Gravity + turning force':/^(run|rope|jump|box|boat)$/.test(ex.id)?'Dynamic: momentum adds to this':'Static load, 70 kg body'),x+64,y+54);
+ ctx.font='600 10.5px Inter,system-ui,sans-serif';ctx.fillStyle=G.ins||G.air?'#cfe3ff':'#fca5a5';ctx.fillText(bal,x+64,y+38);ctx.fillStyle='#7d8ca3';ctx.fillText(ph?'':(G.turning?'Gravity + turning force':/^(run|rope|jump|box|boat)$/.test(ex.id)?'Dynamic: momentum adds to this':(ex.water?'In water: buoyancy unloads the body':'Static load, 70 kg body')),x+64,y+54);
  if(!ph){let yy=y+84;ctx.font='600 10px Inter,system-ui,sans-serif';for(const j of rows){const c=j.f<.33?'#34d399':j.f<.66?'#fbbf24':'#f87171';ctx.fillStyle='#cfe3ff';ctx.fillText(JNAME[j.k],x+10,yy);
   ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(x+82,yy-3,90,6);ctx.fillStyle=c;ctx.fillRect(x+82,yy-3,90*clamp(j.M/j.hi,0,1),6);ctx.fillStyle='#9fb0c8';ctx.font='600 9.5px "JetBrains Mono",monospace';ctx.fillText(Math.round(j.M)+' N·m',x+178,yy);ctx.font='600 10px Inter,system-ui,sans-serif';yy+=17;}
   const worst=G.J.slice().sort((a,b)=>b.f-a.f)[0];const cue=worst&&worst.f>.25?GCUE[worst.k.replace(/[LR]$/,'')]:'Stacked and easy: gravity goes through the bones. The muscles only fine-tune.';
@@ -2025,7 +2030,8 @@ const YB={stand:{},table:{'root.pitch':76,'B.hip.f':76,'B.kn':90,'B.an':-55,'B.s
  seat:{'B.hip.f':90,'B.sh.f':4,'B.sh.a':8,fit:.6,'anc.fl':1},
  cross:{'B.hip.f':60,'B.hip.a':70,'B.hip.r':-135,'B.kn':150,'B.an':-5,'B.sh.f':35,'B.sh.a':12,'B.el':55,'anc.fl':1},
  supine:{'root.pitch':-90,'B.sh.a':18,'B.an':-20,'anc.fl':1},
- prone:{'root.pitch':90,'B.an':-60,'B.sh.f':10,'B.sh.a':20,'B.el':20,'anc.fl':1}};
+ prone:{'root.pitch':90,'B.an':-60,'B.sh.f':10,'B.sh.a':20,'B.el':20,'anc.fl':1},
+ tub:{'root.pitch':-22,'B.hip.f':72,'B.kn':28,'B.an':-12,'B.sh.f':12,'B.sh.a':32,'B.el':28,'neck.f':14,'anc.fl':1}};
 const YOGA={
  easySeat:{name:'Easy seat',sk:'Sukhasana',cat:'center',start:'cross',tags:['hips','spine','breath'],work:['multifidus','erector','longusColli'],stab:['rectusAbd','intOblique','gluteMed'],str:['adductors','piriformis'],
   steps:[[{},'in','Inhale: sit tall on the sit bones. The crown grows up.'],[{},'cyc','Breathe here. Let the belly soften on the inhale and the ribs settle on the exhale.',4],[{},'out','Exhale: soften the shoulders.']]},
@@ -2116,42 +2122,73 @@ const YOGA={
  savasana:{name:'Final rest',sk:'Savasana',cat:'rest',start:'supine',tags:['calm','breath'],work:[],stab:[],str:[],
   steps:[[{'B.hip.a':10,'B.hip.r':-20,'B.sh.a':26,'B.sh.r':-20},'out','Exhale: let the whole body be heavy. The floor holds you; no muscle has to work against gravity.'],[{},'cyc','Rest. Let the breath be natural.',6],[{},'in','Inhale: deepen the breath. Move the fingers and toes.']]}
 };
-const YCAT=['center','warm','sun','stand','balance','back','floor','cool','rest'];
-const YCATNAME={center:'Arrive',warm:'Warm up',sun:'Sun salutation',stand:'Standing',balance:'Balance',back:'Backbend',floor:'Seated',cool:'Cool down',rest:'Rest'};
+
+// BATH YOGA (in a bathtub): buoyancy carries most of the weight below the waterline, warm water relaxes muscles
+Object.assign(YOGA,{
+ tubArrive:{set:'bath',name:'Arrive in the water',sk:'Jala Sukhasana',cat:'center',start:'tub',tags:['calm','breath','spine'],work:[],stab:['longusColli'],str:[],
+  steps:[[{},'in','Inhale: lean back on the tub. Feel the water lift the legs and arms.'],[{},'cyc','Breathe. The water carries most of your weight below the waterline, so the muscles can let go.',4],[{},'out','Exhale: soften the jaw and shoulders.']]},
+ floatArms:{set:'bath',name:'Floating arms',sk:'Jala Hasta',cat:'warm',start:'tub',tags:['shoulders','breath','calm'],work:['deltLat','supraspinatus','lats','pec'],stab:['trapLower','serratus'],str:['pec','lats'],
+  steps:[[{'B.sh.a':82,'B.el':8,'B.sh.f':6},'in','Inhale: let the arms float up to the surface. The water lifts them, so the deltoids hardly work.'],[{'B.sh.a':24,'B.el':24,'B.sh.f':12},'out','Exhale: press the arms slowly down through the water. The water resists in every direction: the lats and chest work gently.'],
+   [{'B.sh.a':82,'B.el':8,'B.sh.f':6},'in','Inhale: float up.'],[{'B.sh.a':24,'B.el':24,'B.sh.f':12},'out','Exhale: press down.']]},
+ tubNeck:{set:'bath',name:'Neck release',sk:'Griva Sanchalana',cat:'warm',start:'tub',tags:['neck','calm'],work:['scalenes','scm'],stab:['longusColli'],str:['trapUpper','levScap','scalenes','splenius'],
+  steps:[[{'neck.f':0},'in','Inhale: head tall, resting on the warm water line.'],[{'neck.s':-26},'out','Exhale: ear toward the right shoulder. The left side of the neck lengthens.'],[{'neck.s':0},'in','Inhale: center.'],[{'neck.t':50},'out','Exhale: turn to look left.'],[{'neck.t':0,'neck.f':14},'in','Inhale: center.']]},
+ tubShoulders:{set:'bath',name:'Shoulder circles',sk:'Skandha Chakra',cat:'warm',start:'tub',tags:['shoulders','neck'],work:['trapUpper','trapMid','rhomboid','serratus','trapLower'],stab:['longusColli'],str:['pecMinor','trapUpper'],
+  steps:[[{'B.clav.e':14},'in','Inhale: shoulders up toward the ears.'],[{'B.clav.p':-10},'in','Squeeze the shoulder blades back.'],[{'B.clav.e':-6,'B.clav.p':-6},'out','Exhale: slide the shoulder blades down the back.'],[{'B.clav.e':0,'B.clav.p':8},'out','Let them round forward. Then repeat.']]},
+ tubCatCow:{set:'bath',name:'Seated cat and cow',sk:'Jala Marjaryasana',cat:'flow',start:'tub',tags:['spine','core','neck'],work:['erector','multifidus','rectusAbd'],stab:['iliopsoas'],str:['rectusAbd','erector'],
+  steps:[[{'root.pitch':4,'B.sh.f':50,'B.el':20,'B.sh.a':10,'neck.f':0},'out','Exhale: sit up, hands on the knees.'],[{'spine.f':-12,'chest.f':-12,'neck.f':-16},'in','Inhale, cow: chest forward, look up.'],[{'spine.f':16,'chest.f':16,'neck.f':24},'out','Exhale, cat: round the back, chin in.'],[{'spine.f':-12,'chest.f':-12,'neck.f':-16},'in','Inhale, cow.'],[{'spine.f':0,'chest.f':0,'neck.f':0},'out','Exhale: neutral.']]},
+ tubTwist:{set:'bath',name:'Tub twist',sk:'Jala Parivrtta',cat:'flow',start:'tub',tags:['spine','hips','neck'],work:['oblique','intOblique','multifidus'],stab:['QL'],str:['oblique','erector'],
+  steps:[[{'root.pitch':4,'neck.f':0},'in','Inhale: sit tall.'],[{'spine.t':24,'chest.t':22,'neck.t':30,'L.sh.f':-10,'L.sh.a':40,'R.sh.f':40,'R.sh.a':-6,'R.el':70},'out','Exhale: turn left, the left hand on the tub edge behind you.'],[{},'cyc','Hold. Inhale to grow tall, exhale to turn a little more.',3],[{'spine.t':0,'chest.t':0,'neck.t':0,'L.sh.f':12,'L.sh.a':32,'R.sh.f':12,'R.sh.a':32,'R.el':28,'root.pitch':-22,'neck.f':14},'in','Inhale: unwind and lean back.']]},
+ tubKnee:{set:'bath',name:'Knee to chest',sk:'Jala Pavanamuktasana',cat:'flow',start:'tub',tags:['hips','spine','hamstrings'],work:['iliopsoas','biceps'],stab:['rectusAbd'],str:['gluteMax','hamstrings','piriformis'],
+  steps:[[{'L.hip.f':122,'L.kn':125,'L.an':0,'B.sh.f':58,'B.el':92,'B.sh.a':10},'out','Exhale: hug the left knee to the chest. The water makes the leg light.'],[{},'cyc','Hold. The left glute and low back lengthen.',3],[{'L.hip.f':72,'L.kn':28,'L.an':-12,'B.sh.f':12,'B.el':28,'B.sh.a':32},'in','Inhale: release the leg.']]},
+ tubFigure4:{set:'bath',name:'Figure four',sk:'Jala Sucirandhrasana',cat:'flow',start:'tub',tags:['hips'],work:[],stab:['iliopsoas'],str:['piriformis','gluteMax','gluteMed'],
+  steps:[[{'R.hip.f':80,'R.kn':70,'L.hip.f':92,'L.hip.a':40,'L.hip.r':-62,'L.kn':100,'L.an':0},'out','Exhale: bend the right knee and cross the left ankle over it.'],[{'root.pitch':-4},'out','Exhale: sit up a little. The deep hip rotators (piriformis) lengthen.'],[{},'cyc','Hold. Let the water hold the leg.',3],
+   [{'R.hip.f':72,'R.kn':28,'L.hip.f':72,'L.hip.a':0,'L.hip.r':0,'L.kn':28,'L.an':-12,'root.pitch':-22},'in','Inhale: legs long.']]},
+ tubFeet:{set:'bath',name:'Foot and ankle waves',sk:'Goolf Chakra',cat:'flow',start:'tub',tags:['feet','balance'],work:['tibAnt','gastroc','soleus','extDigLong','flexHalLong','flexDigBrev'],stab:[],str:['gastroc','soleus','tibAnt'],
+  steps:[[{'B.an':-40,'B.toe':20},'out','Exhale: point the feet and curl the toes. The calves and sole muscles shorten.'],[{'B.an':22,'B.toe':-25},'in','Inhale: pull the toes up. The shin muscles shorten and the calves lengthen.'],[{'B.an':-40,'B.toe':20},'out','Exhale: point.'],[{'B.an':-12,'B.toe':0},'in','Inhale: relax.']]},
+ tubFold:{set:'bath',name:'Water forward fold',sk:'Jala Paschimottanasana',cat:'cool',start:'tub',tags:['hamstrings','spine','calm'],work:[],stab:['iliopsoas'],str:['hamstrings','erector','gastroc'],
+  steps:[[{'root.pitch':4,'B.kn':12,'neck.f':0},'in','Inhale: sit tall, legs long.'],[{'root.pitch':34,'B.hip.f':112,'spine.f':16,'chest.f':12,'neck.f':14,'B.sh.f':70,'B.el':10},'out','Exhale: fold toward the feet. Warm water helps the back body let go.'],[{},'cyc','Hold and breathe.',4],[{'root.pitch':-22,'B.hip.f':72,'B.kn':28,'spine.f':0,'chest.f':0,'neck.f':14,'B.sh.f':12,'B.el':28},'in','Inhale: roll up and lean back.']]},
+ tubFloat:{set:'bath',name:'Float and rest',sk:'Jala Savasana',cat:'rest',start:'tub',tags:['calm','breath'],work:[],stab:[],str:[],
+  steps:[[{'root.pitch':-46,'B.hip.f':44,'B.kn':10,'B.sh.a':46,'B.el':16,'neck.f':26},'out','Exhale: slide down until the head rests on the tub edge. Let the arms and legs float.'],[{},'cyc','Rest. The water holds you; almost no muscle has to work against gravity.',6],[{'root.pitch':-22,'B.hip.f':72,'B.kn':28,'B.sh.a':32,'B.el':28,'neck.f':14},'in','Inhale: slowly come back up.']]}
+});
+const YCAT=['center','warm','sun','stand','balance','back','floor','cool','rest'];const BCAT=['center','warm','flow','cool','rest'];let yMode='yoga';
+const YCATNAME={flow:'Flow in the water',center:'Arrive',warm:'Warm up',sun:'Sun salutation',stand:'Standing',balance:'Balance',back:'Backbend',floor:'Seated',cool:'Cool down',rest:'Rest'};
 const YFOCUS=[['hips','Hips'],['hamstrings','Hamstrings and back body'],['shoulders','Shoulders and chest'],['spine','Spine and back'],['core','Core'],['legs','Legs and strength'],['balance','Balance'],['neck','Neck and upper back'],['feet','Feet and ankles'],['calm','Calm and sleep']];
 const YMUS={hips:['gluteMax','gluteMed','piriformis','iliopsoas','adductors','tfl'],hamstrings:['hamstrings','gastroc','soleus','erector'],shoulders:['pec','pecMinor','deltAnt','lats','serratus','trapLower'],spine:['erector','multifidus','QL','oblique','intOblique'],
  core:['rectusAbd','oblique','intOblique','iliopsoas'],legs:['vastLat','vastMed','rectFem','gluteMax'],balance:['gluteMed','peroneals','tibPost','abdHallucis'],neck:['splenius','scm','trapUpper','levScap','longusColli','semispinalis'],feet:['abdHallucis','flexDigBrev','tibPost','peroneals','soleus'],calm:[]};
 function makeYoga(k,hold){const d=YOGA[k];const[a,b,c,e]=PACES[bPace].s;const L={in:a+b,out:c+e,cyc:a+b+c+e};
- const nB=s=>d.cat==='sun'||hold==null?(s[3]||3):d.cat==='rest'?hold+3:d.cat==='center'?Math.max(2,hold-1):hold;
- const lens=d.steps.map(s=>s[1]==='cyc'?L.cyc*nB(s):L[s[1]]);
+ const cfx=CF==='iso'&&['stand','balance','back','flow'].includes(d.cat)?2:CF==='str'&&['warm','floor','cool','center','flow'].includes(d.cat)?2:0;
+ const nB=s=>(d.cat==='sun'||hold==null?(s[3]||3):d.cat==='rest'?hold+3:d.cat==='center'?Math.max(2,hold-1):hold)+(d.cat!=='rest'&&d.cat!=='sun'?cfx:0);
+ const lens=d.steps.map((s,i)=>s[1]==='cyc'?L.cyc*nB(s):L[s[1]]*(CF==='ecc'&&s[1]==='out'&&i>0?1.6:1));
  const dur=lens.reduce((x,y)=>x+y,0);let t=0;const keys=[{t:0,p:{},cap:d.steps[0][2],br:d.steps[0][1]}];
  d.steps.forEach((st,i)=>{t+=lens[i];const nx=d.steps[i+1];keys.push({t:Math.min(t/dur,.999),p:st[0],cap:nx?nx[2]:st[2],br:nx?nx[1]:st[1]==='cyc'?'out':st[1]});});
- const m={name:d.name+' · '+d.sk,src:'Yoga',yk:k,dur,anchor:'floor',props:[],view:[90,6],focus:['core','hip','shoulder','foot','neck'],base:Object.assign({},YB[d.start]),keys,work:d.work,stab:d.stab,cr:false,dose:''};
+ const m={name:d.name+' · '+d.sk,src:d.set==='bath'?'Bath yoga':'Yoga',key:'yg'+k+'|'+CF+'|'+bPace,yk:k,dur,anchor:'floor',props:[],view:[90,6],focus:['core','hip','shoulder','foot','neck'],base:Object.assign({},YB[d.start]),keys,work:d.work,stab:d.stab,cr:false,dose:''};
  prep(m);m.dose=(d.cat==='sun'?'Flow with the breath':!d.steps.some(x=>x[1]==='cyc')?'2 rounds with the breath':Math.round((lens.find((x,i)=>d.steps[i][1]==='cyc')||0)/L.cyc)+' breaths')+(isAsym(m)?' · each side':'');return m;}
 for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);
 // flow builder
 let yFocus=new Set(['hips']),yLen='short',yFlow=null;
 function yScore(k){const d=YOGA[k];let s=0;const ms=new Set([...d.work,...d.str]);for(const f of yFocus){if(d.tags.includes(f))s+=3;for(const m of YMUS[f]||[])if(ms.has(m))s+=1;}if(yFocus.has('coach')&&cT){const R=rolesFor(cT);for(const m of[cT,...R.ant,...R.syn])if(ms.has(m))s+=2;}return s+(d.tags.includes('full')?.5:0);}
-function buildYoga(){const full=yLen==='full';const want={center:1,warm:full?2:1,sun:1,stand:full?4:2,balance:1,back:(full||yFocus.has('spine')||yFocus.has('shoulders'))?1:0,floor:full?2:1,cool:1,rest:1};
+function buildYoga(){const full=yLen==='full';if(yMode==='bath'){const wb={center:1,warm:full?3:2,flow:full?5:3,cool:1,rest:1};if(yFocus.has('calm'))wb.flow=Math.max(2,wb.flow-1);
+  const out=[];for(const c of BCAT){let ks=Object.keys(YOGA).filter(k=>YOGA[k].set==='bath'&&YOGA[k].cat===c);ks.sort((a,b)=>yScore(b)-yScore(a));out.push(...ks.slice(0,wb[c]));}return out;}
+ const want={center:1,warm:full?2:1,sun:1,stand:full?4:2,balance:1,back:(full||yFocus.has('spine')||yFocus.has('shoulders'))?1:0,floor:full?2:1,cool:1,rest:1};
  if(yFocus.has('balance'))want.balance++;if(yFocus.has('calm')){want.stand=Math.max(1,want.stand-1);want.floor++;want.back=0;}
- const out=[];for(const c of YCAT){let ks=Object.keys(YOGA).filter(k=>YOGA[k].cat===c);ks.sort((a,b)=>yScore(b)-yScore(a));ks=ks.slice(0,want[c]);
+ const out=[];for(const c of YCAT){let ks=Object.keys(YOGA).filter(k=>!YOGA[k].set&&YOGA[k].cat===c);ks.sort((a,b)=>yScore(b)-yScore(a));ks=ks.slice(0,want[c]);
   if(c==='stand')ks.sort((a,b)=>(YOGA[a].seq||0)-(YOGA[b].seq||0));if(c==='warm'&&ks.includes('catCow'))ks=['catCow',...ks.filter(x=>x!=='catCow')];out.push(...ks);}
  return out;}
 function yogaPlanEx(keys,title){const hold=yLen==='full'?5:3;const blocks=keys.map(k=>{const m=makeYoga(k,hold);const d=YOGA[k];return{m,label:YCATNAME[d.cat],k:'yg'+k,reps:(d.cat==='sun'?(yLen==='full'?3:2):(isAsym(m)?2:1)),ready:2.5};});
  const reg=yFocus.has('neck')?'neck':yFocus.has('shoulders')?'shoulder':yFocus.has('legs')?'thigh':yFocus.has('feet')||yFocus.has('balance')?'foot':yFocus.has('hips')?'hip':'trunk';
- const e=buildPlanEx(cT||'erector',{R:{reg},blocks},title);e.coach=null;e.id='yoga';e.yoga=true;return e;}
+ const e=buildPlanEx(cT||'erector',{R:{reg},blocks,noCF:true},title);e.coach=null;e.id='yoga';e.yoga=true;if(keys.some(k=>YOGA[k].set==='bath')){e.water=WATERLINE;e.extra=bathItems;e.view=[48,20];e.bath=true;e.id='bath';}return e;}
 function startYoga(keys,title,single){if(yLen==='full'&&!single&&!has('pro'))return openPay('pro');const e=yogaPlanEx(keys,title);if(single)e.yk1=keys[0];selectEx(e);sel=null;
  speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;setBreath(true);
  if(document.body.classList.contains('phone')){document.body.classList.add('sheetMini');$('cMin').textContent='▴';$('coach').scrollTop=0;syncSheet();fitCamera();}
  const t=fmtMin(e.dur);toast((single?'Pose':'Flow')+' · '+t+' · breathe with the circle');}
 const fmtMin=s=>s<90?Math.round(s)+' s':Math.round(s/60)+' min';
 function setBreath(v){breathOn=v;const b=$('tBreath');if(b)b.classList.toggle('on',v);const y=$('yBreath');if(y)y.checked=v;}
-function yogaIdle(){const e=yogaPlanEx(['easySeat'],'Yoga · easy seat');e.name='Yoga · breathe and choose a flow';return e;}
-function enterYoga(){const B=document.body.classList;B.remove('pick');B.add('yoga');PICKSET=null;$('coach').hidden=false;$('coach').querySelector('.chd b').textContent='🧘 Yoga';
+function yogaIdle(){const k=yMode==='bath'?'tubArrive':'easySeat';const e=yogaPlanEx([k],'Yoga');e.name=(yMode==='bath'?'Bath yoga':'Yoga')+' · breathe and choose a flow';return e;}
+function enterYoga(mode){yMode=mode||'yoga';const B=document.body.classList;B.remove('pick');B.add('yoga');PICKSET=null;$('coach').hidden=false;$('coach').querySelector('.chd b').textContent=yMode==='bath'?'🛁 Bath yoga':'🧘 Yoga';
  if(B.contains('phone')){B.remove('sheetMini');$('cMin').textContent='▾';}selectEx(yogaIdle());setBreath(true);renderYoga();syncSheet();}
 function exitYoga(){const B=document.body.classList;if(!B.contains('yoga'))return;B.remove('yoga');$('coach').querySelector('.chd b').textContent='🎯 Muscle coach';}
 function renderYoga(){yFlow=buildYoga();const hold=yLen==='full'?5:3;let tot=0;const items=yFlow.map((k,i)=>{const m=makeYoga(k,hold);const d=YOGA[k];const r=d.cat==='sun'?(yLen==='full'?3:2):(isAsym(m)?2:1);tot+=m.dur*r+2.5;return{k,d,m,r};});
- let lastC='',h=`<div class="csub" style="margin:2px 0 6px">Pick what to focus on. The flow follows a class arc: arrive, warm up, sun salutation, standing poses, balance, a backbend, seated poses, cool down, rest.</div><div class="pkrow" style="flex-wrap:wrap">`+
+ let lastC='',h=`<div class="grp" style="margin:0 0 6px;gap:6px"><button class="b${yMode==='yoga'?' on':''}" data-ym="yoga">🧘 Mat yoga</button><button class="b${yMode==='bath'?' on':''}" data-ym="bath">🛁 Bath yoga</button></div><div class="csub" style="margin:2px 0 6px">${yMode==='bath'?'Gentle yoga in a warm bath. The water carries most of your weight below the waterline, so the joints unload and the muscles can let go. Arrive, warm up, flow in the water, fold, then float. Keep the water warm, not hot, and get out slowly.':'Pick what to focus on. The flow follows a class arc: arrive, warm up, sun salutation, standing poses, balance, a backbend, seated poses, cool down, rest.'}</div><div class="pkrow" style="flex-wrap:wrap">`+
   YFOCUS.map(([k,n])=>`<button class="pk${yFocus.has(k)?' on':''}" data-yf="${k}">${n}</button>`).join('')+(cT&&MDEFK[cT]?`<button class="pk m${yFocus.has('coach')?' on':''}" data-yf="coach">🎯 ${MDEFK[cT].short}</button>`:'')+`</div>
   <div class="grp" style="margin:8px 0;flex-wrap:wrap;gap:6px"><button class="b${yLen==='short'?' on':''}" data-yl="short">Short</button><button class="b${yLen==='full'?' on':''}" data-yl="full">Full ${has('pro')?'':'🔒'}</button>
   <label class="csub" style="display:flex;align-items:center;gap:5px;margin:0 0 0 6px"><input type="checkbox" id="yBreath" ${breathOn?'checked':''}> 🌬 Breath</label>
@@ -2160,12 +2197,12 @@ function renderYoga(){yFlow=buildYoga();const hold=yLen==='full'?5:3;let tot=0;c
  for(const it of items){if(it.d.cat!==lastC){lastC=it.d.cat;h+=`<div class="csub" style="margin:8px 0 3px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-size:10.5px">${YCATNAME[lastC]}</div>`;}
   const st=it.d.str.slice(0,3).map(x=>MDEFK[x]?MDEFK[x].short:x),wk=it.d.work.slice(0,3).map(x=>MDEFK[x]?MDEFK[x].short:x);
   h+=`<div class="ypose" data-yk="${it.k}"><div><b>${it.d.name}</b> <span style="color:var(--dim)">${it.d.sk}</span></div><div class="csub" style="margin:1px 0 0">${it.m.dose}${it.r>1&&it.d.cat==='sun'?' · '+it.r+' rounds':''}${wk.length?' · <span style="color:#fca5a5">works</span> '+wk.join(', '):''}${st.length?' · <span style="color:#93c5fd">lengthens</span> '+st.join(', '):''}</div></div>`;}
- h+=`<div class="csub" style="margin-top:10px">Inhale to lift, open or extend. Exhale to fold, twist or lower. Education only, not medical advice.</div>`;
- $('cOut').innerHTML=h;const O=$('cOut');
+ h+=cfHTML();h+=`<div class="csub" style="margin-top:10px">Inhale to lift, open or extend. Exhale to fold, twist or lower. Education only, not medical advice.</div>`;
+ $('cOut').innerHTML=h;const O=$('cOut');wireCF(O);O.querySelectorAll('[data-ym]').forEach(b=>b.onclick=()=>enterYoga(b.dataset.ym));
  O.querySelectorAll('[data-yf]').forEach(b=>b.onclick=()=>{const f=b.dataset.yf;if(yFocus.has(f))yFocus.delete(f);else{yFocus.add(f);if(yFocus.size>3)yFocus.delete([...yFocus][0]);}if(!yFocus.size)yFocus.add('hips');renderYoga();});
  O.querySelectorAll('[data-yl]').forEach(b=>b.onclick=()=>{if(b.dataset.yl==='full'&&!has('pro'))return openPay('pro');yLen=b.dataset.yl;renderYoga();});
  $('yBreath').onchange=e=>setBreath(e.target.checked);$('yPace').onchange=e=>{bPace=e.target.value;for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);renderYoga();};
- $('yGo').onclick=()=>startYoga(yFlow,'Yoga flow: '+[...yFocus].map(f=>f==='coach'?MDEFK[cT].short:YFOCUS.find(x=>x[0]===f)[1]).join(' + '));
+ $('yGo').onclick=()=>startYoga(yFlow,(yMode==='bath'?'Bath yoga: ':'Yoga flow: ')+[...yFocus].map(f=>f==='coach'?MDEFK[cT].short:YFOCUS.find(x=>x[0]===f)[1]).join(' + '));
  $('yShare').onclick=()=>shareYoga();
  $('yBreathe').onclick=()=>{const L=yLen;yLen='short';const e=yogaPlanEx(['easySeat'],'Breathe: '+PACES[bPace].n);e.blocks[0].reps=1;yLen=L;selectEx(e);setBreath(true);speed=1;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='1'));playing=true;};
  O.querySelectorAll('.ypose').forEach(b=>b.onclick=()=>startYoga([b.dataset.yk],YOGA[b.dataset.yk].name,true));}
@@ -2205,15 +2242,15 @@ function readAnyHash(hs){let m;
  if((m=hs.match(/#act-([A-Za-z0-9]+)/))){const e=EX.find(x=>x.id===m[1]);if(!e)return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(e);syncSheet();fitCamera();return true;}
  if((m=hs.match(/#counter-([A-Za-z0-9]+)/))){if(!COUNTER[m[1]])return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(EX.find(x=>x.id===m[1]));playCounter(m[1],COUNTER[m[1]].k);syncSheet();return true;}
  if((m=hs.match(/#muscle-([A-Za-z]+)/))){if(!MDEFK[m[1]])return false;cT=m[1];document.body.classList.remove('pick');enterExplore();return true;}
- if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}enterYoga();startYoga([m[1]],YOGA[m[1]].name,true);return true;}
+ if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}enterYoga(YOGA[m[1]].set==='bath'?'bath':'yoga');startYoga([m[1]],YOGA[m[1]].name,true);return true;}
  return false;}
-const yogaHash=()=>'#yoga-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
+const yogaHash=()=>'#'+(yMode==='bath'?'bath':'yoga')+'-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
 async function shareYoga(){const url=baseShareURL()+yogaHash()+settingsStr();const text='Yoga flow · Muscle Lab';
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab yoga',text,url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied');}catch(_){prompt('Copy this link:',url);}}
-function readYogaHash(hs){const m=hs.match(/#yoga-([a-z.]*)-(short|full)(?:-(calm|even|box|relax))?/);if(!m)return false;
+function readYogaHash(hs){const m=hs.match(/#(yoga|bath)-([a-z.]*)-(short|full)(?:-(calm|even|box|relax))?/);if(!m)return false;m.shift();const md=m[0];m[0]=md;
  const fs=m[1].split('.').filter(f=>YMUS[f]);if(fs.length)yFocus=new Set(fs);yLen=m[2]==='full'&&has('pro')?'full':'short';if(m[3]){bPace=m[3];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}
- enterYoga();document.body.classList.add('shared');startYoga(buildYoga(),'Yoga flow');return true;}
+ enterYoga(md);document.body.classList.add('shared');startYoga(buildYoga(),md==='bath'?'Bath yoga':'Yoga flow');return true;}
 // breath drawing: lungs + diaphragm on the body, and a breath circle
 function drawLungs(W){if(!BR)return;const b=BR.lvl;ctx.save();
  for(const m of[1,-1]){const c=proj(wp(W,'chest',[6.2*m,15,.5]));const r=(7.2+2.4*b)*c[3];const g=ctx.createRadialGradient(c[0],c[1],r*.1,c[0],c[1],r*1.4);g.addColorStop(0,`rgba(140,240,255,${.20+.22*b})`);g.addColorStop(1,'rgba(140,240,255,0)');
@@ -2275,11 +2312,51 @@ function drawFocus(W){if(!ex.explore||!cT||document.body.classList.contains('pic
  ctx.fillStyle='rgba(20,6,26,.88)';ctx.beginPath();ctx.roundRect?ctx.roundRect(bx,by,w,ph?40:46,10):ctx.rect(bx,by,w,46);ctx.fill();ctx.strokeStyle='#ff4fd8';ctx.stroke();
  ctx.textAlign='left';ctx.fillStyle='#ffe0f7';ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;ctx.fillText(t1,bx+11,by+(ph?14:16));ctx.fillStyle='#f0abfc';ctx.font=`600 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;ctx.fillText(t2,bx+11,by+(ph?30:34));
  ctx.restore();}
+// CONTRACTION FOCUS: show and train one type of muscle action
+var CF='all';
+const CTYPES={
+ iso:{n:'Isometric',s:'Hold',col:'iso',d:'The muscle makes force but does not change length. Nothing moves, but the muscle works hard.',ex:'Arms held out in Warrior II, a plank, a wall sit, a ski tuck.',why:'Builds strength at that exact angle and steadies the joint. Gentle on joints and good for tendons.',how:'Hold 3–5 s at the position where the muscle works hardest. Breathe; do not hold the breath.'},
+ con:{n:'Concentric',s:'Shorten',col:'con',d:'The muscle shortens while it makes force. It makes the movement happen.',ex:'Lifting the arms up, standing up from a squat, the pull in a pull-up, the takeoff of a jump.',why:'Builds power and the speed to start a movement.',how:'Pause at the long position (no bounce), then shorten with intent. Lower easily.'},
+ ecc:{n:'Eccentric',s:'Lengthen under load',col:'ecc',d:'The muscle gets longer while it makes force. It brakes and controls the movement.',ex:'Lowering the arms slowly, sitting down into a chair, landing from a jump, skiing down a slope.',why:'Muscles are strongest this way. It builds strength and tendon resilience, but it causes the most soreness, so build up slowly.',how:'Take 3 slow seconds to lower. Shorten at a normal speed.'},
+ str:{n:'Stretch',s:'Lengthen, relaxed',col:'str',d:'The muscle gets longer while it rests. The opposite muscles or gravity do the work.',ex:'Hamstrings in a forward fold, the chest in a doorway stretch.',why:'Improves range of motion and calms the nervous system.',how:'Hold 6 s or more at the long position. Breathe slowly and let go.'}};
+function tempoMove(m,T,cf){prep(m);const K=m.K,n=K.length;if(!MUSK[T+'L'])return m;const Ls=K.map(k=>{const W=solve(m,k.t);return(mLen(W,MUSK[T+'L'])+mLen(W,MUSK[T+'R']))/2;});
+ const nm=MDEFK[T].short.toLowerCase();const out=[];let imin=0,imax=0;Ls.forEach((v,i)=>{if(v<Ls[imin])imin=i;if(v>Ls[imax])imax=i;});const rng=(Ls[imax]-Ls[imin])/Ls[imax];
+ for(let i=0;i<n;i++){const t1=i+1<n?K[i+1].t:1,d0=(t1-K[i].t)*m.dur,Ln=i+1<n?Ls[i+1]:Ls[0],dL=(Ln-Ls[i])/Ls[i];const P=K[i].P,c=K[i].cap;let f=1,pre='';
+  if(cf==='iso'&&(i===(rng>.03?imin:Math.floor(n/2))))out.push({P,cap:`⏸ HOLD 4 s · ISOMETRIC: the ${nm} works but does not change length. ${c}`,dur:4,cf:'iso'});
+  if(cf==='str'&&i===imax&&rng>.02)out.push({P,cap:`🌬 HOLD THE STRETCH 6 s: the ${nm} is long and relaxed. Breathe out and let go.`,dur:6,cf:'str'});
+  if(cf==='con'&&dL<-.01){out.push({P,cap:`⏸ PAUSE 1.5 s at the long position, no bounce. Then shorten with intent (concentric).`,dur:1.5,cf:'con'});pre='⬆ CONCENTRIC: ';}
+  if(cf==='con'&&dL>.01)f=.6;
+  if(cf==='ecc'&&dL>.01){f=3;pre=`🐢 SLOW 3-COUNT · ECCENTRIC: the ${nm} gets longer under load. `;}
+  if(cf==='ecc'&&dL<-.01)f=.8;
+  out.push({P,cap:pre+c,dur:Math.max(.2,d0*f)});}
+ const dur=out.reduce((a,b)=>a+b.dur,0);let t=0;const keys=out.map(o=>{const k={t:t/dur,p:o.P,cap:o.cap};t+=o.dur;return k;});
+ return Object.assign({},m,{K:null,keyList:null,base:{},keys,dur,cr:false,key:(m.key||m.name)+'|'+cf+'|'+T,dose:(m.dose||'')+' · '+CTYPES[cf].n.toLowerCase()+' focus'});}
+function cfHTML(){const t=CTYPES[CF];return`<div class="csec" style="margin-top:8px"><div class="ch3">Muscle action focus</div><div class="pkrow" style="flex-wrap:wrap;gap:5px">`+
+ [['all','All']].concat(Object.entries(CTYPES).map(([k,v])=>[k,v.n])).map(([k,n])=>`<button class="pk${CF===k?' on':''}" data-cf="${k}" style="font-size:11.5px;padding:4px 10px">${k==='all'?'':'<span class="dot" style="background:var(--'+CTYPES[k].col+')"></span> '}${n}</button>`).join('')+`</div>`+
+ (t?`<div class="ctip" style="margin-top:6px"><b style="color:var(--${t.col})">${t.n} · ${t.s}.</b> ${t.d}<br><b>Examples:</b> ${t.ex}<br><b>Why:</b> ${t.why}<br><b>How the plan changes:</b> ${t.how}</div>`:
+ `<div class="csub" style="margin-top:6px">Every movement mixes 4 kinds of muscle action. <b style="color:var(--iso)">Isometric</b>: holds without moving. <b style="color:var(--con)">Concentric</b>: shortens to move. <b style="color:var(--ecc)">Eccentric</b>: lengthens to brake. <b style="color:var(--str)">Stretch</b>: lengthens while relaxed. Pick one to see only those muscles light up and to change the plan's tempo.</div>`)+`</div>`;}
+function setCF(v){CF=v;document.querySelectorAll('#legend [data-st]').forEach(r=>r.classList.toggle('on',r.dataset.st===CF));if(!$('coach').hidden)renderCoach();else if(document.body.classList.contains('yoga'))renderYoga();}
+function wireCF(root){root.querySelectorAll('[data-cf]').forEach(b=>b.onclick=()=>setCF(b.dataset.cf));}
+
+// bathtub scene and water
+const WATERLINE=34;
+function bathItems(W,t,items){const F=(pts,fill,stroke,o)=>items.push(Object.assign({k:'face',pts,fill,stroke},o||{}));const x0=-40,x1=40,zb=-48,zf=140,H=52,y0=-4;
+ F([[x0,y0,zb],[x1,y0,zb],[x1,y0,zf],[x0,y0,zf]],'rgba(225,232,240,.9)','rgba(255,255,255,.6)',{z0:-80,fx:1});
+ F([[x0,y0,zb],[x1,y0,zb],[x1+4,H,zb-24],[x0-4,H,zb-24]],'rgba(236,242,248,.55)','rgba(255,255,255,.8)',{z0:-60,fx:1});
+ F([[x0,y0,zf],[x1,y0,zf],[x1+4,H,zf+8],[x0-4,H,zf+8]],'rgba(236,242,248,.35)','rgba(255,255,255,.7)',{z0:-60,fx:1});
+ for(const x of[x0,x1]){const o=x<0?-4:4;F([[x,y0,zb],[x,y0,zf],[x+o,H,zf+8],[x+o,H,zb-24]],'rgba(236,242,248,.22)','rgba(255,255,255,.55)',{z0:-60,fx:1});}
+ const rim=[[x0-4,H,zb-24],[x1+4,H,zb-24],[x1+4,H,zf+8],[x0-4,H,zf+8],[x0-4,H,zb-24]];for(let i=1;i<rim.length;i++)items.push(L(rim[i-1],rim[i],6,'#f4f7fb',{fx:1,shade:true}));
+ items.push(L([x1-6,H+2,zf+4],[x1-6,H+16,zf+4],3,'#c0c8d2',{fx:1}),L([x1-6,H+16,zf+4],[x1-6,H+14,zf-10],3,'#c0c8d2',{fx:1}));}
+function drawWater(W){if(!ex.water)return;const wl=ex.water,y=wl+Math.sin(RT*1.3)*.4;const Q=[[-40,y,-60],[40,y,-60],[40,y,146],[-40,y,146]].map(proj);
+ ctx.save();ctx.beginPath();Q.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();const g=ctx.createLinearGradient(Q[0][0],Q[0][1],Q[2][0],Q[2][1]);g.addColorStop(0,'rgba(90,180,235,.30)');g.addColorStop(1,'rgba(40,130,210,.36)');ctx.fillStyle=g;ctx.fill();
+ ctx.clip();ctx.strokeStyle='rgba(220,245,255,.35)';ctx.lineWidth=1;const c=W.chest.p;for(let i=0;i<4;i++){const r=((RT*18+i*22)%88)+8;ctx.globalAlpha=1-r/96;ctx.beginPath();for(let a=0;a<=24;a++){const q=proj([c[0]+r*1.4*Math.cos(a/24*2*Math.PI),y,c[2]+r*Math.sin(a/24*2*Math.PI)]);a?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]);}ctx.stroke();}
+ ctx.globalAlpha=.25;for(let i=0;i<14;i++){const zz=-50+((i*15+RT*6)%190),xx=-36+(i*29)%72;const a=proj([xx,y,zz]),b=proj([xx+10,y,zz+4]);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.quadraticCurveTo((a[0]+b[0])/2,(a[1]+b[1])/2-3,b[0],b[1]);ctx.stroke();}
+ ctx.restore();ctx.save();ctx.font='600 10.5px Inter,system-ui,sans-serif';ctx.fillStyle='rgba(200,235,255,.9)';const lb=proj([40,y,146]);ctx.fillText('waterline · buoyancy carries ~90% of the weight below it',lb[0]+6,lb[1]);ctx.restore();}
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-1815';
+const BUILD='2026-11-17-1930';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2293,7 +2370,7 @@ const CONFIG={
  book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:'',
  // allFree: true opens every feature (Pro and Coach) for everyone and hides the Go Pro button. Set it to false to turn on the paid plans.
  allFree:true};
-const FREE_EX=new Set(['dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
+const FREE_EX=new Set(['bath','dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
 const has=f=>CONFIG.allFree||(TIERS[TIER]||0)>=(TIERS[f]||0);
@@ -2407,7 +2484,7 @@ function loop(now){
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
  else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawVerdict(W);drawCountdown();drawFocus(W);
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawWater(W);drawVerdict(W);drawCountdown();drawFocus(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -2443,6 +2520,7 @@ function init(){
  $('sweep').onclick=()=>setSweep(!sweep);
  $('tBreath').onclick=()=>setBreath(!breathOn);
  $('tShare').onclick=shareNow;
+ document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
  setTimeout(()=>applySettings(location.hash),30);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
  $('tLab').onclick=()=>{showLabels=!showLabels;$('tLab').classList.toggle('on',showLabels);};
