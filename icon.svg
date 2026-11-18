@@ -1,31 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <radialGradient id="bg" cx="35%" cy="30%" r="80%">
-      <stop offset="0" stop-color="#16294a"/>
+    <radialGradient id="bg" cx="30%" cy="25%" r="85%">
+      <stop offset="0" stop-color="#1a2f55"/>
       <stop offset="1" stop-color="#050a14"/>
     </radialGradient>
-    <linearGradient id="belly" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ff7ac8"/>
-      <stop offset=".5" stop-color="#e2344f"/>
-      <stop offset="1" stop-color="#7a1426"/>
+    <linearGradient id="bic" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6b8a"/>
+      <stop offset=".55" stop-color="#d9263f"/>
+      <stop offset="1" stop-color="#8a1426"/>
     </linearGradient>
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#7ef9ff"/>
-      <stop offset="1" stop-color="#ff4fd8"/>
+    <linearGradient id="tri" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7e1a2c"/>
+      <stop offset="1" stop-color="#b52a3e"/>
+    </linearGradient>
+    <linearGradient id="fore" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#b8293d"/>
+      <stop offset="1" stop-color="#e2445a"/>
     </linearGradient>
   </defs>
   <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#bg)"/>
-  <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#ring)" stroke-width="2.4" stroke-dasharray="5 3.2" opacity=".9"/>
-  <!-- tendons -->
-  <path d="M15 49 L21 43 M43 21 L49 15" stroke="#f1ebdd" stroke-width="3.2" stroke-linecap="round"/>
-  <!-- muscle belly -->
-  <path d="M21 43 C 16 30, 30 16, 43 21 C 48 34, 34 48, 21 43 Z" fill="url(#belly)"/>
-  <!-- fibers -->
-  <path d="M23 40 C 21 31, 30 22, 40 22 M26 42 C 25 33, 33 25, 42 24.5 M30 43 C 30 35, 36 28, 43 28" fill="none" stroke="#ffd0e6" stroke-width="1" stroke-linecap="round" opacity=".75"/>
+  <!-- grid -->
+  <path d="M2 46 H62 M2 54 H62" stroke="#5ee0ff" stroke-width=".6" opacity=".18"/>
+  <!-- shoulder cap (deltoid) -->
+  <path d="M12 16 C 13 9, 24 7, 27 13 C 25 17, 17 19, 12 16 Z" fill="#c8303f"/>
+  <!-- triceps (back of upper arm) -->
+  <path d="M13 17 C 10 27, 12 38, 18 46 L 22 45 C 18 37, 17 26, 18 18 Z" fill="url(#tri)"/>
+  <!-- forearm -->
+  <path d="M20 44 C 28 38, 35 29, 41 22 L 47 27 C 41 35, 32 44, 25 49 Z" fill="url(#fore)"/>
+  <path d="M24 45 C 30 40, 36 33, 42 26" fill="none" stroke="#ffb3c4" stroke-width=".8" opacity=".6"/>
+  <!-- fist: closed hand with knuckles and thumb -->
+  <g transform="rotate(-38 46 21)">
+    <rect x="40.5" y="14.5" width="12" height="13" rx="3.4" fill="#e3bf98"/>
+    <path d="M41 17.6 h11 M41 20.8 h11 M41 24 h11" stroke="#a9825d" stroke-width=".8" stroke-linecap="round"/>
+    <path d="M40.6 25 C 44 27.5, 48 27, 50 25.5" fill="none" stroke="#c99f75" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+  <!-- bones: humerus and radius (cream) -->
+  <path d="M19 15 L 21.5 44" stroke="#efe6d2" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="22" cy="45" r="2.8" fill="#efe6d2"/>
+  <!-- biceps: peaked belly, contracting -->
+  <path d="M20 17 C 33 15, 38 27, 29 39 C 26 41, 24 41, 23 39 C 22 30, 21 23, 20 17 Z" fill="url(#bic)"/>
+  <!-- biceps fibers -->
+  <path d="M22 20 C 30 20, 33 29, 27 37 M21.5 25 C 28 25, 30 31, 25.5 38" fill="none" stroke="#ffc2d2" stroke-width=".9" stroke-linecap="round" opacity=".8"/>
   <!-- highlight -->
-  <path d="M24 37 C 23 30, 30 23, 37 22" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
-  <!-- line of gravity -->
-  <path d="M32 6 V58" stroke="#ffd84d" stroke-width="1.4" stroke-dasharray="2.5 2.5" opacity=".8"/>
-  <circle cx="32" cy="32" r="3.2" fill="#ffd84d"/>
-  <circle cx="32" cy="32" r="6" fill="#ffd84d" opacity=".25"/>
+  <path d="M23 18.5 C 29 18, 32 21, 33 25" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+  <!-- contraction glow -->
+  <path d="M20 17 C 33 15, 38 27, 29 39" fill="none" stroke="#7ef9ff" stroke-width="1.1" stroke-linecap="round" opacity=".85"/>
 </svg>
