@@ -68,6 +68,7 @@ The unlock runs in the browser and is saved on the buyer's device. It is simple 
 | `index.html` | The complete app in one file. Open it in Chrome, or use the live site. |
 | `README.md` | This file. |
 | `LICENSE` | Copyright and terms: all rights reserved. |
+| `icon.svg`, `favicon-32.png`, `apple-touch-icon.png` | Tab icon and phone home-screen icon. |
 
 ## Notes
 
