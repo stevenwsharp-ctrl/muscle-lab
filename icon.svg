@@ -1,48 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <radialGradient id="bg" cx="30%" cy="25%" r="85%">
-      <stop offset="0" stop-color="#1a2f55"/>
-      <stop offset="1" stop-color="#050a14"/>
+    <radialGradient id="sky" cx="50%" cy="42%" r="75%">
+      <stop offset="0" stop-color="#2a1f6e"/>
+      <stop offset=".45" stop-color="#120c3a"/>
+      <stop offset="1" stop-color="#03030f"/>
     </radialGradient>
-    <linearGradient id="bic" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ff6b8a"/>
-      <stop offset=".55" stop-color="#d9263f"/>
-      <stop offset="1" stop-color="#8a1426"/>
+    <radialGradient id="neb1" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ff3fb4" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#ff3fb4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="neb2" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#2fd6ff" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#2fd6ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff6d6" stop-opacity=".95"/>
+      <stop offset=".35" stop-color="#ffcf5a" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#ff7a3d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="body" gradientUnits="userSpaceOnUse" x1="0" y1="60" x2="0" y2="450">
+      <stop offset="0" stop-color="#7ef9ff"/>
+      <stop offset=".45" stop-color="#ff5fd2"/>
+      <stop offset="1" stop-color="#ffb347"/>
     </linearGradient>
-    <linearGradient id="tri" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#7e1a2c"/>
-      <stop offset="1" stop-color="#b52a3e"/>
+    <linearGradient id="orbit" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2fd6ff" stop-opacity="0"/>
+      <stop offset=".3" stop-color="#7ef9ff"/>
+      <stop offset=".7" stop-color="#ff5fd2"/>
+      <stop offset="1" stop-color="#ff5fd2" stop-opacity="0"/>
     </linearGradient>
-    <linearGradient id="fore" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#b8293d"/>
-      <stop offset="1" stop-color="#e2445a"/>
-    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="28"/></filter>
+    <clipPath id="tile"><rect x="0" y="0" width="512" height="512" rx="112"/></clipPath>
   </defs>
-  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#bg)"/>
-  <!-- grid -->
-  <path d="M2 46 H62 M2 54 H62" stroke="#5ee0ff" stroke-width=".6" opacity=".18"/>
-  <!-- shoulder cap (deltoid) -->
-  <path d="M12 16 C 13 9, 24 7, 27 13 C 25 17, 17 19, 12 16 Z" fill="#c8303f"/>
-  <!-- triceps (back of upper arm) -->
-  <path d="M13 17 C 10 27, 12 38, 18 46 L 22 45 C 18 37, 17 26, 18 18 Z" fill="url(#tri)"/>
-  <!-- forearm -->
-  <path d="M20 44 C 28 38, 35 29, 41 22 L 47 27 C 41 35, 32 44, 25 49 Z" fill="url(#fore)"/>
-  <path d="M24 45 C 30 40, 36 33, 42 26" fill="none" stroke="#ffb3c4" stroke-width=".8" opacity=".6"/>
-  <!-- fist: closed hand with knuckles and thumb -->
-  <g transform="rotate(-38 46 21)">
-    <rect x="40.5" y="14.5" width="12" height="13" rx="3.4" fill="#e3bf98"/>
-    <path d="M41 17.6 h11 M41 20.8 h11 M41 24 h11" stroke="#a9825d" stroke-width=".8" stroke-linecap="round"/>
-    <path d="M40.6 25 C 44 27.5, 48 27, 50 25.5" fill="none" stroke="#c99f75" stroke-width="2.2" stroke-linecap="round"/>
+  <g clip-path="url(#tile)">
+    <rect width="512" height="512" fill="url(#sky)"/>
+    <ellipse cx="150" cy="150" rx="190" ry="140" fill="url(#neb1)" filter="url(#soft)"/>
+    <ellipse cx="380" cy="380" rx="200" ry="150" fill="url(#neb2)" filter="url(#soft)"/>
+    <g fill="#fff">
+      <circle cx="70" cy="90" r="2.4"/><circle cx="430" cy="70" r="3"/><circle cx="460" cy="190" r="1.8"/><circle cx="90" cy="300" r="1.6"/>
+      <circle cx="400" cy="300" r="2"/><circle cx="60" cy="430" r="2.6"/><circle cx="330" cy="460" r="1.6"/><circle cx="190" cy="60" r="1.6"/>
+      <circle cx="120" cy="210" r="1.4"/><circle cx="470" cy="420" r="2.2"/><circle cx="350" cy="120" r="1.4"/><circle cx="160" cy="470" r="1.8"/>
+      <path d="M430 56 v28 M416 70 h28" stroke="#fff" stroke-width="1.6" opacity=".7"/>
+      <path d="M70 418 v24 M58 430 h24" stroke="#fff" stroke-width="1.4" opacity=".6"/>
+    </g>
+    <circle cx="256" cy="272" r="120" fill="url(#halo)" opacity=".55"/>
+    <ellipse cx="256" cy="300" rx="196" ry="58" fill="none" stroke="url(#orbit)" stroke-width="7" transform="rotate(-14 256 300)" opacity=".55"/>
+    <path d="M256 40 V478" stroke="#ffd84d" stroke-width="4" stroke-dasharray="10 12" opacity=".7"/>
+    <g filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M204 200 C 186 160, 166 118, 140 72" fill="none" stroke="url(#body)" stroke-width="22"/>
+      <path d="M308 200 C 326 160, 346 118, 372 72" fill="none" stroke="url(#body)" stroke-width="22"/>
+      <path d="M198 192 Q 256 176 314 192 C 312 214, 300 232, 290 250 C 280 268, 276 284, 274 304 L 238 304 C 236 284, 232 268, 222 250 C 212 232, 200 214, 198 192 Z" fill="url(#body)"/>
+      <path d="M248 300 C 246 352, 250 394, 256 442" fill="none" stroke="url(#body)" stroke-width="26"/>
+      <path d="M266 304 C 304 316, 336 340, 322 364 C 308 380, 282 374, 262 366" fill="none" stroke="url(#body)" stroke-width="21"/>
+    </g>
+    <g fill="none" stroke="#ffffff" stroke-linecap="round" opacity=".5" stroke-width="2.4">
+      <path d="M222 206 C 232 236, 244 262, 248 296"/><path d="M290 206 C 280 236, 268 262, 264 296"/><path d="M256 196 V 292"/>
+      <path d="M196 196 C 180 158, 164 122, 146 86"/><path d="M316 196 C 332 158, 348 122, 366 86"/>
+      <path d="M244 314 C 244 362, 248 398, 252 432"/><path d="M272 314 C 304 324, 326 344, 316 358"/>
+    </g>
+    <circle cx="140" cy="70" r="12" fill="#e9fdff" filter="url(#glow)"/>
+    <circle cx="372" cy="70" r="12" fill="#e9fdff" filter="url(#glow)"/>
+    <circle cx="256" cy="136" r="26" fill="#fff6ef" filter="url(#glow)"/>
+    <circle cx="256" cy="136" r="26" fill="none" stroke="#7ef9ff" stroke-width="3" opacity=".8"/>
+    <path d="M70 352 C 140 384, 380 330, 446 250" fill="none" stroke="url(#orbit)" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="430" cy="262" r="11" fill="#7ef9ff" filter="url(#glow)"/>
+    <circle cx="256" cy="272" r="13" fill="#fff4c2" filter="url(#glow)"/>
+    <circle cx="256" cy="272" r="22" fill="none" stroke="#ffd84d" stroke-width="3" opacity=".9"/>
+    <ellipse cx="258" cy="448" rx="54" ry="10" fill="#7ef9ff" opacity=".35" filter="url(#glow)"/>
   </g>
-  <!-- bones: humerus and radius (cream) -->
-  <path d="M19 15 L 21.5 44" stroke="#efe6d2" stroke-width="2.4" stroke-linecap="round"/>
-  <circle cx="22" cy="45" r="2.8" fill="#efe6d2"/>
-  <!-- biceps: peaked belly, contracting -->
-  <path d="M20 17 C 33 15, 38 27, 29 39 C 26 41, 24 41, 23 39 C 22 30, 21 23, 20 17 Z" fill="url(#bic)"/>
-  <!-- biceps fibers -->
-  <path d="M22 20 C 30 20, 33 29, 27 37 M21.5 25 C 28 25, 30 31, 25.5 38" fill="none" stroke="#ffc2d2" stroke-width=".9" stroke-linecap="round" opacity=".8"/>
-  <!-- highlight -->
-  <path d="M23 18.5 C 29 18, 32 21, 33 25" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
-  <!-- contraction glow -->
-  <path d="M20 17 C 33 15, 38 27, 29 39" fill="none" stroke="#7ef9ff" stroke-width="1.1" stroke-linecap="round" opacity=".85"/>
 </svg>
