@@ -691,7 +691,8 @@ const P=interp(ex,t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
  if(ex.anchor==='floor'){let mn=1e9;for(const c of floorPts(W))if(c.p[1]<mn)mn=c.p[1];const fl=clamp(P['anc.fl']||0,0,1);
   const A=mix(mix(cpt(W,'L','heel'),cpt(W,'R','heel'),.5),W.pelvis.p,fl);shiftW(W,[-A[0],-mn+(P['root.y']||0),-A[2]]);W._P=P;return W;}
  let d;
- if(ex.anchor==='bar'){const a=mix(cpt(W,'L','grip'),cpt(W,'R','grip'),.5);d=sub(ex.bar,a);}
+ if(ex.anchor==='bar'){const a=mix(cpt(W,'L','grip'),cpt(W,'R','grip'),.5);d=sub(ex.barAt?ex.barAt(t):ex.bar,a);}
+ else if(ex.anchor==='free'){const c=W.pelvis.p;d=[-c[0],(ex.hy||200)-c[1]+(P['root.y']||0),-c[2]];}
  else{
   const C=ex.anchor==='pushup'?[['L','toe'],['R','toe'],['L','ball'],['R','ball'],['L','palm'],['R','palm']]:[['L','heel'],['L','ball'],['L','toe'],['R','heel'],['R','ball'],['R','toe']];
   let mn=1e9;for(const[s,k]of C){const y=cpt(W,s,k)[1];if(y<mn)mn=y;}
@@ -1591,7 +1592,7 @@ function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<but
  P.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{pickReg=pickReg===b.dataset.r?null:b.dataset.r;PICKSET=pickReg&&pickReg!=='all'?new Set(REGION[pickReg]):null;buildPick();});
  const M=$('pkMus');M.innerHTML=pickReg?regList(pickReg).map(id=>`<button class="pk m${id===cT&&!document.body.classList.contains('pick')?' on':''}" data-m="${id}">${MDEFK[id].short}</button>`).join(''):'';
  M.querySelectorAll('.pk').forEach(b=>b.onclick=()=>choosePicked(b.dataset.m));
- const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button><button class="pk" data-a="bath">🛁 Bath yoga</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
+ const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button><button class="pk" data-a="bath">🛁 Bath yoga</button><button class="pk" data-a="koala">🐾 Animal mode</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
   A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='yoga'||id==='bath')return enterYoga(id);const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
    const B=document.body.classList;B.remove('pick');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();});}
  if(document.body.classList.contains('pick')){document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');layoutCam();}}
@@ -1787,7 +1788,7 @@ function gravityCalc(W){
  if(turning){const fc=mix(W.Lfoot.p,W.Rfoot.p,.5);gv=norm(mix(gv,norm(sub(fc,COM)),.7));}
  const y0=ex.drop?-ex.drop(phase):0;const gy=(x,z)=>y0+(ex.terr?ex.terr(x,z,phase):0)+(ex.powder?0:0);
  const sup={};for(const S of['L','R']){const pts=['heel','ball','toe'].map(k=>cpt(W,S,k));const mn=Math.min(...pts.map(p=>p[1]-gy(p[0],p[2])));sup[S]=mn<(ex.props.includes('skis')?6:2.5);}
- const hands=ex.anchor==='bar'?'bar':ex.anchor==='pushup'?'push':null;let seat=!!ex.seat;let flc=[];
+ const hands=(ex.anchor==='bar'||ex.anchor==='free')?'bar':ex.anchor==='pushup'?'push':null;let seat=!!ex.seat;let flc=[];
  if(ex.anchor==='floor'){flc=floorPts(W).filter(c=>c.p[1]-y0<2.5&&c.k!=='foot');if(flc.some(c=>c.k!=='palm'))seat=true;}
  if(ex.water){seat=true;const pc=[W.pelvis.p[0],0,W.pelvis.p[2]];for(const v of[[-20,0,-34],[20,0,-34],[-20,0,40],[20,0,40]])flc.push({p:add(pc,v),k:'seat'});}
  const mom=(J,f)=>{let v=[0,0,0];for(const s of segs)if(f(s))v=add(v,cross(sub(s.p,J),mulS(gv,s.m)));return Math.hypot(v[0],v[1],v[2])*BW*GACC/100;};
@@ -2065,6 +2066,100 @@ function playCounter(id,keys){const c=COUNTER[id],a=EX.find(e=>e.id===id);const 
  function zOf2(t){let z=0;const n=40;for(let i=0;i<n;i++){const a=TD+(t-TD)*i/n,b=TD+(t-TD)*(i+1)/n;z+=vel((a+b)/2)*(b-a)*D_;}return z;}
  EX.splice(EX.findIndex(e=>e.id==='box')+1,0,dunk);
  COUNTER.dunk={T:'gastroc',k:['calf','quad','fold'],why:'lengthen the calves, quads and back after jumping'};
+})();
+// ANIMAL MODE: movements the nervous system already knows (grip, hang, climb, crawl, squat) that sitting and overuse let fade
+(function(){
+ const G='Animal mode';
+ // KOALA CLIMB: hug the trunk, diagonal pairs (one hand + the opposite foot move while the other pair grips)
+ const H0={'root.pitch':-6,'spine.f':16,'chest.f':6,'neck.f':-14,'B.sh.f':128,'B.sh.a':26,'B.el':72,'B.sh.r':30,'B.hip.f':78,'B.hip.a':34,'B.hip.r':-30,'B.kn':98,'B.an':18};
+ const koala={id:'koala',group:G,name:'Koala climb',icon:'🐨',dur:6,anchor:'free',hy:230,view:[118,12],props:['tree'],base:H0,
+  work:['biceps','brachialis','forearmFlex','lats','pec','adductors','gracilis','hamstrings','iliopsoas','tibPost','flexHalLong'],stab:['serratus','rhomboid','trapLower','rectusAbd','intOblique','QL','gluteMax','deltPost'],
+  keys:[{t:0,p:{},ok:1,okl:'hug the tree',cap:'Hug the tree: the arms wrap the trunk and the inner thighs squeeze it. Most of the work is isometric: the biceps, forearms, lats, adductors and gracilis hold you on. The grip is the anchor.'},
+   {t:.12,p:{'L.sh.f':166,'L.el':34,'R.hip.f':104,'R.kn':122,'R.an':26,'R.sh.f':118,'R.el':86,'L.hip.f':66,'L.kn':86},ok:1,okl:'diagonal pair reaches',cap:'Diagonal pair: the left hand and the right foot reach up while the right hand and the left foot grip. Koalas and primates both climb with this diagonal pattern, and it is the same pattern as a baby crawl.'},
+   {t:.3,p:{'spine.f':6,'B.el':58,'root.y':-10},ok:1,okl:'pull with arms, push with legs',cap:'Climb: the biceps and lats pull the chest to the hands while the hamstrings and adductors drive the legs. The body moves up the trunk.'},
+   {t:.5,p:{'L.sh.f':128,'L.el':72,'R.hip.f':78,'R.kn':98,'R.an':18,'R.sh.f':128,'R.el':72,'L.hip.f':78,'L.kn':98,'spine.f':16,'root.y':0},ok:1,okl:'hug and reset',cap:'Hug again: both arms and both legs squeeze the trunk.'},
+   {t:.62,p:{'R.sh.f':166,'R.el':34,'L.hip.f':104,'L.kn':122,'L.an':26,'L.sh.f':118,'L.el':86,'R.hip.f':66,'R.kn':86},ok:1,okl:'other diagonal',cap:'Switch: the right hand and the left foot reach up. Feel how the left hip and the right shoulder connect across the back (the back functional line).'},
+   {t:.8,p:{'spine.f':6,'B.el':58,'root.y':-10},ok:1,okl:'pull with arms, push with legs',cap:'Climb again. Why it matters: babies grip and climb before they walk. Hours in a chair let the grip, the inner thighs and the overhead reach fade; climbing wakes them up.'}],
+  focus:['shoulder','hip','core','leg'],flow:t=>t*120};
+ koala.extra=function(W,t,items){const zT=W.chest.p[2]+24,sc=(t*120)%40;
+  items.push(L([0,0,zT],[0,700,zT],38,'#6b4a2f',{shade:true,fx:1}));
+  for(let y=-sc;y<700;y+=40)for(const a of[-.9,-.3,.3,.9]){const x=Math.sin(a)*19,z=zT-Math.cos(a)*19;items.push(L([x,y,z],[x*1.02,y+14,z],1.6,'rgba(40,24,12,.7)',{fx:1}));}
+  for(const[y,dx]of[[430,1],[520,-1],[610,1]])items.push(L([0,y,zT],[dx*120,y+50,zT+10],12,'#6b4a2f',{shade:true,fx:1}));
+  for(const[x,y,z]of[[110,480,40],[-110,570,30],[100,660,50],[40,690,10]])items.push({k:'ball',c:[x,y,zT+z-20],r:26,col:'#3f7d4a',shade:true,fx:1});};
+ // VINE SWING: hang from a vine and pump the swing with the hips
+ const P0=[0,520,0],LR=290,AMP=26*Math.PI/180;const th=t=>AMP*Math.sin(2*Math.PI*t);
+ const vine={id:'vine',group:G,name:'Vine swing',icon:'🐒',dur:4,anchor:'bar',bar:[0,230,0],barAt:t=>[P0[0],P0[1]-LR*Math.cos(th(t)),P0[2]+LR*Math.sin(th(t))],view:[92,6],props:['vine'],
+  base:{'B.sh.f':176,'B.sh.a':4,'B.el':8,'B.clav.e':-4},
+  work:['lats','forearmFlex','biceps','teresMajor','trapLower','rectusAbd','iliopsoas','gluteMax','hamstrings'],stab:['serratus','rhomboid','infraspinatus','intOblique','erector','adductors'],
+  keys:[{t:0,p:{'root.pitch':0},ok:1,okl:'active hang',cap:'Active hang: grip the vine and pull the shoulder blades down. The lats and lower trapezius hold the shoulders in place; the grip holds you on.'},
+   {t:.15,p:{'root.pitch':-20,'B.hip.f':78,'B.kn':88,'spine.f':10},ok:1,okl:'tuck in front',cap:'Swing forward: tuck the knees up in front. The hip flexors and abs pump the swing, like a child on a swing.'},
+   {t:.25,p:{'root.pitch':-30},ok:1,okl:'top of the swing',cap:'Top of the swing: for a moment you are almost weightless. The grip and lats work hardest at the bottom, where the swing is fastest.'},
+   {t:.45,p:{'root.pitch':-4,'B.hip.f':0,'B.kn':6,'spine.f':0},ok:1,okl:'long body',cap:'Swing through the bottom: a long, straight body.'},
+   {t:.65,p:{'root.pitch':20,'B.hip.f':-14,'B.kn':24,'spine.f':-8},ok:1,okl:'open the hips behind',cap:'Swing back: open the front of the hips. The glutes and back extend you.'},
+   {t:.75,p:{'root.pitch':30},ok:1,okl:'top of the back swing',cap:'Top of the back swing. Why it matters: human shoulders still work like an ape\'s for reaching overhead and hanging. Hours with the arms down let that range fade.'},
+   {t:.92,p:{'root.pitch':4,'B.hip.f':0,'B.kn':4,'spine.f':0},ok:1,okl:'long body',cap:'Through the bottom again.'}],
+  focus:['shoulder','core','hip']};
+ vine.extra=function(W,t,items){const g=vine.barAt(t);items.push(L([-260,P0[1],P0[2]],[260,P0[1]+18,P0[2]],22,'#6b4a2f',{shade:true,fx:1}));
+  const dir=sub(g,P0),l=Math.hypot(...dir),u=mulS(dir,1/l);items.push(L(P0,add(g,mulS(u,30)),3.2,'#5f8a3a',{fx:1}));
+  for(let i=1;i<6;i++){const q=add(P0,mulS(u,i*l/6));items.push(L(q,add(q,[6,-8,0]),2,'#7fb24a',{fx:1}));}
+  for(const[x,z]of[[-200,0],[-120,20],[150,-10],[230,10]])items.push({k:'ball',c:[x,P0[1]+30,P0[2]+z],r:34,col:'#3f7d4a',shade:true,fx:1});};
+ // MONKEY HANG: passive hang, active hang (scapular pulls), knee raise, side swing
+ const hang={id:'hang',group:G,name:'Monkey hang',icon:'🦧',dur:10,anchor:'bar',bar:[0,230,0],view:[30,4],props:['bar'],
+  base:{'B.sh.f':178,'B.sh.a':10,'B.el':4},
+  work:['forearmFlex','lats','trapLower','teresMajor','rectusAbd','iliopsoas'],stab:['serratus','rhomboid','infraspinatus','supraspinatus','intOblique'],
+  keys:[{t:0,p:{'B.clav.e':10},ok:1,okl:'passive hang',cap:'Passive hang: let the body hang long. The shoulders open overhead and the lats lengthen. Start with short holds.'},
+   {t:.2,p:{'B.clav.e':-8},ok:1,okl:'active hang',cap:'Active hang: pull the shoulder blades down without bending the elbows. The lower trapezius and lats switch on.'},
+   {t:.32,p:{'B.clav.e':10},ok:1,okl:'scapular pull',cap:'Let them rise again, slowly. Repeat: these scapular pulls teach the shoulder blades to move under load.'},
+   {t:.44,p:{'B.clav.e':-8},ok:1,okl:'active hang',cap:'Active again.'},
+   {t:.56,p:{'B.hip.f':90,'B.kn':90,'root.pitch':-6},ok:1,okl:'knee raise',cap:'Knee raise: lift the knees to the hips. The abs and hip flexors work; the lats keep the body still.'},
+   {t:.7,p:{'B.hip.f':0,'B.kn':4,'root.pitch':0},ok:1,okl:'long body',cap:'Lower slowly (eccentric).'},
+   {t:.8,p:{'root.roll':14,'L.sh.a':2,'R.sh.a':20},ok:1,okl:'side swing',cap:'Side swing: shift the weight to one hand, like a gibbon getting ready to reach for the next branch.'},
+   {t:.9,p:{'root.roll':-14,'L.sh.a':20,'R.sh.a':2},ok:1,okl:'side swing',cap:'And to the other hand. Why it matters: hanging is a pattern every child knows. Grip strength also tracks whole-body health.'}],
+  focus:['shoulder','core']};
+ // BEAR CRAWL: hands and feet, knees hover, diagonal pairs
+ const BB={'root.pitch':78,'B.hip.f':104,'B.kn':96,'B.an':12,'B.toe':-30,'B.sh.f':80,'B.el':6,'neck.f':-14,fit:1,'anc.fl':1};
+ const bear={id:'bear',group:G,name:'Bear crawl',icon:'🐻',dur:4,anchor:'floor',view:[70,10],props:[],base:BB,
+  work:['deltAnt','triceps','serratus','rectusAbd','intOblique','oblique','vastLat','rectFem','iliopsoas'],stab:['gluteMed','multifidus','erector','pec','forearmFlex','gastroc','soleus'],
+  keys:[{t:0,p:{},ok:1,okl:'knees hover',cap:'Bear: hands under the shoulders, knees under the hips, hovering just above the floor. The abs and serratus brace the trunk.'},
+   {t:.22,p:{'L.sh.f':98,'R.hip.f':122,'R.kn':108},ok:1,okl:'diagonal step',cap:'Step the left hand and the right foot forward together. The diagonal pattern links the shoulder and the opposite hip through the core.'},
+   {t:.5,p:{'L.sh.f':80,'R.hip.f':104,'R.kn':96},ok:1,okl:'back level',cap:'Keep the back flat like a table. Do not let the hips sway.'},
+   {t:.72,p:{'R.sh.f':98,'L.hip.f':122,'L.kn':108},ok:1,okl:'other diagonal',cap:'Now the right hand and the left foot.'},
+   {t:.95,p:{'R.sh.f':80,'L.hip.f':104,'L.kn':96},ok:1,okl:'brace',cap:'Why it matters: crawling builds the cross-body coordination we learned as babies. A training study found crawling and animal moves improved movement screen scores and joint range.'}],
+  focus:['shoulder','core','hip']};
+ // CRAB WALK: face up, hips lifted, diagonal pairs
+ const CB={'root.pitch':-66,'B.hip.f':22,'B.kn':94,'B.an':2,'B.sh.f':-74,'B.sh.r':-20,'B.el':4,'neck.f':16,fit:1,'anc.fl':1};
+ const crab={id:'crab',group:G,name:'Crab walk',icon:'🦀',dur:4,anchor:'floor',view:[96,10],props:[],base:CB,
+  work:['triceps','deltPost','gluteMax','hamstrings','erector','rhomboid','trapMid'],stab:['rectusAbd','vastMed','infraspinatus','teresMinor','forearmExt'],
+  keys:[{t:0,p:{},ok:1,okl:'hips lifted',cap:'Crab: hands behind you, fingers pointing back, hips lifted. The glutes and triceps hold you up and the chest opens.'},
+   {t:.25,p:{'L.sh.f':-60,'R.hip.f':34,'R.kn':86},ok:1,okl:'diagonal step',cap:'Step the left hand and the right foot together. The back of the shoulders and the glutes work.'},
+   {t:.5,p:{'L.sh.f':-74,'R.hip.f':22,'R.kn':94},ok:1,okl:'hips up',cap:'Keep the hips up. The front of the shoulders and chest open: the reverse of a desk posture.'},
+   {t:.75,p:{'R.sh.f':-60,'L.hip.f':34,'L.kn':86},ok:1,okl:'other diagonal',cap:'Right hand and left foot.'},
+   {t:.97,p:{'R.sh.f':-74,'L.hip.f':22,'L.kn':94},ok:1,okl:'hips up',cap:'Hips up, chest open.'}],
+  focus:['shoulder','hip']};
+ // APE SQUAT: the deep resting squat, then a side shift
+ const ape={id:'ape',group:G,name:'Ape squat',icon:'🦍',dur:8,anchor:'floor',view:[40,8],props:[],base:{'anc.fl':0},
+  work:['vastLat','vastMed','gluteMax','adductors','soleus','tibAnt'],stab:['erector','multifidus','rectusAbd','abdHallucis','tibPost','peroneals'],
+  keys:[{t:0,p:{'B.hip.a':12},ok:1,okl:'stand',cap:'Stand with the feet a little wider than the hips, toes a little out.'},
+   {t:.15,p:{'root.pitch':34,'B.hip.f':128,'B.kn':140,'B.an':36,'B.hip.a':18,'B.sh.f':58,'B.el':30,'spine.f':6},ok:1,okl:'deep resting squat',cap:'Sink into a deep squat. Heels down, knees over the toes. Most of the world rests and works in this position; chairs let it fade.'},
+   {t:.35,p:{},ok:1,okl:'hold',cap:'Hold and breathe. The ankles, hips and low back get back their full range.'},
+   {t:.5,p:{'root.roll':-10,'L.kn':146,'R.kn':128,'L.hip.a':24,'R.hip.a':10},ok:1,okl:'shift left',cap:'Shift the weight over the left foot, like an ape moving along the ground.'},
+   {t:.65,p:{'root.roll':10,'L.kn':128,'R.kn':146,'L.hip.a':10,'R.hip.a':24},ok:1,okl:'shift right',cap:'Shift to the right foot.'},
+   {t:.8,p:{'root.roll':0,'L.kn':140,'R.kn':140,'L.hip.a':18,'R.hip.a':18},ok:1,okl:'center',cap:'Center.'},
+   {t:.9,p:{'root.pitch':0,'B.hip.f':0,'B.kn':0,'B.an':0,'B.hip.a':12,'B.sh.f':0,'B.el':0,'spine.f':0},ok:1,okl:'stand up',cap:'Stand up: push the floor away.'}],
+  focus:['hip','knee','foot']};
+ // LIZARD CRAWL: low, one knee to the elbow
+ const LB={'root.pitch':86,'B.hip.f':10,'B.kn':6,'B.an':0,'B.toe':-30,'B.sh.f':60,'B.el':70,'B.sh.a':30,'neck.f':-16,fit:1,'anc.fl':1};
+ const lizard={id:'lizard',group:G,name:'Lizard crawl',icon:'🦎',dur:5,anchor:'floor',view:[60,22],props:[],base:LB,
+  work:['pec','triceps','deltAnt','oblique','intOblique','adductors','gluteMed','iliopsoas'],stab:['serratus','rectusAbd','multifidus','QL'],
+  keys:[{t:0,p:{},ok:1,okl:'low body',cap:'Lizard: the body stays low, chest just above the floor, elbows bent. The chest, triceps and shoulders hold an isometric press.'},
+   {t:.25,p:{'L.hip.f':96,'L.hip.a':48,'L.hip.r':-30,'L.kn':112,'L.sh.f':92,'L.el':40,'spine.s':10},ok:1,okl:'knee to elbow',cap:'Bring the left knee out to the left elbow and reach the left hand forward. The side of the waist and the inner thigh lengthen.'},
+   {t:.5,p:{'L.hip.f':10,'L.hip.a':0,'L.hip.r':0,'L.kn':6,'L.sh.f':60,'L.el':70,'spine.s':0},ok:1,okl:'low body',cap:'Slide through, staying low.'},
+   {t:.75,p:{'R.hip.f':96,'R.hip.a':48,'R.hip.r':-30,'R.kn':112,'R.sh.f':92,'R.el':40,'spine.s':-10},ok:1,okl:'other side',cap:'Right knee to the right elbow. The spine bends side to side like a lizard\'s: the obliques and QL drive it.'},
+   {t:.97,p:{'R.hip.f':10,'R.hip.a':0,'R.hip.r':0,'R.kn':6,'R.sh.f':60,'R.el':70,'spine.s':0},ok:1,okl:'low body',cap:'Low and long.'}],
+  focus:['shoulder','hip','core']};
+ EX.push(koala,vine,hang,bear,crab,ape,lizard);
+ Object.assign(COUNTER,{koala:{T:'pec',k:['opener','crossbody','calf'],why:'open the chest and shoulders after gripping and hugging'},vine:{T:'lats',k:['opener','fold'],why:'lengthen the chest and back body after hanging'},hang:{T:'forearmFlex',k:['opener','row'],why:'balance the hang with chest opening and rowing'},
+  bear:{T:'iliopsoas',k:['quad','opener','fold'],why:'open the hip flexors and chest after crawling'},crab:{T:'pec',k:['fold','crossbody'],why:'fold forward after the backbend of the crab'},ape:{T:'vastLat',k:['quad','calf'],why:'lengthen the quads and calves'},lizard:{T:'pec',k:['opener','quad'],why:'open the chest and hip flexors'}});
 })();
 // teaching movements: gravity and ease
 EX.push({id:'stack',group:'Gravity and ease',name:'Stacked vs slumped posture',icon:'⇣',dur:12,anchor:'ground',view:[80,6],props:[],
@@ -2443,7 +2538,7 @@ let MIRROR=false;
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-2210';
+const BUILD='2026-11-17-2330';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2457,7 +2552,7 @@ const CONFIG={
  book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:'',
  // allFree: true opens every feature (Pro and Coach) for everyone and hides the Go Pro button. Set it to false to turn on the paid plans.
  allFree:true};
-const FREE_EX=new Set(['bath','dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
+const FREE_EX=new Set(['koala','vine','hang','bear','crab','ape','lizard','bath','dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
 const has=f=>CONFIG.allFree||(TIERS[TIER]||0)>=(TIERS[f]||0);
