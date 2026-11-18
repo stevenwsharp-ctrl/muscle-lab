@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Muscle Lab — 3D muscles, gravity and movement coach</title>
 <meta name="description" content="A movement plan in 3D: watch which muscles work, oppose and stabilize, from the feet to the neck.">
-<link rel="icon" type="image/svg+xml" href="icon.svg?v=3">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+<link rel="icon" type="image/svg+xml" href="icon.svg?v=4">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=4">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=4">
 <meta name="theme-color" content="#120c3a">
 <meta property="og:title" content="Muscle Lab — movement plan">
 <meta property="og:description" content="Watch the plan in 3D slow motion: the muscles that work, oppose and stabilize, from the feet to the neck.">
@@ -773,7 +773,7 @@ function shade(h,f,a){const[r,g,b]=hexRGB(h);const t=f<1?[r*f,g*f,b*f]:[r+(255-r
 
 let cv,ctx,dpr=1,VW=0,VH=0;
 const cam={yaw:0,pitch:8,zoom:1,s:2,target:[0,100,0],M:I3,Dp:700,cx:0,cy:0};
-let sweep=true,ex=EX[3],phase=0,simT=0,playing=true,speed=.75,orbit=false,showLabels=true,showBody=true,layer='all',anat=false,sel=null,hover=null,hits=[],mouse=null;
+let SIDE=null,SM=1,sweep=true,ex=EX[3],phase=0,simT=0,playing=true,speed=.75,orbit=false,showLabels=true,showBody=true,layer='all',anat=false,sel=null,hover=null,hits=[],mouse=null;
 
 function proj(p){const q=ap(cam.M,sub(p,cam.target));const k=cam.Dp/(cam.Dp-q[2]);const s=cam.s*cam.zoom*k;return[cam.cx+q[0]*s,cam.cy-q[1]*s,q[2],s];}
 
@@ -1795,6 +1795,11 @@ function drawGravHUD(){const G=GR;if(!G)return;const ph=document.body.classList.
   const worst=G.J.slice().sort((a,b)=>b.f-a.f)[0];const cue=worst&&worst.f>.25?GCUE[worst.k.replace(/[LR]$/,'')]:'Stacked and easy: gravity goes through the bones. The muscles only fine-tune.';
   ctx.fillStyle='#e9d5ff';ctx.font='600 10.5px Inter,system-ui,sans-serif';wrapText(cue,x+10,yy+4,w-20,13,2);}}
 function wrapText(t,x,y,mw,lh,max){const ws=t.split(' ');let line='',n=0;for(const w_ of ws){const tl=line?line+' '+w_:w_;if(ctx.measureText(tl).width>mw&&line){ctx.fillText(line,x,y);y+=lh;line=w_;if(++n>=max-1){}}else line=tl;}ctx.fillText(line,x,y);}
+function drawSideBadge(){if(!SIDE||!ex.blocks)return;const ph=document.body.classList.contains('phone');const L_=SIDE==='L';const t=L_?'◀  LEFT SIDE':'RIGHT SIDE  ▶';
+ ctx.save();ctx.font=`900 ${ph?13:17}px Inter,system-ui,sans-serif`;const w=ctx.measureText(t).width+(ph?22:30),h=ph?28:36;const x=L_?camArea.x0+(ph?8:16):camArea.x1-w-(ph?8:16);const cr=$('cap').getBoundingClientRect();
+ const y=(getComputedStyle($('cap')).display!=='none'&&cr.height?cr.bottom+(ph?6:10):camArea.y0)+(ph?0:0);const col=L_?'#7ef9ff':'#ff5fd2';
+ ctx.fillStyle='rgba(6,12,24,.82)';ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,h/2):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();
+ ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=col;ctx.shadowBlur=10;ctx.fillText(t,x+w/2,y+h/2+1);ctx.restore();}
 function drawCountdown(){if(!ex.events||!ex.events.length)return;const sp=Math.max(speed,.05);const ph=document.body.classList.contains('phone');
  let nx=null,dtn=1e9,last=null,dtl=1e9;for(const e of ex.events){const d=((e.t-phase)%1+1)%1;if(d<dtn){dtn=d;nx=e;}const b=((phase-e.t)%1+1)%1;if(b<dtl){dtl=b;last=e;}}
  const secN=dtn*ex.dur/sp,secL=dtl*ex.dur/sp;const cx=(camArea.x0+camArea.x1)/2,cy=camArea.y1-(ph?70:90);ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
@@ -2360,7 +2365,7 @@ function drawWater(W){if(!ex.water)return;const wl=ex.water,y=wl+Math.sin(RT*1.3
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-2035';
+const BUILD='2026-11-17-2045';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2487,8 +2492,11 @@ function loop(now){
  const prevP=phase;if(playing&&!scrubbing){phase=(phase+dt*speed/ex.dur)%1;simT+=dt*speed;}
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
- else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawWater(W);drawVerdict(W);drawCountdown();drawFocus(W);
+ {const IPs=ex.blocks?interp(ex,phase):null;const ns=IPs&&IPs._sd?(/right/.test(IPs._sd)?'R':'L'):null;
+  if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
+ if(orbit){}
+ else if(sweep&&ex.blocks&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawWater(W);drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
