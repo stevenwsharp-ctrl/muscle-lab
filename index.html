@@ -784,7 +784,8 @@ const STATECOL={con:'#ff4d4d',ecc:'#ff9a2e',iso:'#ffd84d',str:'#5fb4ff',idle:'#9
 const STATETXT={con:'Shortening',ecc:'Lengthening (load)',iso:'Holding',str:'Stretching',idle:'Resting'};
 const STATELONG={con:'It shortens under load (concentric). It makes the movement happen.',ecc:'It gets longer under load (eccentric). It brakes and controls the movement.',iso:'It holds steady (isometric). It keeps the joint stable.',str:'It is stretched while the opposite muscle works. It stays relaxed.',idle:'It does little in this phase.'};
 function hexRGB(h){h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
-function shade(h,f,a){const[r,g,b]=hexRGB(h);const t=f<1?[r*f,g*f,b*f]:[r+(255-r)*(f-1),g+(255-g)*(f-1),b+(255-b)*(f-1)];return`rgba(${t.map(v=>Math.round(clamp(v,0,255))).join(',')},${a==null?1:a})`;}
+const SHC=new Map();function shade(h,f,a){const key=h+'|'+f+'|'+a;let v=SHC.get(key);if(v)return v;v=shade0(h,f,a);if(SHC.size<4000)SHC.set(key,v);return v;}
+function shade0(h,f,a){const[r,g,b]=hexRGB(h);const t=f<1?[r*f,g*f,b*f]:[r+(255-r)*(f-1),g+(255-g)*(f-1),b+(255-b)*(f-1)];return`rgba(${t.map(v=>Math.round(clamp(v,0,255))).join(',')},${a==null?1:a})`;}
 
 let cv,ctx,dpr=1,VW=0,VH=0;
 const cam={yaw:0,pitch:8,zoom:1,s:2,target:[0,100,0],M:I3,Dp:700,cx:0,cy:0};
@@ -807,7 +808,13 @@ function layoutCam(){
  const b=cam.box||[100,200,100];const horiz=Math.hypot(b[0],b[2]);
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
 }
-function resize(){dpr=Math.min(window.devicePixelRatio||1,2);VW=innerWidth;VH=innerHeight;cv.width=VW*dpr;cv.height=VH*dpr;layoutCam();}
+// PERFORMANCE: phones start at a lower pixel ratio; if frames get slow, quality steps down (pixel ratio, glows, update rate)
+let LOWQ=0,FT=16,slowSince=0,fastSince=0,FRN=0;
+(function(){const d=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'shadowBlur');if(d&&d.set)Object.defineProperty(CanvasRenderingContext2D.prototype,'shadowBlur',{get(){return d.get.call(this);},set(v){d.set.call(this,LOWQ>=2?0:v);},configurable:true});})();
+function perfTick(now,ft){FT=FT*.92+ft*.08;const ph=document.body.classList.contains('phone');
+ if(FT>34){if(!slowSince)slowSince=now;fastSince=0;if(now-slowSince>1500&&LOWQ<3){LOWQ++;slowSince=now;resize();}}
+ else if(FT<20&&LOWQ>0&&!ph){if(!fastSince)fastSince=now;slowSince=0;if(now-fastSince>6000){LOWQ--;fastSince=now;resize();}}else{slowSince=0;}}
+function resize(){const ph=document.body.classList.contains('phone')||innerWidth<=760;dpr=Math.min(window.devicePixelRatio||1,ph?[1.6,1.3,1.1,1][LOWQ]:[2,1.5,1.25,1][LOWQ]);VW=innerWidth;VH=innerHeight;cv.width=VW*dpr;cv.height=VH*dpr;layoutCam();}
 
 function drawGrid(){
  if(ex.powder)return;
@@ -882,9 +889,9 @@ function drawMuscle(it,labels){
  const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;else if(!Z&&ex.explore&&cT&&!document.body.classList.contains('pick')&&crole!=='target'&&mu.d.id!==cT)ctx.globalAlpha*=(crole&&crole!=='x'?.6:.32);
  if(!Z&&CF!=='all'){if(st===CF){ctx.shadowColor=scol;ctx.shadowBlur=18;}else ctx.globalAlpha*=.25;}
  if(st==='con'||st==='ecc'){ctx.shadowColor=scol;ctx.shadowBlur=(anat||Z?14:10)*clamp(Math.abs(mu.v)*4,.3,1.2);}
- const g=ctx.createLinearGradient(mx-nx*hw,my-ny*hw,mx+nx*hw,my+ny*hw);
+ if(LOWQ>=2&&!Z)ctx.fillStyle=col;else{const g=ctx.createLinearGradient(mx-nx*hw,my-ny*hw,mx+nx*hw,my+ny*hw);
  g.addColorStop(0,shade(col,.4));g.addColorStop(.42,col);g.addColorStop(.6,shade(col,1.3));g.addColorStop(1,shade(col,.4));
- ctx.fillStyle=g;
+ ctx.fillStyle=g;}
  ctx.beginPath();
  if(bl<hw*1.1){ctx.ellipse(mx,my,hw,Math.max(hw*.7,bl/2+1),Math.atan2(dy,dx),0,7);}
  else{const k=1.33*hw,u=bl/3;
@@ -896,16 +903,20 @@ function drawMuscle(it,labels){
  if(ex.explore&&crole&&crole!=='x'&&crole!=='target'&&!(isSel||isHov)){ctx.lineWidth=1.8;ctx.strokeStyle=ROLECOL[crole];ctx.stroke();}
  if(crole==='target'||(ex.explore&&mu.d.id===cT&&!Z)){ctx.save();ctx.globalAlpha=.35+.25*Math.sin(RT*3);ctx.fillStyle='#ff4fd8';ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ff4fd8';ctx.lineWidth=2.6;ctx.shadowColor='#ff4fd8';ctx.shadowBlur=12+8*Math.sin(RT*4);ctx.stroke();ctx.restore();}
  // fibers
- if(bl>=hw*1.1&&hw>1.6){
+ if(bl>=hw*1.1&&hw>1.6&&(Z||LOWQ<3)){
   if(mu.d.pen&&(Z||hw>6)){ // pennate muscle: fibers run at an angle from a central tendon sheet (aponeurosis)
    const th=penAngle(mu)*D,ct=Math.cos(th),sn=Math.sin(th);const n=Math.max(4,Math.floor(bl/(Z?4.5:7)));
    ctx.strokeStyle='rgba(248,242,232,.65)';ctx.lineWidth=Math.max(.8,hw*.08);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
    ctx.lineWidth=Z?.85:.6;
-   for(let i=1;i<n;i++){const sv=i/n,pr=4*sv*(1-sv)*hw*.92;const px=a[0]+dx*bl*sv,py=a[1]+dy*bl*sv;const Lf=pr/Math.max(.25,sn);
-    for(const sd of[-1,1]){ctx.strokeStyle=(i%2)?shade(col,1.45,.5):shade(col,.5,.55);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+(-dx*ct+nx*sd*sn)*Lf,py+(-dy*ct+ny*sd*sn)*Lf);ctx.stroke();}}
+   const P1=new Path2D(),P2=new Path2D();const st=LOWQ>=1&&!Z?2:1;
+   for(let i=1;i<n;i+=st){const sv=i/n,pr=4*sv*(1-sv)*hw*.92;const px=a[0]+dx*bl*sv,py=a[1]+dy*bl*sv;const Lf=pr/Math.max(.25,sn);const PP=(i%2)?P1:P2;
+    for(const sd of[-1,1]){PP.moveTo(px,py);PP.lineTo(px+(-dx*ct+nx*sd*sn)*Lf,py+(-dy*ct+ny*sd*sn)*Lf);}}
+   ctx.strokeStyle=shade(col,1.45,.5);ctx.stroke(P1);ctx.strokeStyle=shade(col,.5,.55);ctx.stroke(P2);
   }else{ctx.lineWidth=Z?.7:.6;const u=bl/3;let n_=0;
-   for(const f of(Z?[-.8,-.6,-.4,-.2,0,.2,.4,.6,.8]:[-.72,-.48,-.24,0,.24,.48,.72])){ctx.strokeStyle=(n_++%2)?shade(col,1.35,.3):shade(col,.5,.42);
-    const k=1.33*hw*f;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.bezierCurveTo(a[0]+dx*u+nx*k,a[1]+dy*u+ny*k,b[0]-dx*u+nx*k,b[1]-dy*u+ny*k,b[0],b[1]);ctx.stroke();}}
+   const P1=new Path2D(),P2=new Path2D();
+   for(const f of(Z?[-.8,-.6,-.4,-.2,0,.2,.4,.6,.8]:LOWQ>=1?[-.5,0,.5]:[-.72,-.48,-.24,0,.24,.48,.72])){const PP=(n_++%2)?P1:P2;
+    const k=1.33*hw*f;PP.moveTo(a[0],a[1]);PP.bezierCurveTo(a[0]+dx*u+nx*k,a[1]+dy*u+ny*k,b[0]-dx*u+nx*k,b[1]-dy*u+ny*k,b[0],b[1]);}
+   ctx.strokeStyle=shade(col,1.35,.3);ctx.stroke(P1);ctx.strokeStyle=shade(col,.5,.42);ctx.stroke(P2);}
   ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=Math.max(1,hw*.18);const u2=bl/3,k2=.55*hw;ctx.beginPath();ctx.moveTo(a[0]+dx*bl*.15-nx*k2*.6,a[1]+dy*bl*.15-ny*k2*.6);
   ctx.bezierCurveTo(a[0]+dx*u2-nx*k2,a[1]+dy*u2-ny*k2,b[0]-dx*u2-nx*k2,b[1]-dy*u2-ny*k2,b[0]-dx*bl*.15-nx*k2*.6,b[1]-dy*bl*.15-ny*k2*.6);ctx.stroke();
  }
@@ -1476,8 +1487,10 @@ for(const k in MOVES){const m=MOVES[k];m.id='mv_'+k;m.key=k;m.anchor='ground';m.
 const ROLECOL={target:'#ff4fd8',syn:'#2dd4bf',ant:'#60a5fa',stab:'#facc15',chain:'#7ef9ff'};
 const listNames=ids=>ids.map(i=>MDEFK[i].short.toLowerCase()).join(', ');
 const MCACHE={};
+const WCACHE={};
 function moveMetrics(mv,T){const key=mv.key+'|'+T;if(MCACHE[key])return MCACHE[key];prep(mv);let mn=9,mx=0;
- for(let i=0;i<16;i++){const W=solve(mv,i/16);for(const S of['L','R']){const m=MUSK[T+S];const r=mLen(W,m)/m.L0;mn=Math.min(mn,r);mx=Math.max(mx,r);}}
+ const WS=WCACHE[mv.key]||(WCACHE[mv.key]=[...Array(10)].map((_,i)=>solve(mv,i/10)));
+ for(const W of WS){for(const S of['L','R']){const m=MUSK[T+S];const r=mLen(W,m)/m.L0;mn=Math.min(mn,r);mx=Math.max(mx,r);}}
  return MCACHE[key]={mn,mx,rom:mx-mn};}
 function buildPlan(T,goal){
  const R=rolesFor(T);const chainS=new Set(R.chain),antS=new Set(R.ant),synS=new Set(R.syn),stabS=new Set(R.stab);const tn=MDEFK[T].short.toLowerCase();
@@ -1555,7 +1568,7 @@ function enterPick(){const B=document.body.classList;if(!B.contains('phone'))ret
  document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+60)+'px');buildPick();setTimeout(()=>{document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');syncSheet();},50);syncSheet();}
 function syncSheet(){document.body.classList.toggle('noSheet',$('coach').hidden);layoutCam();}
 function applyPhone(){const ph=detectPhone();const was=document.body.classList.contains('phone');document.body.classList.toggle('phone',ph);
- if(ph&&!was){zOn=false;document.body.classList.add('zhide');document.body.classList.remove('zoomOpen');$('tZoom').classList.remove('on');}syncSheet();}
+ if(ph&&!was&&LOWQ<1){LOWQ=1;setTimeout(resize,0);}if(ph&&!was){zOn=false;document.body.classList.add('zhide');document.body.classList.remove('zoomOpen');$('tZoom').classList.remove('on');}syncSheet();}
 function renderCoach(){
  if(document.body.classList.contains('yoga'))return renderYoga();
  const T=cT,d=MDEFK[T];cPlan=buildPlan(T,cGoal);if($('cMus').value!==T)$('cMus').value=T;const R=cPlan.R;
@@ -2396,7 +2409,7 @@ let MIRROR=false;
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-2100';
+const BUILD='2026-11-17-2130';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2467,6 +2480,7 @@ function classify(mu){const id=mu.d.id,th=.06;
  if(ex.stabSet.has(id))return'iso';
  if(mu.v>.12)return'str';return'idle';}
 function updateMuscles(W){
+ if(LOWQ>=1&&playing&&(FRN&1)&&MUS[0].L){for(const mu of MUS)mu.L=mLen(W,mu);return;}
  if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1)||ex.blocks[0];ex.workSet=b.ws;ex.stabSet=b.ss;}
  const e=.004;const Wm=solve(ex,(phase-e+1)%1),Wp=solve(ex,(phase+e)%1);
  for(const mu of MUS){mu.L=mLen(W,mu);mu.v=(mLen(Wp,mu)-mLen(Wm,mu))/(2*e)/mu.L0;mu.state=classify(mu);}
@@ -2519,7 +2533,7 @@ function updateUI(){
 }
 let scrubbing=false;
 function loop(now){
- const dt=Math.min(.05,(now-(lastT||now))/1000);lastT=now;
+ const rawFt=now-(lastT||now);const dt=Math.min(.05,rawFt/1000);lastT=now;if(rawFt>0&&rawFt<500)perfTick(now,rawFt);FRN++;
  const prevP=phase;if(playing&&!scrubbing){phase=(phase+dt*speed/ex.dur)%1;simT+=dt*speed;}
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
