@@ -222,7 +222,11 @@ body.phone #actGrid h3{font-size:13px}body.phone #actMenu .amh b{font-size:20px}
 body.phone #actBtn{font-size:15px;padding:10px 15px}
 body.phone #coach select,body.phone #yPace{font-size:15px;padding:7px}
 body.phone{--sheet:52vh}
+body.phone #coach>*,body.phone #cap,body.phone #actMenu,body.phone #pay{zoom:var(--tz,1)}
+body.phone #coach .chd{display:flex;flex-wrap:nowrap;gap:6px;align-items:center}body.phone #coach .chd b{font-size:16px;white-space:nowrap;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}body.phone #coach .chd>span{display:flex;gap:5px;flex-wrap:nowrap;flex:0 0 auto}body.phone #coach .chd .b{padding:6px 9px;font-size:14px;min-height:38px}
+body.phone #ctr .cb:not(.all):not(.bk){display:none}
 body.phone #bot{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;gap:6px}body.phone #bot::-webkit-scrollbar{display:none}body.phone #bot .grp{flex-wrap:nowrap;flex:0 0 auto}body.phone #bot .b{flex:0 0 auto;white-space:nowrap}body.phone #bot #tl{flex:0 0 130px;min-width:130px}
+body:not(.phone) #tText{display:none}
 </style>
 </head>
 <body>
@@ -290,7 +294,7 @@ body.phone #bot{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scro
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tText" title="Text size">Aa</button><button class="b" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <script>
@@ -829,12 +833,14 @@ function fitCamera(){
 }
 let camArea={x0:0,x1:0,y0:0,y1:0};
 function layoutCam(){
- const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:B.contains('follow')?150:96;y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
+ const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:(()=>{const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return 96;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return c.getBoundingClientRect().bottom+(hasV?48:10);})();y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
  camArea={x0,x1,y0,y1};cam.cx=(x0+x1)/2;cam.cy=(y0+y1)/2+8;
  const b=cam.box||[100,200,100];const horiz=Math.hypot(b[0],b[2]);
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
 }
 // PERFORMANCE: phones start at a lower pixel ratio; if frames get slow, quality steps down (pixel ratio, glows, update rate)
+let TZ=1.15;try{const v=+localStorage.getItem('ml_tz');if(v)TZ=v;}catch(_){}
+function applyTZ(){document.documentElement.style.setProperty('--tz',TZ);const b=document.getElementById('tText');if(b)b.textContent='Aa '+Math.round(TZ*100)+'%';if(typeof layoutCam==='function'&&cv)layoutCam();}
 let LOWQ=0,FT=16,slowSince=0,fastSince=0,FRN=0;
 (function(){const d=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'shadowBlur');if(d&&d.set)Object.defineProperty(CanvasRenderingContext2D.prototype,'shadowBlur',{get(){return d.get.call(this);},set(v){d.set.call(this,LOWQ>=2?0:v);},configurable:true});})();
 function perfTick(now,ft){FT=FT*.92+ft*.08;const ph=document.body.classList.contains('phone');
@@ -952,7 +958,7 @@ function drawMuscle(it,labels){
  if(labels&&ex.workSet.has(mu.d.id)&&(layer==='deep'||!mu.d.deep)){const k=mu.d.id;const z=(A[2]+B[2])/2;if(!labels[k]||labels[k].z<z)labels[k]={z,x:mx,y:my,name:mu.d.short,col,id:k};}
 }
 function drawLabels(labels){
- const UF=document.body.classList.contains('phone')?1.25:1;const placed=[];ctx.font=`600 ${Math.round(11*UF)}px system-ui,sans-serif`;ctx.textBaseline='middle';
+ const UF=document.body.classList.contains('phone')?1.25*TZ:1;const placed=[];ctx.font=`600 ${Math.round(11*UF)}px system-ui,sans-serif`;ctx.textBaseline='middle';
  for(const k in labels){const L_=labels[k];const side=L_.x>=cam.cx?1:-1;const tw=ctx.measureText(L_.name).width+24;
   let x=L_.x+side*26,y=L_.y;let ok=false;
   for(let i=0;i<8&&!ok;i++){const yy=y+((i%2)?1:-1)*Math.ceil(i/2)*15*UF;const r=[side>0?x:x-tw,yy-8*UF,tw,16*UF];
@@ -2437,7 +2443,7 @@ let MIRROR=false;
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-2145';
+const BUILD='2026-11-17-2210';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2605,6 +2611,7 @@ function init(){
  $('sweep').onclick=()=>setSweep(!sweep);
  $('tBreath').onclick=()=>setBreath(!breathOn);
  $('tShare').onclick=shareNow;
+ $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
  $('actBtn').onclick=()=>openActs();$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
  document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
  setTimeout(()=>applySettings(location.hash),30);
