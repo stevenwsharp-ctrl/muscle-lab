@@ -159,6 +159,27 @@ body.simple #left,body.simple #zoom,body.simple #legend,body.simple #tMus,body.s
 
 #feetBox{position:fixed;z-index:30;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.5)}
 #feetBox canvas{width:100%;height:100%;display:block}
+#mechPanel{background:linear-gradient(160deg,rgba(167,139,250,.12),rgba(126,249,255,.05));border:1px solid rgba(167,139,250,.5);border-radius:12px;padding:9px 10px;margin:4px 0 8px}
+#mechPanel .mh{display:flex;justify-content:space-between;align-items:center;font-weight:900;letter-spacing:.08em;color:#c4b5fd;font-size:calc(12px*var(--tz,1))}
+#mechPanel .mh .b{padding:2px 8px}
+#mechPanel .msub{font-size:calc(11.5px*var(--tz,1));color:var(--dim);line-height:1.35;margin:3px 0}
+#mechPanel .msub p{margin:5px 0}
+#mechPanel .mt{font-size:calc(10.5px*var(--tz,1));letter-spacing:.1em;color:#a5b4fc;font-weight:800;margin:9px 0 4px}
+#mechPanel .mg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+#mechPanel .mgg{display:flex;gap:7px;align-items:center;background:rgba(0,0,0,.25);border-radius:9px;padding:5px 7px;font-size:calc(12px*var(--tz,1))}
+#mechPanel .mgv{font-size:calc(20px*var(--tz,1));font-weight:900;min-width:34px;text-align:center}
+#mechPanel .mgg .msub{font-size:calc(10px*var(--tz,1));margin:1px 0 3px}
+#mechPanel .mbar{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;flex:1}
+#mechPanel .mbar i{display:block;height:100%}
+#mechPanel .mft{display:grid;grid-template-columns:1.3fr 1fr 34px;gap:6px;align-items:center;font-size:calc(11.5px*var(--tz,1));margin:2px 0}
+#mechPanel .mft b{text-align:right;color:#c4b5fd}
+#mechPanel canvas{width:100%;height:250px;display:block;cursor:pointer;background:rgba(0,0,0,.25);border-radius:9px}
+#mechPanel .mwl{font-size:calc(12px*var(--tz,1));color:#fca5a5;margin:2px 0;display:flex;justify-content:space-between;gap:6px}
+#mechPanel .mwl span{color:#f87171;font-weight:800}
+#mechPanel .mabl{margin-top:6px;font-size:calc(12px*var(--tz,1));background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.4);border-radius:8px;padding:6px}
+body.phone #mechPanel .mg{grid-template-columns:1fr}
+#coach.lensOn #nowCard .nwst,#coach.lensOn #nowCard .nwl,#coach.lensOn #nowCard #nwMore{display:none}
+
 body.phone #viewTools .bt{display:none}body.phone #modeBtn .bt{display:inline}
 @media (max-height:780px){#readTag{display:none!important}#cap{padding:6px 12px}#cap .t{font-size:10px}}
 #nowCard{background:linear-gradient(160deg,rgba(255,79,216,.10),rgba(126,249,255,.06));border:1px solid rgba(255,79,216,.4);border-radius:12px;padding:9px 10px;margin:4px 0 8px}
@@ -376,7 +397,7 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tLens" title="Mechanism lens: features, the attribution graph from gravity to muscles, knock-out tests and wasted energy">🔬 Lens</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
@@ -1035,10 +1056,11 @@ function drawMuscle(it,labels){
  ctx.fill();ctx.shadowBlur=0;
  if((anat||Z)&&active&&!(isSel||isHov)){ctx.lineWidth=1.8;ctx.strokeStyle=scol;}else{ctx.lineWidth=isSel||isHov?2:.7;ctx.strokeStyle=isSel||isHov?'#ffffff':'rgba(0,0,0,.35)';}ctx.stroke();
  if(ex.explore&&crole&&crole!=='x'&&crole!=='target'&&!(isSel||isHov)){ctx.lineWidth=1.8;ctx.strokeStyle=ROLECOL[crole];ctx.stroke();}
+ if(LENS&&!Z){const ms=mechMuscleStyle(mu);if(ms==='abl'){ctx.fillStyle='rgba(30,41,59,.88)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#64748b';ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);}else if(ms==='comp'){ctx.lineWidth=2.6;ctx.strokeStyle='#fb923c';ctx.shadowColor='#fb923c';ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0;}else if(ms==='waste'){ctx.lineWidth=2.2;ctx.strokeStyle='#f87171';ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);}}
  if(ex.fbProg&&!Z){const fc=FBBACK.has(mu.d.id)?'#fbbf24':FBFRONT.has(mu.d.id)?'#7dd3fc':null;if(fc){ctx.lineWidth=1.7;ctx.strokeStyle=fc;ctx.stroke();}}
  if(crole==='target'||(ex.explore&&mu.d.id===cT&&!Z)){ctx.save();ctx.globalAlpha=.35+.25*Math.sin(RT*3);ctx.fillStyle='#ff4fd8';ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ff4fd8';ctx.lineWidth=2.6;ctx.shadowColor='#ff4fd8';ctx.shadowBlur=12+8*Math.sin(RT*4);ctx.stroke();ctx.restore();}
  // fibers
- if(bl>=hw*1.1&&hw>1.6&&(Z||LOWQ<3)){
+ if(bl>=hw*1.1&&hw>1.6&&(Z||LOWQ<3)&&!(LENS&&MABL.has(mu.d.id))){
   if(mu.d.pen&&(Z||hw>6)){ // pennate muscle: fibers run at an angle from a central tendon sheet (aponeurosis)
    const th=penAngle(mu)*D,ct=Math.cos(th),sn=Math.sin(th);const n=Math.max(4,Math.floor(bl/(Z?4.5:7)));
    ctx.strokeStyle='rgba(248,242,232,.65)';ctx.lineWidth=Math.max(.8,hw*.08);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
@@ -2690,7 +2712,7 @@ function currentHash(){
  if(EX.includes(ex))return'#act-'+ex.id;return'';}
 function currentTitle(){if(ex.counterOf)return'Counter moves for '+EX.find(e=>e.id===ex.counterOf).name;if(ex.explore)return MDEFK[sel&&MDEFK[sel]?sel:cT].name+' · Muscle coach';return ex.name;}
 // shared links carry the viewer settings after '&' in the #hash: speed, view, layers, toggles, breath, frame
-function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET,ch:CHAN?1:0};
+function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET,ch:CHAN?1:0,ln:LENS?1:0};
  if(!sweep||orbit){o.cy=Math.round(((cam.yaw%360)+360)%360);o.cp=Math.round(cam.pitch);}if(orbit)o.ob=1;if(Math.abs(cam.zoom-1)>.02)o.cz=+cam.zoom.toFixed(2);
  if(ex.env==='run')o.rs=runSurf;if(!playing){o.pa=1;o.p=+phase.toFixed(3);}
  return'&'+Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');}
@@ -2698,6 +2720,7 @@ function applySettings(hs){const i=hs.indexOf('&');if(i<0)return;const q=new URL
  if(q.has('s')){const v=+q.get('s');if(v>0&&v<=2){speed=v;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',+x.dataset.s===v));}}
  if(q.has('sw'))setSweep(on('sw'));
  if(q.has('ch'))setChan(on('ch'));
+ if(q.has('ln'))setTimeout(()=>setLens(on('ln')),50);
  if(q.has('ft')&&/^(auto|on|off)$/.test(q.get('ft'))){FEET=q.get('ft');const fb=$('tFeet');if(fb){fb.textContent='🦶 Feet · '+FEET;fb.classList.toggle('on',FEET!=='off');}}
  if(q.has('ly')){const b=document.querySelector('.ly[data-l="'+q.get('ly')+'"]');if(b)b.click();}
  if(q.has('an')&&on('an')!==anat)$('tAnat').click();
@@ -3003,6 +3026,8 @@ function drawRoleTags(W,S,c,box){const R=ex.coach;if(!R)return;const ph=document
  ctx.restore();}
 
 const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+{const _arc=CanvasRenderingContext2D.prototype.arc;CanvasRenderingContext2D.prototype.arc=function(x,y,r,a0,a1,ccw){return _arc.call(this,x,y,r>0?r:0,a0,a1,ccw);};}
+{const _rg=CanvasRenderingContext2D.prototype.createRadialGradient;CanvasRenderingContext2D.prototype.createRadialGradient=function(x0,y0,r0,x1,y1,r1){return _rg.call(this,x0,y0,Math.max(0,r0||0),x1,y1,Math.max(0,r1||0));};}
 // FEET CLOSE-UP: a second camera on the feet when foot position, arch or alignment matters
 let FEET='auto';try{FEET=localStorage.getItem('ml_feet')||'auto';}catch(_){}
 const FOOTRX=/\b(foot|feet|arch|arches|toe|toes|heel|heels|ankle|ankles|tripod|sole|soles|knee over|knees over|knees track|knee track|knees out|knee caves|knees cave|ball of|balls of|stance|footwork|edge|edges|grip the floor|pronat|supinat|short foot)\b/i;
@@ -3313,7 +3338,7 @@ function drawBalanceHUD(W){if(ex.id!=='guitar'&&ex.counterOf!=='guitar')return;c
 const MODES=[['muscle','🎯','Train a muscle','Pick a muscle. See where it is, what it does, and how to wake it up.'],['acts','▦','Activities','Sports, ski, run, climb, desk and daily life.'],
  ['yoga','🧘','Yoga','A flow built from the areas you choose, with breath.'],['bath','🛁','Bath yoga','Gentle poses in warm water.'],['mudra','🙏','Mudras','Hand seals, with the hand muscles that hold them.'],
  ['energy','🔆','Breath and channels','Breathe up the back channel and down the front channel.'],['guitar','🎸','Musician relief','Guitar posture, the left–right imbalance, and relief moves.'],
- ['fb','⚖','Front and back power','Train the front and back lines to sit tall, stand up, and move forward or back with power.'],['taichi','☯','Tai chi and qigong','Slow, flowing moves.'],['animal','🐾','Animal mode','Hang, climb, crawl and swing.']];
+ ['lens','🔬','Mechanism lens','See the circuit from gravity to joints to muscles. Knock out a muscle. Find wasted energy.'],['fb','⚖','Front and back power','Train the front and back lines to sit tall, stand up, and move forward or back with power.'],['taichi','☯','Tai chi and qigong','Slow, flowing moves.'],['animal','🐾','Animal mode','Hang, climb, crawl and swing.']];
 let SIMPLE=true;try{const v=localStorage.getItem('ml_simple');if(v!=null)SIMPLE=v==='1';}catch(_){}
 function setSimple(v){SIMPLE=!!v;try{localStorage.setItem('ml_simple',SIMPLE?'1':'0');}catch(_){}const B=document.body.classList;B.toggle('simple',SIMPLE);
  showGrav=!SIMPLE;$('tGrav').classList.toggle('on',showGrav);zOn=!SIMPLE&&innerWidth>1000;B.toggle('zhide',!zOn);$('tZoom').classList.toggle('on',zOn);
@@ -3331,7 +3356,7 @@ function goMode(k){const B=document.body.classList;$('actMenu').hidden=true;if($
  const act=id=>{const e=EX.find(x=>x.id===id);if(!e)return;B.remove('pick','movesOpen');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();try{history.replaceState(null,'','#act-'+id);}catch(_){}};
  if(k==='muscle')return goMainMenu();if(k==='acts')return openActs();if(k==='yoga'||k==='bath'||k==='mudra')return enterYoga(k);
  if(k==='energy'){enterYoga('mudra');setChan(true);return startYoga(['orbit'],'Energy orbit',true);}
- if(k==='guitar')return act('guitar');if(k==='fb')return enterYoga('fb');if(k==='taichi')return playTaiChi();if(k==='animal')return act('koala');}
+ if(k==='guitar')return act('guitar');if(k==='fb')return enterYoga('fb');if(k==='lens'){if(ex.explore||B.contains('pick'))act('squat');return setLens(true);}if(k==='taichi')return playTaiChi();if(k==='animal')return act('koala');}
 
 
 // =========================================================
@@ -3389,6 +3414,7 @@ function nowTick(){const co=$('coach');if(!co)return;let card=$('nowCard');const
  const active=!ex.explore&&!B.contains('pick')&&!B.contains('yoga')&&!co.hidden&&(ex.blocks||ex.keys);
  if(!active){if(card)card.hidden=true;co.classList.remove('nowOn');nowKey='';return;}
  if(!card){card=document.createElement('div');card.id='nowCard';co.insertBefore(card,co.children[1]);}
+ {const mp=$('mechPanel');if(mp&&card.previousElementSibling!==mp&&card.nextElementSibling!==null)co.insertBefore(mp,card);}
  const b=nowBlock();const bi=b?b.i:-1;const K=ex.K||[];let si=-1,steps=[];
  if(b){const seen=new Set();K.forEach(k=>{if(k.bi===bi&&k.rep<=1&&k.cue&&!seen.has(k.cue)&&!/^(Get ready|Next)/.test(k.cue)){seen.add(k.cue);steps.push(k);}});
   for(let i=0;i<steps.length;i++)if(capShown&&capShown.indexOf(steps[i].cue.slice(0,40))>=0)si=i;}
@@ -3510,11 +3536,108 @@ function drawFBMeter(){if(!ex.fbProg)return;const ph=document.body.classList.con
  const bx=x+10,bw=w-20,by=y+24;ctx.fillStyle='#fbbf24';ctx.fillRect(bx,by,bw*pb,9);ctx.fillStyle='#7dd3fc';ctx.fillRect(bx+bw*pb,by,bw*(1-pb),9);
  ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`;ctx.fillStyle='#fde68a';ctx.fillText(`back ${Math.round(pb*100)}%`,bx,by+19);ctx.textAlign='right';ctx.fillStyle='#bae6fd';ctx.fillText(`front ${Math.round((1-pb)*100)}%`,bx+bw,by+19);ctx.restore();}
 
+
+// =========================================================
+// MECHANISM LENS: mechanistic interpretability methods applied to the body model
+// features -> attribution graph (circuit) -> ablation (perturbation) -> verify
+// goals: EASE (work with gravity), LFLOW (smooth), STRENGTH (force where needed), ECONOMY (no wasted energy)
+// =========================================================
+let LENS=false;const MABL=new Set();let MCOMP=new Map(),MWASTE=new Map();
+const MJPRE={ankle:['ank.','ft.','toe.'],knee:['kn.'],hip:['hip.','pelvis.'],back:['tr.','breath.'],neck:['neck.'],shoulder:['sh.','scap.']};
+const MJNAME={ankle:'Ankles',knee:'Knees',hip:'Hips',back:'Low back',neck:'Neck',shoulder:'Shoulders'};
+const MOPP=[['kn.ext','kn.flex'],['hip.flex','hip.ext'],['tr.flex','tr.ext'],['neck.flex','neck.ext'],['sh.flex','sh.ext'],['el.flex','el.ext'],['ank.pf','ank.df'],['wr.flex','wr.ext'],['scap.elev','scap.dep']];
+function muA(id){let a=0;for(const S of['L','R']){const m=MUSK[id+S];if(m)a=Math.max(a,ACT(m));}return a;}
+function muActive(id){for(const S of['L','R']){const m=MUSK[id+S];if(m&&m.state!=='idle'&&m.state!=='str')return true;}return false;}
+function jointOf(id){const out=new Set();for(const a of ACTS[id]||[])for(const j in MJPRE)if(MJPRE[j].some(p=>a.startsWith(p)))out.add(j);return out;}
+// features: reusable movement motifs, like the interpretable features found inside a network
+function mechFeatures(W){const P=W._P||{};const g=k=>P[k]||0;const avg=(a,b)=>(g('L.'+a)+g('R.'+a)+2*g('B.'+a))/2;
+ const hipF=avg('hip.f'),knF=avg('kn'),sp=Math.abs(g('spine.f'))+Math.abs(g('chest.f'));const shF=Math.max(g('L.sh.f'),g('R.sh.f'))+g('B.sh.f');
+ const m=ids=>ids.reduce((s,i)=>s+muA(i),0)/ids.length;const isoA=ids=>ids.reduce((s,i)=>{let a=0;for(const S of['L','R']){const u=MUSK[i+S];if(u&&u.state==='iso')a=Math.max(a,ACT(u));}return s+a;},0)/ids.length;
+ const lf=cpt(W,'L','heel')[1],rf=cpt(W,'R','heel')[1];
+ const seated=!!ex.seat||(ex.anchor==='floor'&&hipF>60);const F=[['Hinge (hips back, spine long)',clamp((hipF-knF*.6)/70,0,1)*clamp(1-sp/40,0,1)],[seated?'Sit (the seat carries you)':'Squat (hips and knees bend)',clamp(Math.min(hipF,knF)/90,0,1)*(seated?.6:1)],
+  ['Split stance / stride',clamp(Math.abs(g('L.hip.f')-g('R.hip.f'))/80,0,1)],['Push',clamp(m(['pec','triceps','deltAnt','serratus'])*1.6,0,1)],['Pull',clamp(m(['lats','biceps','rhomboid','trapMid'])*1.6,0,1)],
+  ['Rotate',clamp((Math.abs(g('chest.t'))+Math.abs(g('spine.t')))/45,0,1)],['Brace (trunk stiff)',clamp(isoA(['rectusAbd','tva','intOblique','multifidus','erector'])*2.2,0,1)],
+  ['Reach overhead',clamp((shF-100)/70,0,1)],['Single-leg balance',ex.anchor==='ground'&&Math.abs(lf-rf)>8?1:0],['Drive (glutes, calves push)',clamp(m(['gluteMax','gastroc','hamstrings'])*1.6,0,1)],
+  ['Breath',breathOn?clamp((BR&&BR.lvl)||0,0,1):0],['Grip',clamp(Math.abs(g('grip')),0,1)]];
+ return F.sort((a,b)=>b[1]-a[1]);}
+// flow: smoothness from the change of acceleration (jerk) of all joint angles, in motion time
+let MFLH=[];let LFLOW=100;
+let RW=[],LENSBAL=false;function flowTick(W){if(FRN%3)return LFLOW;if(ex.explore){LFLOW+=(100-LFLOW)*.05;return LFLOW;}
+ const h=.006,num=P=>Object.keys(P).filter(k=>k.indexOf('.')>0&&typeof P[k]==='number'&&!/^anc|^root\.(x|y|z)/.test(k));
+ const S_=[-1.5,-.5,.5,1.5].map(o=>{const w_=solve(ex,((phase+o*h)%1+1)%1);return w_._P||{};});const ks=num(S_[0]);if(!ks.length)return LFLOW;
+ const hs=h*ex.dur;let j=0,vv=0;for(const k of ks){const p=S_.map(P=>P[k]||0);j+=((p[3]-3*p[2]+3*p[1]-p[0])/(hs**3))**2;vv+=((p[2]-p[1])/hs)**2;}
+ j=Math.sqrt(j/ks.length);vv=Math.sqrt(vv/ks.length);if(vv<3){RW.push(40);}else{const Dc=Math.min(ex.dur,8);RW.push(j*Dc*Dc/vv);}if(RW.length>40)RW.shift();
+ const srt=RW.slice().sort((a,b)=>a-b);const r=srt[Math.floor(srt.length/2)];const bal=ex.ballistic||/box|run|jump|dunk|cliff|kick|hook|serve|swing|rope|sprint|throw|punch|snap/i.test((ex.id||'')+' '+(ex.name||'')+' '+((nowBlock()||{}).name||''));LENSBAL=bal;const f=100*Math.exp(-Math.max(0,r-40)/(bal?900:260));LFLOW+=(f-LFLOW)*.15;return LFLOW;}
+// economy: wasted tension = held tension without a load + antagonists fighting at low load
+function mechWaste(W,G){const P=W._P||{};const out=new Map();const add_=(ids,why,c)=>{for(const id of ids)out.set(id,why);out.cost=(out.cost||0)+c;out.list=(out.list||[]).concat([[why,c]]);};
+ const ce=Math.max(P['L.clav.e']||0,P['R.clav.e']||0)+(P['B.clav.e']||0);const shF=Math.max(P['L.sh.f']||0,P['R.sh.f']||0)+(P['B.sh.f']||0);
+ if(ce>4&&shF<110&&Math.abs(phase%1-.5)<2)add_(['trapUpper','levScap'],'Shoulders held up with no load (upper trapezius, levator scapulae)',clamp(ce/14,0,1)*.22);
+ const gr=P.grip||0;if(gr>.55&&!(ex.anchor==='bar'||ex.anchor==='free'))add_(['forearmFlex','thenar','handIntr'],'Hands squeeze harder than the task needs',(gr-.45)*.3);
+ const nk=G&&G.J.find(j=>j.k==='neck');if(nk&&nk.f>.45&&(P['neck.f']||0)>14)add_(['splenius','semispinalis','trapUpper'],'Head forward or down: the neck muscles carry extra head weight',(nk.f-.35)*.3);
+ if((P.brs||0)>.5)add_(['scalenes','scm','trapUpper','levScap'],'Breathing with the upper chest: neck and shoulder muscles lift the ribs',.12);
+ for(const[a,b]of MOPP){const A=[],B=[];for(const id in ACTS){if(!MUSK[id+'L'])continue;const ac=ACTS[id];if(ac[0]===a&&muActive(id))A.push(id);else if(ac[0]===b&&muActive(id))B.push(id);}
+  if(!A.length||!B.length)continue;const jk=Object.keys(MJPRE).find(j=>MJPRE[j].some(p=>a.startsWith(p)));const jl=G&&G.J.filter(j=>(j.th||j.k)===jk);const load=jl&&jl.length?Math.max(...jl.map(j=>j.f)):0;
+  if(load<.25&&!ex.workSet.has(A[0])&&!ex.workSet.has(B[0])&&!ex.stabSet.has(A[0])&&!ex.stabSet.has(B[0])){const c=Math.min(muA(A[0]),muA(B[0]))*.25;if(c>.04)add_([A[0],B[0]],`${MDEFK[A[0]].short} and ${MDEFK[B[0]].short} pull against each other at low load`,c);}}
+ return out;}
+let MECHS={ease:100,flow:100,str:0,eco:100,feat:[],graph:null};
+function mechTick(W){if(!LENS||!W)return;{const co=$('coach');if(co.hidden&&!document.body.classList.contains('phone')){co.hidden=false;layoutCam();}const mp=$('mechPanel');if(mp&&mp.hidden)mp.hidden=false;}const G=gravityCalc(W);flowTick(W);MWASTE=mechWaste(W,G);
+ let s=0,n=0;for(const id of ex.workSet||[]){if(MUSK[id+'L']){s+=muA(id);n++;}}
+ MECHS.ease=G.ease;MECHS.flow=LFLOW;MECHS.str=n?Math.round(100*s/n):0;MECHS.eco=Math.round(clamp(100-100*(MWASTE.cost||0),0,100));
+ // compensation after ablation: muscles that share the knocked-out muscle's main job take over
+ MCOMP=new Map();for(const id of MABL){const jobs=ACTS[id]||[];for(const o in ACTS){if(o===id||MABL.has(o)||!MUSK[o+'L'])continue;const sh=(ACTS[o]||[]).filter(a=>jobs.includes(a));if(sh.length)MCOMP.set(o,(MCOMP.get(o)||[]).concat(MDEFK[id].short+': '+sh.map(a=>(ACTW[a]||[a])[0]).join(', ')));}}
+ if(FRN%8===0)renderMech(W,G);}
+function setLens(v){LENS=!!v;const b=$('tLens');if(b)b.classList.toggle('on',LENS);$('coach').classList.toggle('lensOn',LENS);let p=$('mechPanel');
+ if(!LENS){if(p)p.hidden=true;MABL.clear();MCOMP.clear();MWASTE=new Map();return;}
+ const co=$('coach');co.hidden=false;if(document.body.classList.contains('phone')){document.body.classList.remove('sheetMini');$('cMin').textContent='▾';syncSheet();}
+ if(!p){p=document.createElement('div');p.id='mechPanel';co.insertBefore(p,co.children[1]);}p.hidden=false;co.scrollTop=0;layoutCam();fitCamera();MFLH=[];LFLOW=100;}
+const MGHIT=[];
+function renderMech(W,G){const p=$('mechPanel');if(!p||p.hidden)return;
+ if(!p.dataset.built){p.dataset.built=1;p.innerHTML=`<div class="mh">🔬 MECHANISM LENS <button class="b" id="mLensX" title="Close the lens">✕</button></div>
+  <div class="msub">This lens studies the body the way interpretability research studies a neural network: find the <b>features</b> (movement motifs), trace the <b>circuit</b> (gravity → joint → muscle → movement), then <b>knock out</b> a muscle to test what really carries the load. Values come from this app's body model, not from sensors.</div>
+  <div class="mg" id="mGauges"></div><div class="mt">FEATURES ACTIVE NOW</div><div id="mFeat"></div>
+  <div class="mt">ATTRIBUTION GRAPH · tap a muscle to knock it out</div><canvas id="mGraph" height="250"></canvas>
+  <div id="mAbl"></div><div class="mt">WASTED ENERGY NOW</div><div id="mWaste"></div>
+  <details class="msub" style="margin-top:6px"><summary>How this borrows from AI interpretability</summary>
+  <p><b>Features:</b> a network represents ideas as directions that can be found and named. Here the "features" are motifs the nervous system reuses: hinge, squat, brace, drive, rotate, breath.</p>
+  <p><b>Superposition:</b> networks pack more features than neurons, so one neuron does many jobs. Muscles do the same: the glute max extends the hip, turns the thigh out and steadies the pelvis. The lens shows which job a muscle does now.</p>
+  <p><b>Attribution graphs:</b> trace which parts cause an output and by how much. Here: gravity load at each joint → the muscles that hold that joint → the movement.</p>
+  <p><b>Ablation (perturbation):</b> switch a part off and watch what changes. Knock out a muscle and see which muscles must take over. Overworked compensators are often where pain and tension come from.</p></details>`;
+  $('mLensX').onclick=()=>setLens(false);
+  $('mGraph').onclick=e=>{const r=e.target.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;const h=MGHIT.find(g=>x>=g[0]&&x<=g[0]+g[2]&&y>=g[1]&&y<=g[1]+g[3]);if(h){MABL.has(h[4])?MABL.delete(h[4]):MABL.add(h[4]);toast(MABL.has(h[4])?`Knocked out: ${MDEFK[h[4]].name}. Orange = muscles that take over.`:`${MDEFK[h[4]].name} is back on.`);}};}
+ const gauge=(ic,n,v,why)=>{const col=v>=75?'#34d399':v>=50?'#fbbf24':'#f87171';return`<div class="mgg"><div class="mgv" style="color:${col}">${Math.round(v)}</div><div><b>${ic} ${n}</b><div class="msub">${why}</div><div class="mbar"><i style="width:${clamp(v,0,100)}%;background:${col}"></i></div></div></div>`;};
+ $('mGauges').innerHTML=gauge('🌍','Ease',MECHS.ease,'Work with gravity: joints stacked, low holding torque')+gauge('🌊','Flow',MECHS.flow,LENSBAL?'Fast, sharp move: judged on a softer scale':'Smooth motion: low jerk (sudden change of acceleration)')+gauge('💪','Strength',MECHS.str,'Force from the muscles that should work')+gauge('♻','Economy',MECHS.eco,'No wasted tension: nothing works that is not needed');
+ const ft=mechFeatures(W).filter(f=>f[1]>.08).slice(0,6);$('mFeat').innerHTML=ft.length?ft.map(([n,v])=>`<div class="mft"><span>${n}</span><div class="mbar"><i style="width:${Math.round(v*100)}%;background:#a78bfa"></i></div><b>${v.toFixed(2)}</b></div>`).join(''):'<div class="msub">Rest: no feature is strongly active.</div>';
+ const wl=(MWASTE.list||[]).sort((a,b)=>b[1]-a[1]);$('mWaste').innerHTML=wl.length?wl.map(([w,c])=>`<div class="mwl">⚠ ${w} <span>−${Math.round(c*100)}</span></div>`).join(''):'<div class="msub" style="color:#86efac">✓ No wasted tension found. Every active muscle has a job.</div>';
+ $('mAbl').innerHTML=MABL.size?`<div class="mabl"><b>Knocked out:</b> ${[...MABL].map(id=>MDEFK[id].short).join(', ')} <button class="b" id="mAblR">Reset</button><div class="msub">${MCOMP.size?'Take over: '+[...MCOMP.keys()].slice(0,8).map(id=>`<span style="color:#fb923c">${MDEFK[id].short}</span>`).join(', ')+'. If these are already tense or tired, this is where overload starts.':'No other muscle shares this job in the model.'}</div></div>`:'';
+ if($('mAblR'))$('mAblR').onclick=()=>{MABL.clear();MCOMP.clear();};
+ drawGraph(G);}
+function drawGraph(G){const cv_=$('mGraph');if(!cv_)return;const w=cv_.clientWidth||360,h=250;const dp=Math.min(2,dpr);if(cv_.width!==Math.round(w*dp)){cv_.width=Math.round(w*dp);cv_.height=Math.round(h*dp);}
+ const c=cv_.getContext('2d');c.setTransform(dp,0,0,dp,0,0);c.clearRect(0,0,w,h);MGHIT.length=0;
+ const joints={};for(const j of G.J){const k=j.th||j.k;if(!joints[k]||joints[k].f<j.f)joints[k]={k,f:j.f,M:j.M};}const JL=Object.values(joints).sort((a,b)=>b.M-a.M).slice(0,5);
+ const mus=[];for(const id in MDEFK){if(!MUSK[id+'L'])continue;const a=MABL.has(id)?0:muA(id);if(a<.15&&!MABL.has(id))continue;const js=jointOf(id);let sc=0;for(const j of JL)if(js.has(j.k))sc+=j.f+.05;mus.push({id,a,js,sc:a*(sc+.1)});}
+ mus.sort((a,b)=>b.sc-a.sc);const ML=mus.slice(0,8);for(const id of MABL)if(!ML.find(m=>m.id===id))ML.push({id,a:0,js:jointOf(id),sc:0});
+ const X=[8,w*.30,w*.72],y=(i,n)=>18+(h-30)*(n<=1?.5:i/(n-1));
+ c.font='600 10.5px Inter,system-ui,sans-serif';c.textBaseline='middle';
+ c.fillStyle='#94a3b8';c.textAlign='left';c.fillText('GRAVITY LOAD',X[0],8);c.fillText('MUSCLES',X[1]+6,8);c.textAlign='right';c.fillText('MOVEMENT',w-6,8);
+ const jy={};JL.forEach((j,i)=>{jy[j.k]=y(i,JL.length);});const my={};ML.forEach((m,i)=>{my[m.id]=y(i,ML.length);});
+ // edges: joint -> muscle (weight = joint load share × activation)
+ for(const m of ML)for(const j of JL)if(m.js.has(j.k)){const wgt=(j.f+.05)*(m.a||.05);c.strokeStyle=MABL.has(m.id)?'rgba(148,163,184,.35)':`rgba(251,191,36,${clamp(.15+wgt*1.4,.15,.9)})`;c.lineWidth=.6+wgt*7;c.beginPath();c.moveTo(X[0]+78,jy[j.k]);c.bezierCurveTo(X[0]+110,jy[j.k],X[1]-30,my[m.id],X[1],my[m.id]);c.stroke();}
+ // edges: muscle -> movement
+ const oy=h/2+6;for(const m of ML){c.strokeStyle=MABL.has(m.id)?'rgba(148,163,184,.3)':MCOMP.has(m.id)?'rgba(251,146,60,.8)':`rgba(126,249,255,${clamp(.2+m.a*.7,.2,.9)})`;c.lineWidth=.6+m.a*5;c.beginPath();c.moveTo(X[1]+100,my[m.id]);c.bezierCurveTo(X[2]-10,my[m.id],X[2]-10,oy,X[2]+8,oy);c.stroke();}
+ // nodes
+ c.textAlign='left';for(const j of JL){const yy=jy[j.k];c.fillStyle='rgba(251,191,36,.15)';c.strokeStyle='#fbbf24';c.beginPath();c.roundRect?c.roundRect(X[0],yy-11,78,22,6):c.rect(X[0],yy-11,78,22);c.fill();c.stroke();c.fillStyle='#fde68a';c.fillText(`${MJNAME[j.k]} ${Math.round(j.M)}`,X[0]+5,yy);}
+ for(const m of ML){const yy=my[m.id];const ab=MABL.has(m.id),cp=MCOMP.has(m.id),ws=MWASTE.has&&MWASTE.has(m.id);c.fillStyle=ab?'rgba(100,116,139,.25)':cp?'rgba(251,146,60,.2)':'rgba(126,249,255,.1)';c.strokeStyle=ab?'#64748b':cp?'#fb923c':ws?'#f87171':'#7ef9ff';c.lineWidth=ws?2:1;c.beginPath();c.roundRect?c.roundRect(X[1],yy-10,100,20,6):c.rect(X[1],yy-10,100,20);c.fill();c.stroke();
+  c.fillStyle=ab?'#94a3b8':'#e2e8f0';const t=(ab?'✕ ':ws?'⚠ ':'')+MDEFK[m.id].short;c.fillText(t.length>17?t.slice(0,16)+'…':t,X[1]+5,yy);MGHIT.push([X[1],yy-10,100,20,m.id]);}
+ c.fillStyle='rgba(167,139,250,.18)';c.strokeStyle='#a78bfa';c.beginPath();c.roundRect?c.roundRect(X[2]+8,oy-16,w-X[2]-14,32,8):c.rect(X[2]+8,oy-16,w-X[2]-14,32);c.fill();c.stroke();c.fillStyle='#ede9fe';c.textAlign='left';
+ const nm=((nowBlock&&nowBlock())||{}).name||ex.name||'';c.fillText(nm.length>16?nm.slice(0,15)+'…':nm,X[2]+13,oy-5);c.fillStyle='#c4b5fd';c.fillText(`ease ${Math.round(MECHS.ease)} · eco ${MECHS.eco}`,X[2]+13,oy+8);}
+// on the body: knocked-out muscles grey, compensators orange, wasted tension dashed red
+function mechMuscleStyle(mu){if(!LENS)return null;const id=mu.d.id;if(MABL.has(id))return'abl';if(MCOMP.has(id)&&muActive(id))return'comp';if(MWASTE.has&&MWASTE.has(id))return'waste';return null;}
+
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-1450';
+const BUILD='2026-11-18-1640';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -3695,7 +3818,7 @@ function loop(now){
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawMudraBox(W);drawBalanceHUD(W);drawFBMeter();autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawMudraBox(W);drawBalanceHUD(W);drawFBMeter();mechTick(W);autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -3739,7 +3862,7 @@ function init(){
  {const rb=$('tRead');rb.classList.toggle('on',READ);rb.onclick=()=>{READ=!READ;rb.classList.toggle('on',READ);try{localStorage.setItem('ml_read',READ?'1':'0');}catch(_){}toast(READ?'Reading pace on: the motion slows down for long instructions':'Reading pace off');};}
  $('cap').addEventListener('click',e=>{if(e.target.closest('button'))return;setPlay(!playing);toast(playing?'Playing':'Paused: read at your own pace, tap again to play');});
  $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
- $('actBtn').onclick=()=>openActs();$('modeBtn').onclick=()=>openModes();$('tChan').onclick=()=>{setChan(!CHAN);toast(CHAN?'Channels on: up the back on the inhale, down the front on the exhale':'Channels off');};$('tChan').classList.toggle('on',CHAN);$('tSimple').onclick=()=>{setSimple(!SIMPLE);toast(SIMPLE?'Simple view: only the essentials':'Full lab: all panels and data');};$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
+ $('actBtn').onclick=()=>openActs();$('modeBtn').onclick=()=>openModes();$('tLens').onclick=()=>{setLens(!LENS);toast(LENS?'Mechanism lens on: see the circuit, knock out a muscle, find wasted energy':'Mechanism lens off');};$('tChan').onclick=()=>{setChan(!CHAN);toast(CHAN?'Channels on: up the back on the inhale, down the front on the exhale':'Channels off');};$('tChan').classList.toggle('on',CHAN);$('tSimple').onclick=()=>{setSimple(!SIMPLE);toast(SIMPLE?'Simple view: only the essentials':'Full lab: all panels and data');};$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
  document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
  setTimeout(()=>applySettings(location.hash),30);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};

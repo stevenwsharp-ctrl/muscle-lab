@@ -154,3 +154,17 @@ Each job has 4 stages: 🌱 Wake → 🌿 Control → 🔥 Strength → ⚡ Powe
 - Back-line muscles have a gold edge and front-line muscles a blue edge.
 - A live meter shows which line does the work.
 - Share a program with `#fb-<sit|stand|fwd|back>-<1-4>`.
+
+### 🔬 Mechanism lens
+This lens applies the methods of mechanistic interpretability (the study of how neural networks work inside) to the body model:
+- **Features:** the movement motifs active now (hinge, squat or sit, stride, push, pull, rotate, brace, reach, balance, drive, breath, grip).
+- **Attribution graph:** gravity load at each joint → the muscles that carry it → the movement. Line thickness shows how much each muscle carries.
+- **Ablation:** tap a muscle to knock it out. Grey = knocked out, orange = the muscles that must take over.
+- **4 scores:**
+  - 🌍 **Ease:** working with gravity
+  - 🌊 **Flow:** smoothness, from dimensionless jerk
+  - 💪 **Strength:** force from the muscles that should work
+  - ♻ **Economy:** no wasted tension (shoulders held up, over-gripping, head forward, upper-chest breathing, antagonists fighting at low load)
+- Wasted tension shows on the body as a red dashed edge.
+
+All values come from the app's simplified body model, not from sensors.
