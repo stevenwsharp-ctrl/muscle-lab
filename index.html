@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Muscle Lab — 3D muscles, gravity and movement coach</title>
 <meta name="description" content="A movement plan in 3D: watch which muscles work, oppose and stabilize, from the feet to the neck.">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=4">
@@ -16,7 +16,7 @@
 <style>
 :root{--bg:#04060c;--panel:rgba(11,17,30,.80);--line:rgba(120,200,255,.18);--txt:#dbe7f5;--dim:#7d8ca3;--acc:#5ee0ff;--con:#ff4d4d;--ecc:#ff9a2e;--iso:#ffd84d;--str:#5fb4ff;--idle:#9c5a63}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font:14px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+html,body{margin:0;height:100%;touch-action:pan-x pan-y;overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg);color:var(--txt);font:14px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #c.drag{cursor:grabbing}
 .panel{position:fixed;background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
@@ -348,6 +348,15 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
 
 <div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
 <script>
+/* PAGE-ZOOM GUARD: a pinch on a panel must never zoom or pan the whole page. Only the 3D view zooms. */
+(function(){const vm=document.querySelector('meta[name=viewport]');const base=vm.content;
+ ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+ document.addEventListener('touchmove',e=>{if(e.touches.length>1&&e.target.id!=='c')e.preventDefault();},{passive:false});
+ let lastTap=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastTap<300&&e.target.id!=='c'&&e.target.closest&&!e.target.closest('input,textarea,select,button,a'))e.preventDefault();lastTap=n;},{passive:false});
+ const fix=()=>{const v=window.visualViewport;if(scrollX||scrollY)scrollTo(0,0);if(v&&(v.scale>1.01||Math.abs(v.offsetLeft)>1)){vm.content=base.replace('maximum-scale=1','maximum-scale=1.01');setTimeout(()=>{vm.content=base;},60);}};
+ if(window.visualViewport){visualViewport.addEventListener('resize',fix);visualViewport.addEventListener('scroll',fix);}
+ addEventListener('scroll',fix,{passive:true});addEventListener('orientationchange',()=>setTimeout(fix,300));window.__fixPageZoom=fix;})();
+
 'use strict';
 /* =========================================================
    MATH
@@ -2076,7 +2085,7 @@ function openActs(){const G=$('actGrid');let h='',lastG=null,open=false;
   document.body.classList.remove('pick','movesOpen');if(btn){btn.click();if(document.body.classList.contains('phone')&&!['explore','yoga','bath'].includes(b.dataset.go)){$('coach').hidden=true;syncSheet();fitCamera();}}});
  $('actMenu').hidden=false;}
 function recenter(){FC=null;orbit=false;$('orbit').classList.remove('on');setSweep(false);cam.zoom=1;fitCamera();if(ex&&ex.view){cam.yaw=ex.view[0];cam.pitch=ex.view[1];}
- if(ex)ex._sw=null;toast('Recentered on the whole body');}
+ if(ex)ex._sw=null;if(window.__fixPageZoom)__fixPageZoom();toast('Recentered on the whole body');}
 function readTagTick(){const t=$('readTag');if(t)t.classList.toggle('on',READ&&playing&&RF<.85);if(capNext&&(!playing||performance.now()/1000-capAt>=Math.min(needSec(capShown)*.55,5))){const n=capNext;capNext='';capShown='';setCap(n);}}
 function drawSideBadge(){if(!SIDE||!(ex.blocks||ex.both))return;const ph=document.body.classList.contains('phone');const L_=SIDE==='L';const t=L_?'◀  LEFT SIDE':'RIGHT SIDE  ▶';
  ctx.save();ctx.font=`900 ${ph?13:17}px Inter,system-ui,sans-serif`;const w=ctx.measureText(t).width+(ph?22:30),h=ph?28:36;const x=L_?camArea.x0+(ph?8:16):camArea.x1-w-(ph?8:16);const cr=$('cap').getBoundingClientRect();
