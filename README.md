@@ -79,3 +79,13 @@ The unlock runs in the browser and is saved on the buyer's device. It is simple 
 ## Notes
 
 This is a teaching model, not medical advice. Joint loads are static gravity loads for a 70 kg body. Fascial chains follow Myers' Anatomy Trains, and the app shows the evidence level for each chain (Wilke et al. 2016).
+
+### 🌱 → ⚡ Wake to strong (activation ladder)
+Every muscle page has 4 stages, based on the size principle (small motor units switch on first, big units last):
+1. **🌱 Wake (~15% effort):** 3 gentle 3 s pulses with full relax. Rebuilds the brain-to-muscle link.
+2. **🌿 Control (~35%):** slow full-range reps, about 3 s each way.
+3. **🔥 Strength (~70%):** more load, 6–10 reps, slow 3 s lowering.
+4. **⚡ Max (100%, short):** 5 s full-effort holds or 3–5 heavy reps, long rests.
+
+An effort meter shows the stage. Muscles glow more as effort goes up. Share a stage with `#stage-<muscle>-<1-4>`.
+New low-load moves: wall angel, dead bug, side-lying leg lift, clamshell.

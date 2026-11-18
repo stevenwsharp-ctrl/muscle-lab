@@ -950,6 +950,7 @@ function drawMuscle(it,labels){
  const isSel=sel===mu.d.id,isHov=hover===mu.d.id;
  ctx.globalAlpha=Z?(mu.d.deep?.88:.97):anat?(mu.d.deep&&layer==='all'?.8:.97):(active?.96:.55);
  const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;else if(!Z&&ex.explore&&cT&&!document.body.classList.contains('pick')&&crole!=='target'&&mu.d.id!==cT)ctx.globalAlpha*=(crole&&crole!=='x'?.6:.32);
+ if(!Z&&ex.effort!=null&&st!=='idle'&&st!=='str'){ctx.globalAlpha*=.35+.65*ex.effort;if(ex.effort>.6){ctx.shadowColor=scol;ctx.shadowBlur=8+14*ex.effort;}}
  if(!Z&&CF!=='all'){if(st===CF){ctx.shadowColor=scol;ctx.shadowBlur=18;}else ctx.globalAlpha*=.25;}
  if(st==='con'||st==='ecc'){ctx.shadowColor=scol;ctx.shadowBlur=(anat||Z?14:10)*clamp(Math.abs(mu.v)*4,.3,1.2);}
  if(LOWQ>=2&&!Z)ctx.fillStyle=col;else{const g=ctx.createLinearGradient(mx-nx*hw,my-ny*hw,mx+nx*hw,my+ny*hw);
@@ -1642,7 +1643,7 @@ function renderCoach(){
   <div class="ctip" style="color:#fde68a"><b>Work with gravity:</b> ${GRAVTIP[regionOf(T)]||''}</div>
   ${BREATHLINK(T)?`<div class="ctip" style="color:#a5f3fc"><b>🫁 Breath link:</b> ${BREATHLINK(T)}</div>`:''}
   <div class="ctip"><b>${cGoal==='wake'?'If it is underactive':'If it is overactive'}:</b> ${cGoal==='wake'?tip:`It often stays tight to protect a weak neighbor. Strengthen the opposing muscles and the chain, then lengthen it with slow breathing.`}</div></div>`;
- h+=cfHTML();
+ h+=ladderHTML(T);h+=cfHTML();
  const sec=(t,ids,role,sub)=>ids.length?`<div class="csec"><div class="ch3"><span class="dot" style="background:${ROLECOL[role]}"></span>${t}</div>${sub?`<div class="csub">${sub}</div>`:''}<div>${ids.map(i=>chip(i,role)).join('')}</div></div>`:'';
  h+=sec('Works with it',R.syn,'syn','Same main job (synergists).');
  h+=sec('Opposes it',R.ant,'ant','Opposite job (antagonists). Balance them.');
@@ -1657,7 +1658,7 @@ function renderCoach(){
  if(more.length)h+=`<div class="ch3" style="margin-top:10px">More movements that use the ${d.short.toLowerCase()}</div><div>${more.map(k=>`<div class="cmrow"><button class="b cmore" data-k="${k}">▶ ${MOVES[k].name} <span class="src">${MOVES[k].src}</span></button><button class="b cmshr" data-k="${k}" title="Share this exercise for the ${d.short.toLowerCase()}">🔗</button></div>`).join('')}</div>`;
  h+=`</div><div class="cnote">Chain evidence: dissection studies support the superficial back line and the two functional lines strongly, and parts of the spiral and lateral lines (Wilke et al. 2016). Links from foot posture to the spine are still debated. This is education, not medical advice. If a movement hurts, stop and ask a physical therapist.</div>`;
  h+=brandFormHTML();
- $('cOut').innerHTML=h;wireCoachExtras();wireCF($('cOut'));
+ $('cOut').innerHTML=h;wireCoachExtras();wireCF($('cOut'));$('cOut').querySelectorAll('[data-lad]').forEach(b=>b.onclick=()=>playStage(T,+b.dataset.lad));
  if(document.body.classList.contains('shared')){const ps=$('cPlanSec'),tg=$('cOut').querySelector('.ctgt');if(ps&&tg)tg.after(ps);$('coach').scrollTop=0;}
  if(ex.explore){ex.coach=cPlan.R;const zr=REG2ZOOM[cPlan.R.reg];if(zr&&zr!==zReg){zReg=zr;TRACE.ids=[];buildZTabs();}}
  const rp=$('replayShare');if(rp)rp.onclick=()=>{if(!/^#(plan|move)-/.test(location.hash))try{history.replaceState(null,'',planHash(cT,cGoal));}catch(_){}readHash();};
@@ -2462,6 +2463,7 @@ function renderYoga(){yFlow=buildYoga();const hold=yLen==='full'?5:3;let tot=0;c
 function currentHash(){
  if(ex.counterOf)return'#counter-'+ex.counterOf;
  if(ex.yoga){const bl=ex.blocks||[];if(bl.length===1&&ex.yk1)return'#pose-'+ex.yk1+'-'+bPace;return yogaHash();}
+ if(ex.stage!=null)return'#stage-'+ex.stageT+'-'+(ex.stage+1);
  if(ex.blocks){const h=location.hash;if(/^#(plan|move)-/.test(h))return h;return planHash(cT,cGoal);}
  if(ex.explore)return'#muscle-'+(sel&&MDEFK[sel]?sel:cT);
  if(EX.includes(ex))return'#act-'+ex.id;return'';}
@@ -2494,6 +2496,7 @@ async function shareNow(){const h=currentHash()+settingsStr();const url=baseShar
 function readAnyHash(hs){let m;
  if((m=hs.match(/#act-([A-Za-z0-9]+)/))){const e=EX.find(x=>x.id===m[1]);if(!e)return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(e);syncSheet();fitCamera();return true;}
  if((m=hs.match(/#counter-([A-Za-z0-9]+)/))){if(!COUNTER[m[1]])return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(EX.find(x=>x.id===m[1]));playCounter(m[1],COUNTER[m[1]].k);syncSheet();return true;}
+ if((m=hs.match(/#stage-([A-Za-z]+)-([1-4])/))){if(!MDEFK[m[1]])return false;exitYoga();cT=m[1];openCoach(m[1]);playStage(m[1],+m[2]-1);return true;}
  if((m=hs.match(/#muscle-([A-Za-z]+)/))){if(!MDEFK[m[1]])return false;cT=m[1];document.body.classList.remove('pick');enterExplore();return true;}
  if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}enterYoga(YOGA[m[1]].set==='bath'?'bath':'yoga');startYoga([m[1]],YOGA[m[1]].name,true);return true;}
  return false;}
@@ -2587,6 +2590,8 @@ const CTYPES={
 function tempoMove(m,T,cf){prep(m);const K=m.K,n=K.length;if(!MUSK[T+'L'])return m;const Ls=K.map(k=>{const W=solve(m,k.t);return(mLen(W,MUSK[T+'L'])+mLen(W,MUSK[T+'R']))/2;});
  const nm=MDEFK[T].short.toLowerCase();const out=[];let imin=0,imax=0;Ls.forEach((v,i)=>{if(v<Ls[imin])imin=i;if(v>Ls[imax])imax=i;});const rng=(Ls[imax]-Ls[imin])/Ls[imax];
  for(let i=0;i<n;i++){const t1=i+1<n?K[i+1].t:1,d0=(t1-K[i].t)*m.dur,Ln=i+1<n?Ls[i+1]:Ls[0],dL=(Ln-Ls[i])/Ls[i];const P=K[i].P,c=K[i].cap;let f=1,pre='';
+  if(cf==='pulse'&&(i===(rng>.03?imin:Math.floor(n/2)))){const rp=K[(i-1+n)%n].P;for(let r=0;r<3;r++){out.push({P,cap:`🌱 PULSE ${r+1} of 3 · squeeze the ${nm} gently for 3 s, about 15% effort. Feel it switch on.`,dur:3});out.push({P:rp,cap:'Let go completely for 2 s. Breathe out.',dur:2});}out.push({P,cap:`🌱 One more gentle squeeze, then move on.`,dur:2.5});}
+  if(cf==='ctrl'){f=Math.max(2.5/Math.max(d0,.3),1.9);pre='🌿 SLOW AND SMOOTH: about 3 s each way. ';}
   if(cf==='iso'&&(i===(rng>.03?imin:Math.floor(n/2))))out.push({P,cap:`⏸ HOLD 4 s · ISOMETRIC: the ${nm} works but does not change length. ${c}`,dur:4,cf:'iso'});
   if(cf==='str'&&i===imax&&rng>.02)out.push({P,cap:`🌬 HOLD THE STRETCH 6 s: the ${nm} is long and relaxed. Breathe out and let go.`,dur:6,cf:'str'});
   if(cf==='con'&&dL<-.01){out.push({P,cap:`⏸ PAUSE 1.5 s at the long position, no bounce. Then shorten with intent (concentric).`,dur:1.5,cf:'con'});pre='⬆ CONCENTRIC: ';}
@@ -2595,7 +2600,7 @@ function tempoMove(m,T,cf){prep(m);const K=m.K,n=K.length;if(!MUSK[T+'L'])return
   if(cf==='ecc'&&dL<-.01)f=.8;
   out.push({P,cap:pre+c,dur:Math.max(.2,d0*f)});}
  const dur=out.reduce((a,b)=>a+b.dur,0);let t=0;const keys=out.map(o=>{const k={t:t/dur,p:o.P,cap:o.cap};t+=o.dur;return k;});
- return Object.assign({},m,{K:null,keyList:null,base:{},keys,dur,cr:false,key:(m.key||m.name)+'|'+cf+'|'+T,dose:(m.dose||'')+' · '+CTYPES[cf].n.toLowerCase()+' focus'});}
+ return Object.assign({},m,{K:null,keyList:null,base:{},keys,dur,cr:false,key:(m.key||m.name)+'|'+cf+'|'+T,dose:(m.dose||'')+(CTYPES[cf]?' · '+CTYPES[cf].n.toLowerCase()+' focus':'')});}
 function cfHTML(){const t=CTYPES[CF];return`<div class="csec" style="margin-top:8px"><div class="ch3">Muscle action focus</div><div class="pkrow" style="flex-wrap:wrap;gap:5px">`+
  [['all','All']].concat(Object.entries(CTYPES).map(([k,v])=>[k,v.n])).map(([k,n])=>`<button class="pk${CF===k?' on':''}" data-cf="${k}" style="font-size:11.5px;padding:4px 10px">${k==='all'?'':'<span class="dot" style="background:var(--'+CTYPES[k].col+')"></span> '}${n}</button>`).join('')+`</div>`+
  (t?`<div class="ctip" style="margin-top:6px"><b style="color:var(--${t.col})">${t.n} · ${t.s}.</b> ${t.d}<br><b>Examples:</b> ${t.ex}<br><b>Why:</b> ${t.why}<br><b>How the plan changes:</b> ${t.how}</div>`:
@@ -2640,11 +2645,60 @@ let capShown='',capAt=0,capNext='';
 function setCap(t){const el=$('capC');if(t===capShown)return;const now=performance.now()/1000;
  if(READ&&capShown&&now-capAt<Math.min(needSec(capShown)*.55,5)&&playing){capNext=t;return;}
  capShown=t;capAt=now;capNext='';el.textContent=t;el.classList.remove('fadeIn');void el.offsetWidth;el.classList.add('fadeIn');}
+
+// ACTIVATION LADDER: wake a muscle at very low load, then build control, strength and maximal effort
+const LADDER=[
+ {k:'wake',ic:'🌱',n:'Wake',eff:.15,tempo:'pulse',moves:2,reps:1,dose:'3 gentle pulses of 3 s at ~15% effort · daily',
+  why:'Gentle squeezes at very low effort switch on the smallest, slow-twitch motor units first. This rebuilds the brain-to-muscle link when a muscle is "asleep" from disuse, pain or overuse by its neighbors.',how:'Squeeze about 15% of your maximum, so the muscle you want works and nothing else. Touch it if you can. Breathe out on each pulse.'},
+ {k:'control',ic:'🌿',n:'Control',eff:.35,tempo:'ctrl',moves:2,reps:2,dose:'2 × 12–15 slow reps · light load',
+  why:'Light load through the full range teaches the muscle to work at every angle and builds endurance in the fatigue-resistant fibers.',how:'Move slowly, about 3 s each way, with no momentum. Stop before other muscles take over.'},
+ {k:'strength',ic:'🔥',n:'Strength',eff:.7,tempo:'ecc',moves:3,reps:2,dose:'3 × 6–10 reps · moderate to heavy load (or light load close to failure)',
+  why:'More load recruits larger, fast-twitch motor units. Both heavy and light-to-failure sets build muscle; heavier loads build more maximum strength.',how:'Add a band, a weight or a harder version. Lower slowly for 3 s. Rest 1–2 minutes between sets.'},
+ {k:'max',ic:'⚡',n:'Max',eff:1,tempo:'iso',moves:2,reps:2,dose:'3–5 holds of 5 s at full effort, or 3–5 heavy reps · long rests',
+  why:'Brief maximal efforts reach the highest-threshold motor units and teach the nervous system to fire them all together. This is where the muscle becomes fully available.',how:'Only after the earlier stages feel easy and pain-free. Full intent for 5 s, rest 2–3 minutes. Quality, not quantity.'}];
+let EFFORT=null;
+function ladderHTML(T){const nm=MDEFK[T].short;return`<div class="csec" style="margin-top:8px"><div class="ch3">🌱 → ⚡ Wake to strong: ${nm}</div>
+ <div class="csub" style="margin:2px 0 6px">Muscles switch on small units first and big units last (the size principle). Start gently to wake the muscle, then build up stage by stage.</div>
+ <div class="pkrow" style="flex-wrap:wrap;gap:6px">`+LADDER.map((L,i)=>`<button class="pk${ex.stage===i&&ex.stageT===T?' on':''}" data-lad="${i}" title="${L.dose}">${L.ic} ${i+1}. ${L.n} · ${Math.round(L.eff*100)}%</button>`).join('')+`</div>
+ ${LADDER.map((L,i)=>`<div class="ctip" style="margin-top:6px"><b>${L.ic} ${i+1}. ${L.n}</b> · <span style="color:var(--dim)">${L.dose}</span><br>${L.why}<br><b>How:</b> ${L.how}</div>`).join('')}</div>`;}
+const LOWLOAD=new Set(['wallAngel','deadBug','sideLift','clam']);
+function stageMoves(T,i){const sc=Object.keys(MOVES).map(k=>{const m=MOVES[k];const met=moveMetrics(m,T);
+  return{k,m,s:(m.work.includes(T)?10:m.stab.includes(T)?3:0)+(i<2&&LOWLOAD.has(k)?4:0)+(i>=2&&SPORTY.test(m.src||'')?2:0)+met.rom*(i===1?20:8)-(STRETCH.has(k)?6:0)};}).filter(x=>x.s>=3).sort((a,b)=>b.s-a.s);
+ return sc.slice(0,LADDER[i].moves);}
+function playStage(T,i){const L=LADDER[i];const plan={R:rolesFor(T)};const pick=stageMoves(T,i);if(!pick.length){toast('No good move for this muscle yet.');return;}
+ const blocks=pick.map(b=>({m:tempoMove(b.m,T,L.tempo),label:L.ic+' '+L.n,why:L.how,k:b.k,reps:L.reps}));
+ const e=buildPlanEx(T,{R:plan.R,blocks,noCF:true},`${L.ic} ${L.n} · ${MDEFK[T].short}`);e.stage=i;e.stageT=T;e.effort=L.eff;cT=T;selectEx(e);sel=T;
+ if(document.body.classList.contains('phone')){document.body.classList.add('sheetMini');$('cMin').textContent='▴';syncSheet();fitCamera();}
+ try{history.replaceState(null,'','#stage-'+T+'-'+(i+1));}catch(_){}toast(`${L.ic} ${L.n}: ${L.dose}`);}
+function drawEffort(){if(ex.effort==null)return;const L=LADDER[ex.stage];const ph=document.body.classList.contains('phone');const w=ph?150:200,h=ph?30:34;
+ const x=ph?10:camArea.x0+16,y=camArea.y1-(ph?150:120);ctx.save();ctx.fillStyle='rgba(6,12,24,.82)';ctx.strokeStyle='rgba(255,255,255,.15)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h+18,10):ctx.rect(x,y,w,h+18);ctx.fill();ctx.stroke();
+ ctx.font=`800 ${ph?11:12}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e6faff';ctx.textBaseline='middle';ctx.fillText(`${L.ic} EFFORT ${Math.round(ex.effort*100)}% · ${L.n.toUpperCase()}`,x+10,y+12);
+ const bx=x+10,by=y+24,bw=w-20;const g=ctx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#34d399');g.addColorStop(.5,'#ffd84d');g.addColorStop(1,'#ff4d4d');ctx.fillStyle='rgba(255,255,255,.1)';ctx.fillRect(bx,by,bw,10);ctx.fillStyle=g;ctx.fillRect(bx,by,bw*ex.effort,10);ctx.restore();}
+
+// low-load activation moves (good for the Wake and Control stages)
+Object.assign(MOVES,{
+ wallAngel:{name:'Wall angel',src:'Physical therapy',dur:6,dose:'2 × 10 slow slides',base:{'B.sh.a':86,'B.el':90,'B.sh.r':-80,'neck.f':4},
+  keys:[{t:0,p:{},cap:'Back and head on a wall, arms in a cactus shape. Ribs down.'},{t:.45,p:{'B.sh.a':160,'B.el':24},cap:'Slide the arms up the wall slowly. The lower trapezius and serratus guide the shoulder blades up and around.'},{t:.9,p:{'B.sh.a':86,'B.el':90},cap:'Slide down, pulling the shoulder blades down and in.'}],
+  work:['trapLower','serratus','infraspinatus','teresMinor','deltLat'],stab:['rhomboid','rectusAbd','longusColli']},
+ deadBug:{name:'Dead bug',src:'Physical therapy / core',dur:6,dose:'2 × 8 each side, slow',anchor:'floor',
+  base:{'root.pitch':-90,'B.hip.f':90,'B.kn':90,'B.sh.f':90,'B.el':4,'anc.fl':1},
+  keys:[{t:0,p:{},cap:'On your back, knees over the hips, arms up. Press the low back gently to the floor.'},{t:.3,p:{'L.sh.f':172,'R.hip.f':24,'R.kn':12},cap:'Exhale and reach the left arm back and the right leg long. The deep core (TVA, obliques) keeps the back still.'},
+   {t:.5,p:{'L.sh.f':90,'R.hip.f':90,'R.kn':90},cap:'Inhale back to the start.'},{t:.8,p:{'R.sh.f':172,'L.hip.f':24,'L.kn':12},cap:'Exhale: right arm and left leg.'}],
+  work:['rectusAbd','tva','intOblique','oblique','iliopsoas'],stab:['multifidus','diaphragm','deltAnt','serratus']},
+ sideLift:{name:'Side-lying leg lift',src:'Physical therapy',dur:5,dose:'2 × 12 each side',anchor:'floor',
+  base:{'root.roll':90,'B.sh.f':0,'R.sh.f':160,'R.el':10,'L.sh.f':30,'L.el':90,'B.kn':4,'anc.fl':1},
+  keys:[{t:0,p:{},cap:'Lie on your side, body in one straight line, top leg long.'},{t:.4,p:{'L.hip.a':34},cap:'Lift the top leg, heel slightly back, toes forward. The glute medius lifts; the hip does not roll back.'},{t:.65,p:{},cap:'Hold 1 s at the top, then lower slowly.'}],
+  work:['gluteMed','gluteMin','tfl'],stab:['QL','oblique','intOblique']},
+ clam:{name:'Clamshell',src:'Physical therapy',dur:5,dose:'2 × 15 each side',anchor:'floor',
+  base:{'root.roll':90,'B.hip.f':45,'B.kn':90,'R.sh.f':160,'R.el':10,'L.sh.f':30,'L.el':90,'anc.fl':1},
+  keys:[{t:0,p:{},cap:'Lie on your side, hips and knees bent, feet together.'},{t:.4,p:{'L.hip.r':-38,'L.hip.a':16},cap:'Open the top knee like a clamshell, feet together. The glute medius and deep rotators work at low load.'},{t:.7,p:{},cap:'Close slowly.'}],
+  work:['gluteMed','piriformis','gluteMax'],stab:['QL','oblique']}});
+for(const k of['wallAngel','deadBug','sideLift','clam']){const m=MOVES[k];m.id='mv_'+k;m.key=k;m.anchor=m.anchor||'ground';m.props=[];m.view=m.anchor==='floor'?[60,22]:[35,10];m.icon='•';m.focus=['core','hip','shoulder'];}
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-0950';
+const BUILD='2026-11-18-1030';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2787,7 +2841,7 @@ function loop(now){
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();drawWater(W);drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();drawWater(W);drawEffort();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
