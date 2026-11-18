@@ -137,8 +137,41 @@ body.shared #left{display:none}
 .cshr{padding:4px 7px}
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:rgba(10,20,35,.95);border:1px solid rgba(94,224,255,.5);color:#e6f6ff;padding:8px 14px;border-radius:10px;font-size:13px;z-index:50;transition:all .25s}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.flBox,#feetBox{position:fixed;z-index:30;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.flBox canvas{width:100%;height:100%;display:block}
+#modePick{position:fixed;inset:0;z-index:80;background:rgba(2,5,12,.82);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto}
+#modePick[hidden]{display:none}
+#modePick .mpc{width:min(860px,100%);background:linear-gradient(160deg,#0d1630,#120c3a);border:1px solid rgba(126,249,255,.3);border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:100%;overflow:auto}
+#modePick .mph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+#modePick .mpt{font-size:calc(22px*var(--tz,1));font-weight:900;letter-spacing:.04em;background:linear-gradient(90deg,#7ef9ff,#ff4fd8);-webkit-background-clip:text;background-clip:text;color:transparent}
+#modePick .mps{color:var(--dim);font-size:calc(14px*var(--tz,1))}
+#modePick .mpg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+#modePick .mpb{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px;color:var(--txt);font:inherit;cursor:pointer;transition:transform .12s,border-color .12s}
+#modePick .mpb:hover,#modePick .mpb:focus{border-color:#7ef9ff;transform:translateY(-2px)}
+#modePick .mpb b{font-size:calc(15px*var(--tz,1))}
+#modePick .mpb span:not(.mpi){font-size:calc(12px*var(--tz,1));color:var(--dim);line-height:1.3}
+#modePick .mpi{font-size:26px}
+#modePick .mpf{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;color:var(--dim);font-size:calc(13px*var(--tz,1))}
+#modePick .mpf label{display:flex;align-items:center;gap:5px;margin-left:auto}
+body.phone #modePick .mpg{grid-template-columns:1fr 1fr;gap:8px}
+body.phone #modePick .mpb{padding:10px}
+body.simple #left,body.simple #zoom,body.simple #legend,body.simple #tMus,body.simple #tPro,body.simple .ly,body.simple #tAnat{display:none!important}
+
 #feetBox{position:fixed;z-index:30;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.5)}
 #feetBox canvas{width:100%;height:100%;display:block}
+body.phone #viewTools .bt{display:none}body.phone #modeBtn .bt{display:inline}
+@media (max-height:780px){#readTag{display:none!important}#cap{padding:6px 12px}#cap .t{font-size:10px}}
+#nowCard{background:linear-gradient(160deg,rgba(255,79,216,.10),rgba(126,249,255,.06));border:1px solid rgba(255,79,216,.4);border-radius:12px;padding:9px 10px;margin:4px 0 8px}
+#nowCard .nwh{font-size:calc(10.5px*var(--tz,1));letter-spacing:.1em;color:#ff9be8;font-weight:800}
+#nowCard .nwt{font-size:calc(16px*var(--tz,1));font-weight:800;margin:2px 0}
+#nowCard .nws{font-size:calc(12px*var(--tz,1));color:var(--dim);margin-bottom:3px}
+#nowCard .nwl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:5px 0;font-size:calc(12px*var(--tz,1));font-weight:700}
+#nowCard .nwc{background:rgba(255,255,255,.05);border:1px solid;border-radius:999px;color:var(--txt);font:inherit;font-weight:600;padding:2px 8px;cursor:pointer}
+#nowCard .nwst{margin:6px 0 8px;padding-left:20px;font-size:calc(12.5px*var(--tz,1));line-height:1.4;color:#94a3b8}
+#nowCard .nwst li{margin:3px 0}#nowCard .nwst li.done{color:#64748b}
+#nowCard .nwst li.on{color:#fff;font-weight:700;background:rgba(126,249,255,.1);border-radius:6px;padding:2px 4px}
+#coach.nowOn > #pick,#coach.nowOn > .csub,#coach.nowOn > #cMus,#coach.nowOn > .grp,#coach.nowOn > #cOut{display:none!important}
+
 #idBar{margin:8px 0;background:rgba(40,8,40,.35);border:1px solid rgba(255,79,216,.45);border-radius:12px;padding:7px 9px;color:var(--txt);font-size:calc(12px*var(--tz,1));backdrop-filter:blur(6px)}
 #idBar .idh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
 #idBar .idh b{color:#ffb3ef}
@@ -282,7 +315,7 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
 </div></div>
 
 <button id="actBtn" aria-label="Open activities">▦ Activities</button>
-<div id="viewTools"><button id="recBtn" title="Recenter on the whole body (or double-tap the body)">⌖ Recenter</button><button id="keyBtn" title="What the colors mean">🎨 Key</button></div>
+<div id="viewTools"><button id="modeBtn" title="Choose a mode">◎<span class="bt"> Modes</span></button><button id="recBtn" title="Recenter on the whole body (or double-tap the body)">⌖<span class="bt"> Recenter</span></button><button id="keyBtn" title="What the colors mean">🎨<span class="bt"> Key</span></button></div>
 <div id="colorKey" hidden><div class="kh"><b>Color key</b><button id="keyX" aria-label="Close">✕</button></div>
  <div class="kr"><span class="sw" style="background:var(--con)"></span><b>Red · shortening</b> — working to lift or pull (concentric)</div>
  <div class="kr"><span class="sw" style="background:var(--ecc)"></span><b>Orange · lengthening under load</b> — working to lower or brake (eccentric)</div>
@@ -343,7 +376,7 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
@@ -901,7 +934,7 @@ function fitCamera(){
 }
 let camArea={x0:0,x1:0,y0:0,y1:0};
 function layoutCam(){
- const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150)-(NAVON?60:0);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:(()=>{const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return 96;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return c.getBoundingClientRect().bottom+(hasV?48:10);})();y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108)-(NAVON?62:0);}
+ const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:(B.contains('simple')?0:250)):0,x1=wide?VW-(zOn?458:322)-(typeof CLOSEW!=='undefined'?CLOSEW:0):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=(()=>{const bt=document.getElementById('bot');let y=VH-(wide?84:150);if(wide&&bt){const r=bt.getBoundingClientRect();if(r.height)y=r.top-10;}const nv=document.getElementById('mvNav');if(nv&&getComputedStyle(nv).display!=='none'){const r=nv.getBoundingClientRect();if(r.height&&wide)y=Math.min(y,r.top-8);else if(!wide&&NAVON)y-=60;}return y;})();if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:(()=>{const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return 96;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return c.getBoundingClientRect().bottom+(hasV?48:10);})();y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108)-(NAVON?62:0);}
  camArea={x0,x1,y0,y1};cam.cx=(x0+x1)/2;cam.cy=(y0+y1)/2+8;
  const b=cam.box||[100,200,100];const horiz=Math.hypot(b[0],b[2]);
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
@@ -2655,13 +2688,14 @@ function currentHash(){
  if(EX.includes(ex))return'#act-'+ex.id;return'';}
 function currentTitle(){if(ex.counterOf)return'Counter moves for '+EX.find(e=>e.id===ex.counterOf).name;if(ex.explore)return MDEFK[sel&&MDEFK[sel]?sel:cT].name+' · Muscle coach';return ex.name;}
 // shared links carry the viewer settings after '&' in the #hash: speed, view, layers, toggles, breath, frame
-function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET};
+function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET,ch:CHAN?1:0};
  if(!sweep||orbit){o.cy=Math.round(((cam.yaw%360)+360)%360);o.cp=Math.round(cam.pitch);}if(orbit)o.ob=1;if(Math.abs(cam.zoom-1)>.02)o.cz=+cam.zoom.toFixed(2);
  if(ex.env==='run')o.rs=runSurf;if(!playing){o.pa=1;o.p=+phase.toFixed(3);}
  return'&'+Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');}
 function applySettings(hs){const i=hs.indexOf('&');if(i<0)return;const q=new URLSearchParams(hs.slice(i+1));const on=k=>q.get(k)==='1';const B=document.body.classList;
  if(q.has('s')){const v=+q.get('s');if(v>0&&v<=2){speed=v;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',+x.dataset.s===v));}}
  if(q.has('sw'))setSweep(on('sw'));
+ if(q.has('ch'))setChan(on('ch'));
  if(q.has('ft')&&/^(auto|on|off)$/.test(q.get('ft'))){FEET=q.get('ft');const fb=$('tFeet');if(fb){fb.textContent='🦶 Feet · '+FEET;fb.classList.toggle('on',FEET!=='off');}}
  if(q.has('ly')){const b=document.querySelector('.ly[data-l="'+q.get('ly')+'"]');if(b)b.click();}
  if(q.has('an')&&on('an')!==anat)$('tAnat').click();
@@ -2685,9 +2719,10 @@ function readAnyHash(hs){let m;
  if((m=hs.match(/#counter-([A-Za-z0-9]+)/))){if(!COUNTER[m[1]])return false;exitYoga();$('coach').hidden=true;document.body.classList.remove('pick');selectEx(EX.find(x=>x.id===m[1]));playCounter(m[1],COUNTER[m[1]].k);syncSheet();return true;}
  if((m=hs.match(/#stage-([A-Za-z]+)-([1-4])/))){if(!MDEFK[m[1]])return false;exitYoga();cT=m[1];openCoach(m[1]);playStage(m[1],+m[2]-1);return true;}
  if((m=hs.match(/#muscle-([A-Za-z]+)/))){if(!MDEFK[m[1]])return false;cT=m[1];document.body.classList.remove('pick');enterExplore();return true;}
- if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}enterYoga(YOGA[m[1]].set==='bath'?'bath':'yoga');startYoga([m[1]],YOGA[m[1]].name,true);return true;}
+ if((m=hs.match(/#pose-([A-Za-z0-9]+)(?:-(calm|even|box|relax))?/))){if(!YOGA[m[1]])return false;if(m[2]){bPace=m[2];for(const k in YOGA)MOVES['yg'+k]=makeYoga(k);}if(YOGA[m[1]].orbit)setChan(true);enterYoga(YOGA[m[1]].set||'yoga');startYoga([m[1]],YOGA[m[1]].name,true);return true;}
+ if(/^#mudra\b/.test(hs)){enterYoga('mudra');return true;}
  return false;}
-const yogaHash=()=>'#'+(yMode==='bath'?'bath':'yoga')+'-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
+const yogaHash=()=>yMode==='mudra'?'#mudra':'#'+(yMode==='bath'?'bath':'yoga')+'-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
 async function shareYoga(){const url=baseShareURL()+yogaHash()+settingsStr();const text='Yoga flow · Muscle Lab';
  try{if(navigator.share&&document.body.classList.contains('phone')){await navigator.share({title:'Muscle Lab yoga',text,url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
  try{await navigator.clipboard.writeText(url);toast('Link copied');}catch(_){prompt('Copy this link:',url);}}
@@ -2975,8 +3010,9 @@ function feetWanted(){if(FEET==='off')return false;if(FEET==='on')return true;if
  else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>REGION.foot.includes(x)))feetUntil=RT+4;}
  return RT<feetUntil;}
 function drawFeet(W){let box=$('feetBox');const want=feetWanted();if(!want){if(box)box.hidden=true;return;}const ph=document.body.classList.contains('phone');
- const w=ph?150:250,h=ph?140:210;let X=camArea.x1-w-(ph?6:12),Y=camArea.y1-h-(ph?6:12);
- const zp=$('zoom');if(!ph&&zOn&&zp&&!zp.hidden&&getComputedStyle(zp).display!=='none'){const r=zp.getBoundingClientRect();if(r.width>200&&r.height>h+60){X=r.right-w-10;Y=r.bottom-h-10;}}
+ let w=ph?150:250,h=ph?140:210;let X=camArea.x1-w-(ph?6:12),Y=camArea.y1-h-(ph?6:12);
+ if(CLOSEW&&!ph){h=Math.min(h,camArea.y1-camArea.y0);w=Math.min(w,CLOSEW/Math.max(1,CLOSEN)-10);X=camArea.x1+10+(CLOSEN-1)*(w+10);Y=camArea.y1-h-12;}
+ const zp=$('zoom');if(!CLOSEW&&!ph&&zOn&&zp&&!zp.hidden&&getComputedStyle(zp).display!=='none'){const r=zp.getBoundingClientRect();if(r.width>200&&r.height>h+60){X=r.right-w-10;Y=r.bottom-h-10;}}
  if(!box){box=document.createElement('div');box.id='feetBox';box.innerHTML='<canvas></canvas>';box.title='Feet close-up. Tap to change: auto, on, off.';box.onclick=()=>{const fb=$('tFeet');if(fb)fb.click();};document.body.appendChild(box);}
  box.hidden=false;box.style.left=X+'px';box.style.top=Y+'px';box.style.width=w+'px';box.style.height=h+'px';const fc=box.firstChild;const dp=Math.min(2,dpr);if(fc.width!==Math.round(w*dp)){fc.width=Math.round(w*dp);fc.height=Math.round(h*dp);}
  const mctx=ctx;ctx=fc.getContext('2d');ctx.setTransform(dp,0,0,dp,0,0);ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.setLineDash([]);ctx.clearRect(0,0,w,h);const x=0,y=0;
@@ -3019,11 +3055,359 @@ function drawFeetIn(W,x,y,w,h,ph){
  ctx.fillStyle='#cbd5e1';if(msg.w)ctx.fillText('Weight: '+msg.w,x+9,y+h-(ph?9:26));
  if(!ph){let tx=x+9;for(const[c,t]of[['#facc15','● heel  '],['#34d399','● big toe  '],['#5fb4ff','● little toe  '],['#2dd4bf','⌒ arch']]){ctx.fillStyle=c;ctx.fillText(t,tx,y+h-11);tx+=ctx.measureText(t).width;}}
  ctx.restore();Object.assign(cam,sv);}
+
+// =========================================================
+// MUDRAS: hand seals, with the hand muscles that hold them
+// =========================================================
+{const noArm=o=>{const r=Object.assign({},o);delete r['B.sh.f'];delete r['B.sh.a'];delete r['B.el'];delete r['B.sh.r'];return r;};
+ const C=noArm(YB.cross);const KN={'sh.f':30,'sh.a':10,'sh.r':-40,el:0};const side=(S,o)=>{const r={};for(const k in o)r[S+'.'+k]=o[k];return r;};
+ YB.mknee=Object.assign({},C,side('B',KN));
+ YB.mlap=Object.assign({},C,side('B',{'sh.f':0,'sh.a':0,'sh.r':40,el:50}));
+ YB.mheart=Object.assign({},C,side('B',{'sh.f':10,'sh.a':20,'sh.r':40,el:130}));
+ YB.mnose=Object.assign({},C,side('L',KN),side('R',{'sh.f':60,'sh.a':15,'sh.r':30,el:140}));
+ YB.mraise=Object.assign({},C,side('L',KN),side('R',{'sh.f':40,'sh.a':15,'sh.r':0,el:110}));}
+// finger states: e = long, t = tip touches the thumb tip, b = folded to the base of the thumb, c = curled into the palm
+const MUDRA={
+ gyan:{name:'Gyan mudra',sk:'Jnana / Chin',en:'Seal of knowledge',at:'mknee',th:'t',f:['t','e','e','e'],how:'Touch the tip of the index finger to the tip of the thumb. Keep the other three fingers long and soft. Palms up is gyan; palms down is chin.',trad:'Traditionally used for focus and calm in seated meditation. The most common mudra.'},
+ prana:{name:'Prana mudra',sk:'Prana',en:'Seal of life force',at:'mknee',th:'t',f:['e','e','t','t'],how:'Touch the tips of the ring and little fingers to the thumb tip. The index and middle fingers stay long.',trad:'Traditionally linked with vitality and energy.'},
+ apana:{name:'Apana mudra',sk:'Apana',en:'Seal of downward flow',at:'mknee',th:'t',f:['e','t','t','e'],how:'Touch the tips of the middle and ring fingers to the thumb tip. The index and little fingers stay long.',trad:'Traditionally linked with grounding, release and letting go.'},
+ prithvi:{name:'Prithvi mudra',sk:'Prithvi',en:'Earth seal',at:'mknee',th:'t',f:['e','e','t','e'],how:'Touch the ring finger tip to the thumb tip. The other fingers stay long.',trad:'Traditionally linked with stability (the ring finger stands for earth).'},
+ shuni:{name:'Shuni mudra',sk:'Shuni',en:'Seal of patience',at:'mknee',th:'t',f:['e','t','e','e'],how:'Touch the middle finger tip to the thumb tip.',trad:'Traditionally linked with patience and steady attention.'},
+ varuna:{name:'Varuna mudra',sk:'Varuna',en:'Water seal',at:'mknee',th:'t',f:['e','e','e','t'],how:'Touch the little finger tip to the thumb tip.',trad:'Traditionally linked with fluid and flow (the little finger stands for water).'},
+ vayu:{name:'Vayu mudra',sk:'Vayu',en:'Air seal',at:'mknee',th:'p',f:['b','e','e','e'],how:'Fold the index finger to the base of the thumb. Rest the thumb gently on top of it.',trad:'Traditionally used to settle restlessness.'},
+ shunya:{name:'Shunya mudra',sk:'Shunya',en:'Space seal',at:'mknee',th:'p',f:['e','b','e','e'],how:'Fold the middle finger to the base of the thumb. Rest the thumb on top of it.',trad:'Traditionally linked with quiet and inner listening.'},
+ surya:{name:'Surya mudra',sk:'Surya',en:'Sun seal',at:'mknee',th:'p',f:['e','e','b','e'],how:'Fold the ring finger to the base of the thumb. Rest the thumb on top of it.',trad:'Traditionally linked with warmth and fire.'},
+ heart:{name:'Heart mudra',sk:'Apana vayu / Mrit sanjeevani',en:'Heart seal',at:'mknee',th:'t',f:['b','t','t','e'],how:'Fold the index finger to the base of the thumb. Touch the middle and ring finger tips to the thumb tip. The little finger stays long.',trad:'Traditionally linked with the heart and the chest.'},
+ vishnu:{name:'Vishnu mudra',sk:'Vishnu',en:'Breath-switch seal',at:'mnose',th:'e',f:['c','c','e','e'],how:'Right hand: fold the index and middle fingers into the palm. The thumb closes the right nostril; the ring finger closes the left. Used for alternate nostril breathing (nadi shodhana).',trad:'Used in yoga breathing practice to switch the breath from side to side.'},
+ adi:{name:'Adi mudra',sk:'Adi',en:'First seal',at:'mknee',th:'k',f:['c','c','c','c'],how:'Put the thumb into the palm and close the fingers softly over it.',trad:'Traditionally used to calm the nervous system and quiet the senses.'},
+ abhaya:{name:'Abhaya mudra',sk:'Abhaya',en:'Seal of fearlessness',at:'mraise',th:'e',f:['e','e','e','e'],how:'Lift the right hand to shoulder height, palm forward, fingers up. The left hand rests on the knee.',trad:'A gesture of safety and fearlessness in Buddhist and Hindu art.'},
+ anjali:{name:'Anjali mudra',sk:'Anjali',en:'Salutation seal',at:'mheart',sp:'anjali',how:'Press the palms together in front of the heart. Thumbs touch the breastbone lightly. Elbows soft.',trad:'A gesture of greeting and respect. Used at the start and end of practice.'},
+ hakini:{name:'Hakini mudra',sk:'Hakini',en:'Seal of the mind',at:'mheart',sp:'hakini',how:'Touch all five fingertips of one hand to the same fingertips of the other hand. Leave space between the palms.',trad:'Traditionally linked with concentration and memory.'},
+ dhyana:{name:'Dhyana mudra',sk:'Dhyana',en:'Meditation seal',at:'mlap',sp:'dhyana',how:'Rest the right hand in the left hand, palms up, in the lap. The thumb tips touch and make an oval.',trad:'The classic seal for seated meditation.'}};
+const FINGN=['index','middle','ring','little'];
+const ELEM=[['thumb','fire','#ff7a59'],['index','air','#93c5fd'],['middle','space','#c4b5fd'],['ring','earth','#d6a86b'],['little','water','#38bdf8']];
+function mudraMuscles(md){const out=new Set(['handIntr']);const why=[];
+ if(md.sp==='anjali'||md.sp==='hakini'){out.add('forearmFlex');out.add('pec');why.push('The palms or fingertips press together lightly: the chest and the small hand muscles meet in the middle (isometric).');return{m:[...out],why};}
+ if(md.sp==='dhyana'){why.push('The hands rest. Only the thumb muscles hold a light oval. The shoulders and arms can let go.');out.add('thenar');return{m:[...out],why};}
+ if(md.th==='t'||md.th==='p'){out.add('thenar');why.push(md.th==='t'?'The thenar muscles (thumb pad) bring the thumb across to the fingertips (opposition).':'The thumb rests and presses lightly on the folded finger (adductor pollicis, thenar muscles).');}
+ if(md.f&&md.f[3]==='t'){out.add('hypothenar');why.push('The hypothenar muscles bring the little finger toward the thumb.');}
+ if(md.f&&md.f.some(x=>x==='b'||x==='c')){out.add('forearmFlex');why.push('The finger flexors hold the folded fingers with a light, steady contraction.');}
+ if(md.f&&md.f.some(x=>x==='e')){out.add('forearmExt');why.push('The finger extensors and the lumbricals keep the long fingers straight and soft.');}
+ if(md.th==='k'){out.add('forearmFlex');why.push('The fingers close softly over the thumb. Do not squeeze.');}
+ return{m:[...out],why};}
+for(const k in MUDRA){const md=MUDRA[k];const mm_=mudraMuscles(md);md.mus=mm_.m;md.why=mm_.why;
+ const grip=k==='abhaya'?-1:md.sp==='dhyana'?0:.65;
+ YOGA['m'+k]={set:'mudra',cat:'mudra',mudra:k,name:md.name,sk:md.sk,start:md.at,tags:['breath','calm'],work:mm_.m,stab:['multifidus','longusColli','erector'],str:[],
+  steps:[[{mf:0,grip:0},'in','Sit tall. Let the shoulders drop. Breathe in.'],[{mf:1,grip},'out',md.how],[{mf:1,grip},'cyc','Hold the mudra and breathe slowly. Use the least pressure that keeps the fingers in place. '+md.trad,4],[{mf:0,grip:0},'out','Release slowly. Open the hands and feel them.']]};}
+YOGA.orbit={set:'mudra',cat:'mudra',mudra:'dhyana',orbit:1,name:'Energy orbit',sk:'Microcosmic orbit · Xiao zhou tian',start:'mlap',tags:['breath','calm','spine'],work:['diaphragm','pelvicFloor','tva'],stab:['multifidus','longusColli','erector'],str:[],
+ steps:[[{mf:1},'in','Inhale: feel the breath rise from the base of the spine, up the back, to the crown. This is the rear channel (the Governing Vessel, Du Mai).'],[{mf:1},'out','Exhale: let it flow over the face and down the front of the body to the lower belly. This is the front channel (the Conception Vessel, Ren Mai).'],
+  [{mf:1},'cyc','Keep circling: up the back on the inhale, down the front on the exhale. The tip of the tongue rests on the roof of the mouth.',5],[{mf:1},'out','Rest the attention in the lower belly (the dantian).']]};
+const MFLOW=['manjali','mgyan','mprana','mapana','madi','orbit','mdhyana'];
+{const _ype=yogaPlanEx;yogaPlanEx=function(keys,title){const e=_ype(keys,title);e.yks=keys.slice();return e;};}
+function curYK(){if(!ex.yks||!ex.blocks)return ex.yk1||null;const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1)||ex.blocks[ex.blocks.length-1];return ex.yks[b.i]||null;}
+function curMudra(){const k=curYK();const d=k&&YOGA[k];return d&&d.mudra?MUDRA[d.mudra]:null;}
+function renderMudra(){const O=$('cOut');let tot=0;const items=Object.keys(MUDRA).map(k=>{const m=makeYoga('m'+k,3);return{k,md:MUDRA[k],m};});
+ for(const k of MFLOW)tot+=makeYoga(k,3).dur+2.5;
+ let h=`<div class="grp" style="margin:0 0 6px;gap:6px"><button class="b" data-ym="yoga">🧘 Mat yoga</button><button class="b" data-ym="bath">🛁 Bath yoga</button><button class="b on" data-ym="mudra">🙏 Mudras</button></div>
+ <div class="csub" style="margin:2px 0 6px">Mudras are hand seals from yoga, Buddhist and Hindu practice, and Indian dance. Each one shapes the hand and gives the attention a place to rest. Here you also see the hand muscles that hold each seal. The meanings are traditional, not medical claims.</div>
+ <div class="grp" style="margin:6px 0;flex-wrap:wrap;gap:6px"><label class="csub" style="display:flex;align-items:center;gap:5px;margin:0"><input type="checkbox" id="yBreath" ${breathOn?'checked':''}> 🌬 Breath</label>
+ <select id="yPace" aria-label="Breath pace" style="font-size:12px;padding:3px 5px">${Object.entries(PACES).map(([k,v])=>`<option value="${k}"${k===bPace?' selected':''}>${v.n}</option>`).join('')}</select>
+ <label class="csub" style="display:flex;align-items:center;gap:5px;margin:0"><input type="checkbox" id="mChan" ${CHAN?'checked':''}> 🔆 Channels</label></div>
+ <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"><button class="b on" id="mGo" style="font-weight:700">▶ Mudra flow · ${fmtMin(tot)}</button><button class="b" id="mOrbit">🔆 Energy orbit</button></div>
+ <div class="csub" style="margin:4px 0 6px">Each finger stands for an element in the tradition: `+ELEM.map(([f,e,c])=>`<b style="color:${c}">${f} ${e}</b>`).join(' · ')+`.</div>`;
+ for(const it of items){const mus=it.md.mus.map(x=>MDEFK[x]?MDEFK[x].short:x).slice(0,3).join(', ');
+  h+=`<div class="ypose" data-mk="${it.k}"><div><b>${it.md.name}</b> <span style="color:var(--dim)">${it.md.en}</span></div><div class="csub" style="margin:1px 0 0">${it.md.how.split('. ')[0]}. · <span style="color:#fca5a5">holds it:</span> ${mus}</div></div>`;}
+ h+=`<div class="ypose" data-mk="orbit"><div><b>🔆 Energy orbit</b> <span style="color:var(--dim)">Microcosmic orbit</span></div><div class="csub" style="margin:1px 0 0">Breathe up the back channel and down the front channel, with dhyana mudra.</div></div>`;
+ h+=`<div class="csub" style="margin-top:10px">Use the least pressure that holds the shape. If a hand or wrist hurts, rest it. Education only, not medical advice.</div>`;
+ O.innerHTML=h;O.querySelectorAll('[data-ym]').forEach(b=>b.onclick=()=>enterYoga(b.dataset.ym));
+ $('yBreath').onchange=e=>setBreath(e.target.checked);$('yPace').onchange=e=>{bPace=e.target.value;renderMudra();};$('mChan').onchange=e=>setChan(e.target.checked);
+ $('mGo').onclick=()=>startYoga(MFLOW,'Mudra flow');$('mOrbit').onclick=()=>{setChan(true);startYoga(['orbit'],'Energy orbit',true);};
+ O.querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>{const k=b.dataset.mk;if(k==='orbit')setChan(true);startYoga([k==='orbit'?'orbit':'m'+k],k==='orbit'?'Energy orbit':MUDRA[k].name,true);});}
+{const _ry=renderYoga;renderYoga=function(){if(yMode==='mudra')return renderMudra();return _ry();};
+ const _yi=yogaIdle;yogaIdle=function(){if(yMode==='mudra'){const e=yogaPlanEx(['mgyan'],'Mudras');e.name='Mudras · choose a hand seal';return e;}return _yi();};
+ const _ey=enterYoga;enterYoga=function(mode){_ey(mode);if(mode==='mudra'){$('coach').querySelector('.chd b').textContent='🙏 Mudras';renderMudra();}};}
+
+// floating close-up boxes (feet, hands)
+function floatBox(id,w,h,slot){let box=$(id);const ph=document.body.classList.contains('phone');
+ if(CLOSEW&&!ph){h=Math.min(h,camArea.y1-camArea.y0);w=Math.min(w,CLOSEW/Math.max(1,CLOSEN)-10);}
+ let X=CLOSEW&&!ph?camArea.x1+10+(CLOSEN-1-(slot||0))*(w+10)+(slot?0:0):camArea.x1-w-(ph?6:12),Y=camArea.y1-h-(ph?6:12);if(CLOSEW&&!ph)slot=0;
+ const zp=$('zoom');if(!ph&&zOn&&zp&&!zp.hidden&&getComputedStyle(zp).display!=='none'){const r=zp.getBoundingClientRect();if(r.width>200&&r.height>h+60){X=r.right-w-10;Y=r.bottom-h-10;}}
+ if(slot)X-=slot*(w+8);
+ if(!box){box=document.createElement('div');box.id=id;box.className='flBox';box.innerHTML='<canvas></canvas>';document.body.appendChild(box);}
+ box.hidden=false;box.style.left=X+'px';box.style.top=Y+'px';box.style.width=w+'px';box.style.height=h+'px';const fc=box.firstChild;const dp=Math.min(2,dpr);if(fc.width!==Math.round(w*dp)){fc.width=Math.round(w*dp);fc.height=Math.round(h*dp);}
+ const c=fc.getContext('2d');c.setTransform(dp,0,0,dp,0,0);c.globalAlpha=1;c.shadowBlur=0;c.clearRect(0,0,w,h);return c;}
+function hideBox(id){const b=$(id);if(b)b.hidden=true;}
+// 2D hand drawing. Palm faces the viewer; thumb on the left. Units: about 1 = 1 mm / 2.
+function handGeo(md,f){const base=[[-15,-24],[-5,-26],[5,-25],[14,-20]],len=[40,45,42,32],ang=[-9,-2,5,13];const thB=[-21,12],thLen=34,thAng=-52;
+ const D=a=>a*Math.PI/180;const extTip=i=>[base[i][0]+Math.sin(D(ang[i]))*len[i],base[i][1]-Math.cos(D(ang[i]))*len[i]];
+ const thExt=[thB[0]+Math.sin(D(thAng))*thLen,thB[1]-Math.cos(D(thAng))*thLen];
+ const st=md.f||['e','e','e','e'],th=md.th||'e';const tIdx=st.map((s,i)=>s==='t'?i:-1).filter(i=>i>=0);
+ const M=tIdx.length?[tIdx.reduce((a,i)=>a+base[i][0],0)/tIdx.length*.62-7,-17]:null;
+ const lerp=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];const fing=[];
+ st.forEach((s,i)=>{const b0=base[i],e=extTip(i);let tip=e,ctl=lerp(b0,e,.5);
+  if(s==='t'){tip=lerp(e,M,f);ctl=lerp(lerp(b0,e,.5),[b0[0]-2,b0[1]-len[i]*.55],f);}
+  else if(s==='b'){const B=[-11,13];tip=lerp(e,B,f);ctl=lerp(lerp(b0,e,.5),[b0[0]+3,b0[1]+4],f);}
+  else if(s==='c'){const B=[b0[0]*.75,2];tip=lerp(e,B,f);ctl=lerp(lerp(b0,e,.5),[b0[0],b0[1]-5],f);}
+  fing.push({b:b0,c:ctl,t:tip,s,i,touch:s==='t'&&f>.85});});
+ let thT=thExt,thC=lerp(thB,thExt,.5);
+ if(th==='t'&&M){thT=lerp(thExt,M,f);thC=lerp(thC,[-28,-6],f);}
+ else if(th==='p'){const fb=fing.find(x=>x.s==='b');const q=fb?[(fb.b[0]+fb.t[0])/2-2,(fb.b[1]+fb.t[1])/2+3]:[-8,0];thT=lerp(thExt,q,f);thC=lerp(thC,[-24,4],f);}
+ else if(th==='k'){thT=lerp(thExt,[2,4],f);thC=lerp(thC,[-10,10],f);}
+ return{fing,th:{b:thB,c:thC,t:thT},M:tIdx.length&&f>.85?M:null,tuck:th==='k'};}
+function drawHand2D(c,cx,cy,s,md,f,o){o=o||{};const G=handGeo(md,f);c.save();c.translate(cx,cy);if(o.rot)c.rotate(o.rot);c.scale((o.mir?-1:1)*s,s);c.globalAlpha=o.alpha||1;
+ const skin='#e8b48f',edge='#8a5a3c';const seg=(p,col,w)=>{c.lineCap='round';c.strokeStyle=edge;c.lineWidth=w+1.6;c.beginPath();c.moveTo(p.b[0],p.b[1]);c.quadraticCurveTo(p.c[0],p.c[1],p.t[0],p.t[1]);c.stroke();
+  c.strokeStyle=skin;c.lineWidth=w;c.stroke();c.fillStyle=col;c.beginPath();c.arc(p.t[0],p.t[1],2.6,0,7);c.fill();};
+ if(G.tuck)seg(G.th,ELEM[0][2],8.5);
+ // palm
+ c.fillStyle=skin;c.strokeStyle=edge;c.lineWidth=1.6;c.beginPath();c.moveTo(-22,-22);c.quadraticCurveTo(0,-30,20,-20);c.quadraticCurveTo(25,8,18,30);c.quadraticCurveTo(0,38,-14,30);c.quadraticCurveTo(-25,16,-22,-22);c.fill();c.stroke();
+ c.strokeStyle='rgba(138,90,60,.45)';c.lineWidth=1;c.beginPath();c.moveTo(-18,-6);c.quadraticCurveTo(0,-2,18,-12);c.moveTo(-14,8);c.quadraticCurveTo(-4,4,10,6);c.stroke();
+ const order=G.fing.slice().sort((a,b)=>(a.s==='e'?0:1)-(b.s==='e'?0:1));for(const p of order)seg(p,ELEM[p.i+1][2],p.i===3?7.5:8.6);
+ if(!G.tuck)seg(G.th,ELEM[0][2],9.5);
+ if(G.M){c.strokeStyle='rgba(255,224,130,.9)';c.lineWidth=1.6;c.shadowColor='#ffd84d';c.shadowBlur=10;c.beginPath();c.arc(G.M[0],G.M[1],6+Math.sin(RT*4),0,7);c.stroke();c.shadowBlur=0;}
+ c.restore();}
+function drawMudraBox(W){const md=curMudra();const ph=document.body.classList.contains('phone');if(!md||!document.body.classList.contains('yoga')){hideBox('handBox');return;}
+ let w=ph?160:240,h=ph?170:250;const vis=id=>$(id)&&!$(id).hidden;const c=floatBox('handBox',w,h,(vis('feetBox')?1:0)+(vis('neckBox')?1:0));h=c.canvas.height/Math.min(2,dpr);w=c.canvas.width/Math.min(2,dpr);
+ const P=(W&&W._P)||{};const f=clamp(P.mf==null?1:P.mf,0,1);
+ c.fillStyle='#070b16';c.beginPath();c.roundRect?c.roundRect(0,0,w,h,12):c.rect(0,0,w,h);c.fill();c.strokeStyle='rgba(255,216,77,.5)';c.lineWidth=1.5;c.stroke();
+ c.fillStyle='#ffd84d';c.font=`800 ${ph?10.5:12}px Inter,system-ui,sans-serif`;c.textBaseline='middle';c.textAlign='left';c.fillText('🙏 '+md.name.toUpperCase(),9,13);
+ const bw=c.canvas.width/Math.min(2,dpr),bh=c.canvas.height/Math.min(2,dpr);w=bw;const s=Math.min(bw/128,bh/132),cx=bw/2,cy=bh*.52;
+ if(md.sp==='anjali'){drawHand2D(c,cx-3,cy,s*.95,{f:['e','e','e','e'],th:'e'},1,{mir:true,rot:.06});drawHand2D(c,cx+3,cy,s*.95,{f:['e','e','e','e'],th:'e'},1,{rot:-.06,alpha:.82});}
+ else if(md.sp==='hakini'){const r=.38;drawHand2D(c,cx-22*s*.5,cy+6,s*.8,{f:['e','e','e','e'],th:'e'},1,{mir:true,rot:r});drawHand2D(c,cx+22*s*.5,cy+6,s*.8,{f:['e','e','e','e'],th:'e'},1,{rot:-r});
+  c.strokeStyle='rgba(255,224,130,.8)';c.lineWidth=1.5;c.beginPath();c.arc(cx,cy-s*30,5+Math.sin(RT*4),0,7);c.stroke();}
+ else if(md.sp==='dhyana'){drawHand2D(c,cx+s*6,cy+12,s*.8,{f:['e','e','e','e'],th:'e'},1,{rot:Math.PI/2,alpha:.9});drawHand2D(c,cx-s*6,cy+4,s*.8,{f:['e','e','e','e'],th:'e'},1,{rot:-Math.PI/2,mir:true,alpha:.95});
+  c.strokeStyle='rgba(255,224,130,.85)';c.lineWidth=2;c.beginPath();c.ellipse(cx,cy-s*16,s*12,s*7,0,Math.PI,2*Math.PI);c.stroke();}
+ else drawHand2D(c,cx,cy+4,s,md,f);
+ c.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`;let tx=9;const ty=h-(ph?10:12);if(!ph)for(const[fn,e,col]of ELEM){c.fillStyle=col;const t=fn+' ';c.fillText(t,tx,ty);tx+=c.measureText(t).width;}
+ c.fillStyle='#cbd5e1';c.fillText(f>.85?'Light touch: least pressure':'Forming the seal…',9,ty-(ph?0:14));}
+
+// =========================================================
+// FRONT AND REAR ENERGY CHANNELS (Daoist microcosmic orbit) + front/back body balance
+// =========================================================
+let CHAN=false;try{CHAN=localStorage.getItem('ml_chan')==='1';}catch(_){}
+function setChan(v){CHAN=!!v;const b=$('tChan');if(b)b.classList.toggle('on',CHAN);const m=$('mChan');if(m)m.checked=CHAN;try{localStorage.setItem('ml_chan',CHAN?'1':'0');}catch(_){}}
+function chanPaths(W){const P=(b,v)=>wp(W,b,v);
+ const rear=[P('pelvis',[0,-7,-1]),P('pelvis',[0,-3,-8]),P('pelvis',[0,5,-9]),P('spine',[0,4,-9]),P('spine',[0,12,-9]),P('chest',[0,8,-11]),P('chest',[0,18,-11]),P('chest',[0,27,-8]),P('neck',[0,4,-5]),P('head',[0,6,-9]),P('head',[0,13,-4]),P('head',[0,14,2]),P('head',[0,9,8]),P('head',[0,4,10])];
+ const front=[P('head',[0,1,10]),P('head',[0,-3,7]),P('neck',[0,4,5]),P('chest',[0,26,8]),P('chest',[0,17,11]),P('chest',[0,7,11]),P('spine',[0,9,9]),P('spine',[0,1,9]),P('pelvis',[0,5,9]),P('pelvis',[0,-2,8]),P('pelvis',[0,-7,-1])];
+ return{rear,front};}
+function polyAt(q,u){let L=0;const seg=[];for(let i=1;i<q.length;i++){const d=Math.hypot(q[i][0]-q[i-1][0],q[i][1]-q[i-1][1]);seg.push(d);L+=d;}let r=u*L;for(let i=0;i<seg.length;i++){if(r<=seg[i]){const k=seg[i]?r/seg[i]:0;return[q[i][0]+(q[i+1][0]-q[i][0])*k,q[i][1]+(q[i+1][1]-q[i][1])*k];}r-=seg[i];}return q[q.length-1];}
+function fbBalance(){const g=ids=>{let s=0,n=0;for(const id of ids)for(const S of['L','R']){const m=MUSK[id+S];if(m&&m.L0){s+=m.L/m.L0;n++;}}return n?s/n:1;};
+ const fr=g(['rectusAbd','rectFem','iliopsoas','pec','scm','longusColli']),bk=g(['erector','multifidus','semispinalis','splenius','hamstrings','gastroc']);return fr-bk;}
+function drawChannels(W){const d=YOGA[curYK()||''];const on=CHAN||(d&&d.orbit);if(!on||document.body.classList.contains('pick'))return;const ph=document.body.classList.contains('phone');
+ const{rear,front}=chanPaths(W);const R=rear.map(proj),F=front.map(proj);
+ let act=null,u=0;if(breathOn){const B=BR||breathAt(RT);const lv=clamp(B.lvl==null?.5:B.lvl,0,1);if(B.ph==='Inhale'){act='rear';u=lv;}else if(B.ph==='Exhale'){act='front';u=1-lv;}else{act=lv>.5?'rear':'front';u=lv>.5?1:1;}}
+ else{const c_=(RT/9)%1;act=c_<.5?'rear':'front';u=(c_%.5)*2;}
+ const line=(q,col,on_)=>{ctx.save();ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle=col;ctx.globalAlpha=on_?.95:.45;ctx.lineWidth=on_?4:2.5;ctx.shadowColor=col;ctx.shadowBlur=on_?16:6;ctx.beginPath();q.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.restore();};
+ const RC='#fbbf24',FC_='#7dd3fc';line(R,RC,act==='rear');line(F,FC_,act==='front');
+ // flowing pearls
+ const q=act==='rear'?R:F,col=act==='rear'?RC:FC_;ctx.save();for(let i=0;i<5;i++){const uu=u-i*.035;if(uu<0)continue;const p=polyAt(q,uu);ctx.globalAlpha=1-i*.18;ctx.fillStyle=i?col:'#fff';ctx.shadowColor=col;ctx.shadowBlur=18;ctx.beginPath();ctx.arc(p[0],p[1],(ph?4:5.5)-i*.7,0,7);ctx.fill();}ctx.restore();
+ // key points
+ const dot=(p,t,col)=>{ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.arc(p[0],p[1],3.5,0,7);ctx.fill();ctx.font=`700 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(t,p[0]+7,p[1]);ctx.fillStyle=col;ctx.fillText(t,p[0]+7,p[1]);ctx.restore();};
+ dot(R[0],'base (perineum)','#e2e8f0');dot(R[10],'crown','#fde68a');dot(proj(wp(W,'pelvis',[0,5,9])),'lower belly (dantian)','#bae6fd');
+ // labels
+ const lab=(p,t1,t2,col,left)=>{ctx.save();ctx.font=`800 ${ph?10:11.5}px Inter,system-ui,sans-serif`;const w1=Math.max(ctx.measureText(t1).width,(ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`,ctx.measureText(t2).width))+16;
+  const x=clamp(left?p[0]-w1-30:p[0]+30,camArea.x0+6,camArea.x1-w1-6),y=clamp(p[1]-18,camArea.y0+6,camArea.y1-50);ctx.strokeStyle=col;ctx.globalAlpha=.7;ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(left?x+w1:x,y+18);ctx.stroke();ctx.globalAlpha=1;
+  ctx.fillStyle='rgba(6,10,20,.88)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w1,36,8):ctx.rect(x,y,w1,36);ctx.fill();ctx.stroke();ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle=col;ctx.font=`800 ${ph?10:11.5}px Inter,system-ui,sans-serif`;ctx.fillText(t1,x+8,y+12);ctx.fillStyle='#cbd5e1';ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`;ctx.fillText(t2,x+8,y+26);ctx.restore();};
+ const sR=Math.sin(cam.yaw*D);const backLeft=sR>0;
+ lab(R[6],'REAR CHANNEL · rises','Governing Vessel (Du Mai) · yang · inhale',RC,backLeft);lab(F[5],'FRONT CHANNEL · descends','Conception Vessel (Ren Mai) · yin · exhale',FC_,!backLeft);
+ // front/back balance meter
+ const b=fbBalance();const v=clamp(b/.06,-1,1);const w=ph?190:250,h=48,x=camArea.x0+10,y=camArea.y0+(ph?8:10)+(showGrav&&!ph&&!idOn()?0:0);
+ const yy=camArea.y0+8;const x_=camArea.x1-w-10;ctx.save();ctx.fillStyle='rgba(6,10,20,.88)';ctx.strokeStyle='rgba(255,255,255,.15)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x_,yy,w,h,10):ctx.rect(x_,yy,w,h);ctx.fill();ctx.stroke();
+ ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e6faff';ctx.textBaseline='middle';ctx.textAlign='left';
+ ctx.fillText(Math.abs(v)<.2?'⚖ FRONT AND BACK BALANCED':v>0?'FRONT BODY OPENS (front channel)':'BACK BODY OPENS (rear channel)',x_+10,yy+12);
+ const bx=x_+10,bw=w-20,by=yy+26;const g=ctx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,RC);g.addColorStop(.5,'#334155');g.addColorStop(1,FC_);ctx.fillStyle=g;ctx.fillRect(bx,by,bw,8);
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(bx+bw*(.5+v/2),by+4,6,0,7);ctx.fill();ctx.font=`600 ${ph?8.5:9.5}px Inter,system-ui,sans-serif`;ctx.fillStyle='#cbd5e1';ctx.fillText('back line long',bx,by+16);ctx.textAlign='right';ctx.fillText('front line long',bx+bw,by+16);ctx.restore();}
+
+// =========================================================
+// GUITAR: right-handed playing, the left/right imbalance, and musician relief
+// =========================================================
+(function(){
+ const seg=(p,n,cap,ok,okl,mode)=>{const out=[];for(let i=0;i<n;i++){const up=i%2===0;const q=Object.assign({},p);
+   if(mode==='shoulder'){q['R.sh.f']=(p['R.sh.f']||0)+(up?7:-7);q['R.sh.a']=(p['R.sh.a']||0)+(up?5:-5);}else if(mode==='elbow'){q['R.el']=(p['R.el']||0)+(up?10:-10);q['R.wr']=up?14:-14;}
+   out.push({p:q,cap,ok,okl});}return out;};
+ const T={'B.hip.f':90,'B.kn':90,'B.hip.a':8,'L.sh.f':38,'L.sh.a':24,'L.sh.r':-28,'L.el':108,'L.wr':24,'R.sh.f':24,'R.sh.a':28,'R.sh.r':12,'R.el':84,'neck.f':10};
+ const tense=Object.assign({},T,{'R.clav.e':11,'R.sh.a':38,'L.clav.p':9,'L.clav.e':4,'chest.f':12,'spine.s':-4,'neck.f':24,'neck.t':22,'neck.s':8,grip:1});
+ const bal=Object.assign({},T,{'R.clav.e':0,'L.clav.p':0,'L.clav.e':0,'chest.f':0,'spine.s':0,'neck.f':12,'neck.t':10,'neck.s':0,grip:.35});
+ const segs=[
+  [T,3,'Right-handed guitar: the guitar sits on the right thigh. The left hand frets the neck. The right arm strums over the body.',null,'','elbow'],
+  [Object.assign({},tense,{grip:.6,'neck.t':10,'neck.f':16}),3,'A common pattern: the strumming shoulder lifts and stays up. The upper trapezius and levator scapulae hold it there for the whole session (isometric).',0,'strumming shoulder lifted','shoulder'],
+  [Object.assign({},tense,{grip:.6}),3,'The strum comes from the shoulder, not the elbow and wrist. Big shoulder muscles do the work that the forearm can do with much less effort.',0,'strumming from the shoulder','shoulder'],
+  [tense,3,'The fretting shoulder rolls forward and in. The chest and front deltoid stay short. The back of that shoulder is long and switched off.',0,'fretting shoulder rolled in','shoulder'],
+  [tense,3,'The head turns and drops to watch the fretboard. One side of the neck stays short for hours.',0,'head turned to the fretboard','shoulder'],
+  [tense,3,'The left hand squeezes the neck much harder than the strings need. The thumb pad and the forearm flexors stay hard (grip 100%).',0,'squeezing too hard','shoulder'],
+  [tense,3,'Result: the right side lifts and works hard, the left side rolls in and grips. The two sides pull the body in different directions. Look at the balance meter.',0,'body out of balance','shoulder'],
+  [bal,3,'Reset: breathe out and let both shoulder blades slide down. The shoulders are level again.',1,'level shoulders','elbow'],
+  [bal,3,'Strum from the elbow and a loose wrist. The shoulder stays quiet and low.',1,'strum from the elbow','elbow'],
+  [Object.assign({},bal,{'neck.t':6,'neck.f':8}),3,'Lift the guitar neck a little (a strap or a footstool helps), so the head stays over the shoulders. Look with the eyes more than with the neck.',1,'head stacked','elbow'],
+  [Object.assign({},bal,{grip:.3}),3,'Fret with the least pressure that gives a clean note. Press lighter until the note buzzes, then add a little. That is enough.',1,'light fretting hand','elbow'],
+  [Object.assign({},bal,{grip:0}),3,'Every 20–30 minutes: stop, drop the arms, shake out the hands, and do the relief moves below.',1,'take breaks','elbow']];
+ const keys=[];let n=0;for(const s of segs)n+=s[1];let i=0;for(const s of segs){for(const k of seg(...s)){k.t=i/n;keys.push(k);i++;}}
+ const guitar={id:'guitar',group:'Musician relief',name:'Guitar: right-handed playing',icon:'🎸',dur:44,anchor:'ground',view:[25,8],props:['guitar'],seat:true,base:T,keys,
+  work:['trapUpper','levScap','deltAnt','deltLat','pec','forearmFlex','thenar','handIntr','scm','splenius','biceps'],stab:['rhomboid','trapMid','trapLower','serratus','erector','multifidus','longusColli','infraspinatus'],focus:['shoulder','neck','core']};
+ guitar.prepX=function(){const W=solve(guitar,0);const pel=W.pelvis.p;guitar.geo={sy:W.Lthigh.p[1]-8.5,sz:pel[2]};guitar.seatC=[pel[0],0,pel[2]];};
+ guitar.extra=function(W,t,items){const G_=guitar.geo;if(!G_)return;const{sy,sz}=G_;const Fc=(pts,fill,stroke,o)=>items.push(Object.assign({k:'face',pts,fill,stroke},o||{}));
+  Fc([[-22,sy,sz-16],[22,sy,sz-16],[22,sy,sz+26],[-22,sy,sz+26]],'rgba(52,64,84,.95)','#56657d');items.push(L([0,sy,sz+4],[0,6,sz+4],3.5,'#3a4250'));
+  const ctr=wp(W,'pelvis',[-5,9,15]);const nk=wp(W,'Lhand',[0,-5,1]);let a=sub(nk,ctr);const al=Math.hypot(...a)||1;a=mulS(a,1/al);const zf=[0,0,1];let v=cross(a,zf);const vl=Math.hypot(...v)||1;v=mulS(v,1/vl);
+  const circ=(c0,r)=>{const pts=[];for(let k=0;k<14;k++){const th=k/14*2*Math.PI;pts.push(add(add(c0,mulS(a,Math.cos(th)*r*.92)),mulS(v,Math.sin(th)*r)));}return pts;};
+  const lower=add(ctr,mulS(a,-6)),upper=add(ctr,mulS(a,9));const front=[0,0,3.5];
+  Fc(circ(add(lower,front),14.5),'#b8743c','#6b3e1d');Fc(circ(add(upper,front),10.8),'#c27d43','#6b3e1d');
+  items.push({k:'ball',c:add(add(ctr,mulS(a,4)),[0,0,4.6]),r:3.4,col:'#2a1608'});
+  const nut=add(nk,mulS(a,6)),head_=add(nut,mulS(a,9));items.push(L(add(upper,mulS(a,8)),nut,3.4,'#5b3a1e',{shade:true}),L(nut,head_,4.2,'#3b2412'));
+  for(const o of[-1.2,0,1.2])items.push(L(add(add(lower,mulS(v,o)),[0,0,5]),add(add(nut,mulS(v,o*.6)),[0,0,1.8]),.45,'rgba(240,240,230,.85)'));};
+ EX.push(guitar);
+ // relief moves
+ Object.assign(MOVES,{
+  gtShrug:{name:'Shrug and drop',src:'Musician relief',dur:7,dose:'5 slow rounds',base:{'B.sh.a':6},
+   keys:[{t:0,p:{},cap:'Stand tall, arms by the sides. Breathe in.'},{t:.25,p:{'B.clav.e':14},cap:'Lift both shoulders to the ears for 3 s. The upper trapezius and levator scapulae shorten.'},
+    {t:.55,p:{'B.clav.e':-4},cap:'Exhale and drop. Let the shoulder blades slide down the back: the lower trapezius sets them. The strumming shoulder usually wants to stay up: let it drop the most.'},{t:.85,p:{'B.clav.e':0},cap:'Feel both shoulders level.'}],
+   work:['trapUpper','levScap','trapLower'],stab:['serratus','rhomboid']},
+  gtNeck:{name:'Neck: turn away from the fretboard',src:'Musician relief',dur:10,dose:'3 slow rounds',base:{'B.sh.a':6},
+   keys:[{t:0,p:{},cap:'Stand or sit tall. The head is over the shoulders.'},{t:.2,p:{'neck.t':-34},cap:'Turn the head slowly away from the fretboard side, to the right. Breathe out.'},
+    {t:.4,p:{'neck.t':-20,'neck.s':-16},cap:'Tip the right ear toward the right shoulder. The left side of the neck, which turned to the frets all session, lengthens.'},
+    {t:.6,p:{'neck.t':0,'neck.s':0,'neck.f':6},cap:'Chin tuck: slide the head back, as if you make a double chin. The deep neck flexors (longus colli) wake up.'},{t:.8,p:{'neck.t':24,'neck.f':0},cap:'Turn gently the other way too. Both directions, so the neck is not stuck in one.'}],
+   work:['longusColli','scm','splenius','suboccipitals'],stab:['trapUpper','scalenes']},
+  gtFretOpen:{name:'Fretting arm opener (left)',src:'Musician relief',dur:9,dose:'3 × 3 breaths',base:{'B.sh.a':6},
+   keys:[{t:0,p:{},cap:'Stand tall.'},{t:.25,p:{'L.sh.a':88,'L.el':90,'L.sh.r':60},cap:'Left arm in a goal-post shape, forearm up. The chest and the front deltoid of the fretting arm start to lengthen.'},
+    {t:.5,p:{'L.sh.a':88,'L.el':90,'L.sh.r':70,'chest.t':-16},cap:'Turn the chest away to the right. Draw the left shoulder blade back and down: the rhomboids, middle trapezius and infraspinatus wake up.'},{t:.8,p:{},cap:'Release. This undoes the rolled-in fretting shoulder.'}],
+   work:['rhomboid','trapMid','infraspinatus','teresMinor','trapLower'],stab:['serratus','oblique']},
+  gtPend:{name:'Strumming arm pendulum (right)',src:'Musician relief',dur:8,dose:'30 s',base:{'root.pitch':34,'B.hip.f':34,'B.kn':10,'L.sh.f':40,'L.el':20,'R.sh.f':34},
+   keys:[{t:0,p:{},cap:'Hinge forward a little. Let the strumming arm hang like a rope.'},{t:.25,p:{'R.sh.f':46,'R.sh.a':6},cap:'Sway the body so the arm swings in small circles. The shoulder muscles do not work: the upper trapezius lets go.'},
+    {t:.5,p:{'R.sh.f':24,'R.sh.a':-5}},{t:.75,p:{'R.sh.f':40,'R.sh.a':-6},cap:'Keep it loose. The arm feels heavy and long.'}],
+   work:['erector'],stab:['hamstrings','gluteMax','multifidus']},
+  gtWrist:{name:'Forearm flexor and thumb stretch',src:'Musician relief',dur:9,dose:'2 × 20 s each hand',base:{'B.sh.a':6,'L.sh.f':88,'L.el':2,'R.sh.f':70,'R.el':40},
+   keys:[{t:0,p:{},cap:'Left arm forward, elbow long.'},{t:.25,p:{'L.wr':-62,grip:-1},cap:'Palm forward, fingers up. Draw the fingers and thumb back gently with the other hand. The forearm flexors and the thumb pad lengthen after the squeeze.'},
+    {t:.55,p:{'L.wr':38,grip:1},cap:'Make a soft fist and bend the wrist down. The extensors lengthen.'},{t:.8,p:{'L.wr':0,grip:0},cap:'Shake out the hand.'}],
+   work:['forearmExt','handIntr'],stab:['deltAnt','triceps']},
+  gtLeast:{name:'Least-pressure ladder',src:'Musician relief',dur:12,dose:'2 rounds',base:{'B.sh.a':6,'L.sh.f':38,'L.sh.a':24,'L.sh.r':-28,'L.el':108,'L.wr':20},
+   keys:[{t:0,p:{grip:0},cap:'Fretting hand in playing position (on the guitar, or in the air).'},{t:.15,p:{grip:1},cap:'100%: squeeze as hard as you can for 3 s. Feel the thumb pad and the forearm go hard.'},
+    {t:.35,p:{grip:.7},cap:'70%: the note still rings.'},{t:.52,p:{grip:.45},cap:'45%: still clean.'},{t:.7,p:{grip:.28},cap:'Lighter until the note buzzes. Then add just a little. That is your playing pressure.'},{t:.88,p:{grip:0},cap:'Let go. Most players use much more pressure than the strings need.'}],
+   work:['forearmFlex','thenar','handIntr'],stab:['brachiorad','biceps']},
+  gtTaps:{name:'Light finger taps (thumb to each finger)',src:'Musician relief · mudras',dur:10,dose:'2 rounds, both hands',base:{'B.sh.a':6,'B.sh.f':30,'B.el':70},
+   keys:[{t:0,p:{grip:0},cap:'Hands soft in front of you.'},{t:.15,p:{grip:.6},cap:'Thumb to index (gyan mudra). Touch as lightly as possible.'},{t:.27,p:{grip:.1}},{t:.37,p:{grip:.6},cap:'Thumb to middle finger (shuni mudra).'},{t:.49,p:{grip:.1}},
+    {t:.59,p:{grip:.6},cap:'Thumb to ring finger (prithvi mudra).'},{t:.71,p:{grip:.1}},{t:.81,p:{grip:.6},cap:'Thumb to little finger (varuna mudra). Slow, light and even: this is fine control, not force.'},{t:.93,p:{grip:0}}],
+   work:['thenar','hypothenar','handIntr'],stab:['forearmFlex','forearmExt']},
+  gtSpread:{name:'Finger spread',src:'Musician relief',dur:6,dose:'5 × 3 s',base:{'B.sh.a':6,'B.sh.f':30,'B.el':70},
+   keys:[{t:0,p:{grip:0},cap:'Hands soft.'},{t:.3,p:{grip:-1},cap:'Spread all the fingers and the thumb wide for 3 s. The small muscles between the fingers work; the squeezing muscles let go.'},{t:.7,p:{grip:0},cap:'Relax.'}],
+   work:['handIntr','forearmExt'],stab:['thenar']},
+  gtTwist:{name:'Chest turn, both ways',src:'Musician relief',dur:9,dose:'5 each way',base:{'B.sh.a':6,'B.sh.f':80,'B.el':90},
+   keys:[{t:0,p:{},cap:'Arms crossed in front, hips still.'},{t:.25,p:{'chest.t':30,'spine.t':10,'neck.t':10},cap:'Turn the chest to one side. The obliques turn it; the back muscles guide it.'},
+    {t:.5,p:{},cap:'Back to the middle.'},{t:.75,p:{'chest.t':-30,'spine.t':-10,'neck.t':-10},cap:'Turn the other way. Playing holds the trunk in one twist; this gives it the other direction.'}],
+   work:['oblique','intOblique','multifidus'],stab:['gluteMed','erector']}});
+ for(const k of['gtShrug','gtNeck','gtFretOpen','gtPend','gtWrist','gtLeast','gtTaps','gtSpread','gtTwist']){const m=MOVES[k];m.id='mv_'+k;m.key=k;m.anchor='ground';m.props=[];m.view=[35,10];m.icon='•';m.focus=['shoulder','neck','core'];}
+ COUNTER.guitar={T:'trapUpper',k:['gtShrug','gtNeck','gtFretOpen','gtPend','gtWrist','gtLeast','gtTaps','gtSpread','wallAngel','gtTwist'],why:'level the shoulders, open the fretting side, free the neck, and let the hands go soft'};
+})();
+function drawBalanceHUD(W){if(ex.id!=='guitar'&&ex.counterOf!=='guitar')return;const P=(W&&W._P)||{};const ph=document.body.classList.contains('phone');
+ const dE=(P['R.clav.e']||0)-(P['L.clav.e']||0),cp=P['L.clav.p']||0,nt=Math.abs(P['neck.t']||0),nf=P['neck.f']||0,gr=P.grip||0;
+ const sc=Math.round(clamp(100-(Math.abs(dE)*3+cp*3+nt*1.1+Math.max(0,nf-12)*1.6+Math.max(0,gr-.4)*55+(P['chest.f']||0)*1.2),0,100));
+ const rows=[[`Right shoulder: ${dE>3?'lifted '+Math.round(dE)+'°':'level'}`,dE>3],[`Left shoulder: ${cp>3?'rolled forward':'open'}`,cp>3],[`Head: ${nt>14||nf>18?'turned and dropped':'stacked'}`,nt>14||nf>18],[`Left hand grip: ${Math.round(gr*100)}%`,gr>.55]];
+ const w=ph?178:220,h=30+rows.length*(ph?15:17);const x=camArea.x0+10,y=camArea.y1-h-(ph?10:14);ctx.save();ctx.fillStyle='rgba(6,10,20,.88)';ctx.strokeStyle=sc<60?'rgba(248,113,113,.7)':'rgba(52,211,153,.6)';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,10):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();
+ ctx.textAlign='left';ctx.textBaseline='middle';ctx.font=`800 ${ph?10.5:12}px Inter,system-ui,sans-serif`;ctx.fillStyle=sc<60?'#fca5a5':'#86efac';ctx.fillText(`⚖ LEFT–RIGHT BALANCE ${sc}`,x+10,y+14);
+ ctx.font=`600 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;rows.forEach(([t,bad],i)=>{ctx.fillStyle=bad?'#fca5a5':'#cbd5e1';ctx.fillText((bad?'✕ ':'✓ ')+t,x+10,y+30+i*(ph?15:17));});ctx.restore();}
+
+// =========================================================
+// MODE PICKER + SIMPLE VIEW
+// =========================================================
+const MODES=[['muscle','🎯','Train a muscle','Pick a muscle. See where it is, what it does, and how to wake it up.'],['acts','▦','Activities','Sports, ski, run, climb, desk and daily life.'],
+ ['yoga','🧘','Yoga','A flow built from the areas you choose, with breath.'],['bath','🛁','Bath yoga','Gentle poses in warm water.'],['mudra','🙏','Mudras','Hand seals, with the hand muscles that hold them.'],
+ ['energy','🔆','Breath and channels','Breathe up the back channel and down the front channel.'],['guitar','🎸','Musician relief','Guitar posture, the left–right imbalance, and relief moves.'],
+ ['taichi','☯','Tai chi and qigong','Slow, flowing moves.'],['animal','🐾','Animal mode','Hang, climb, crawl and swing.']];
+let SIMPLE=true;try{const v=localStorage.getItem('ml_simple');if(v!=null)SIMPLE=v==='1';}catch(_){}
+function setSimple(v){SIMPLE=!!v;try{localStorage.setItem('ml_simple',SIMPLE?'1':'0');}catch(_){}const B=document.body.classList;B.toggle('simple',SIMPLE);
+ showGrav=!SIMPLE;$('tGrav').classList.toggle('on',showGrav);zOn=!SIMPLE&&innerWidth>1000;B.toggle('zhide',!zOn);$('tZoom').classList.toggle('on',zOn);
+ const sb=$('tSimple');if(sb)sb.textContent=SIMPLE?'🔬 Full lab':'✨ Simple';document.querySelectorAll('[data-sv]').forEach(b=>b.classList.toggle('on',(b.dataset.sv==='1')===SIMPLE));layoutCam();fitCamera();}
+function openModes(){let el=$('modePick');if(!el){el=document.createElement('div');el.id='modePick';document.body.appendChild(el);}
+ let show=true;try{show=localStorage.getItem('ml_mp')!=='0';}catch(_){}
+ el.innerHTML=`<div class="mpc"><div class="mph"><div><div class="mpt">Muscle Lab</div><div class="mps">What do you want to do?</div></div><button class="b" id="mpX" aria-label="Close">✕</button></div>
+ <div class="mpg">`+MODES.map(([k,ic,n,d])=>`<button class="mpb" data-md="${k}"><span class="mpi">${ic}</span><b>${n}</b><span>${d}</span></button>`).join('')+`</div>
+ <div class="mpf"><span>View:</span><button class="b${SIMPLE?' on':''}" data-sv="1">✨ Simple</button><button class="b${SIMPLE?'':' on'}" data-sv="0">🔬 Full lab</button>
+ <label><input type="checkbox" id="mpShow" ${show?'checked':''}> Show this at the start</label></div></div>`;
+ el.hidden=false;$('mpX').onclick=()=>{el.hidden=true;};el.onclick=e=>{if(e.target===el)el.hidden=true;};
+ el.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>setSimple(b.dataset.sv==='1'));$('mpShow').onchange=e=>{try{localStorage.setItem('ml_mp',e.target.checked?'1':'0');}catch(_){}};
+ el.querySelectorAll('[data-md]').forEach(b=>b.onclick=()=>{el.hidden=true;goMode(b.dataset.md);});}
+function goMode(k){const B=document.body.classList;$('actMenu').hidden=true;if($('modePick'))$('modePick').hidden=true;
+ const act=id=>{const e=EX.find(x=>x.id===id);if(!e)return;B.remove('pick','movesOpen');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();try{history.replaceState(null,'','#act-'+id);}catch(_){}};
+ if(k==='muscle')return goMainMenu();if(k==='acts')return openActs();if(k==='yoga'||k==='bath'||k==='mudra')return enterYoga(k);
+ if(k==='energy'){enterYoga('mudra');setChan(true);return startYoga(['orbit'],'Energy orbit',true);}
+ if(k==='guitar')return act('guitar');if(k==='taichi')return playTaiChi();if(k==='animal')return act('koala');}
+
+
+// =========================================================
+// AUTO-FIT: keep the whole person (head to feet) inside the view
+// =========================================================
+let lastCamUser=-99,CLOSEW=0,CLOSEN=0;
+function closeTick(){const ph=document.body.classList.contains('phone');const n=(feetWanted()?1:0)+(neckWanted()?1:0)+((curMudra()&&document.body.classList.contains('yoga'))?1:0);
+ const zp=$('zoom');const inZoom=!ph&&zOn&&zp&&!zp.hidden&&getComputedStyle(zp).display!=='none';let want=0;
+ if(n&&!ph&&VW>1000&&!inZoom){const full=camArea.x1+CLOSEW-camArea.x0;const per=Math.min(250,(full-300)/n);if(per>=150)want=n*(per+10);}
+ if(want!==CLOSEW||n!==CLOSEN){CLOSEW=want;CLOSEN=n;layoutCam();}}
+function autoFit(W){if(!W||ex.explore||FC||RT-lastCamUser<4||document.body.classList.contains('pick'))return;
+ const pts=[wp(W,'head',[0,22,1]),wp(W,'head',[0,-2,8]),cpt(W,'L','heel'),cpt(W,'R','heel'),cpt(W,'L','toe'),cpt(W,'R','toe'),wp(W,'Lhand',[0,-8,0]),wp(W,'Rhand',[0,-8,0]),W.pelvis.p,W.Lshin.p,W.Rshin.p,W.Lfore.p,W.Rfore.p,W.Lupper.p,W.Rupper.p];
+ let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const q of pts){const p=proj(q);x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}
+ const A=camArea,m=10,aw=A.x1-A.x0-2*m,ah=A.y1-A.y0-2*m;const bw=x1-x0,bh=y1-y0;if(aw<40||ah<40)return;
+ if(bh>ah||bw>aw){cam.zoom*=Math.max(.95,Math.min(aw/bw,ah/bh));}
+ const dy=y0<A.y0+m&&y1<A.y1-m?Math.min((A.y0+m)-y0,(A.y1-m)-y1):y1>A.y1-m&&y0>A.y0+m?-Math.min(y1-(A.y1-m),y0-(A.y0+m)):0;
+ const dx=x0<A.x0+m&&x1<A.x1-m?Math.min((A.x0+m)-x0,(A.x1-m)-x1):x1>A.x1-m&&x0>A.x0+m?-Math.min(x1-(A.x1-m),x0-(A.x0+m)):0;
+ if(dy)cam.cy+=dy*.2;if(dx)cam.cx+=dx*.2;}
+
+// =========================================================
+// NECK CLOSE-UP: a side view of the head and neck when the neck matters
+// =========================================================
+const NECKRX=/\b(neck|head|chin|ear|ears|nod|jaw|skull|gaze)\b/i;let neckUntil=0;
+function neckWanted(){if(FEET==='off')return false;if(document.body.classList.contains('pick')||document.body.classList.contains('yoga'))return false;
+ if(ex.id==='necklab'||ex.counterOf==='necklab'||(ex.explore&&cT&&REGION.neck.includes(cT))||(ex.idT&&REGION.neck.includes(ex.idT)))neckUntil=RT+4;
+ else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>REGION.neck.includes(x)))neckUntil=RT+4;}
+ else if(!ex.explore&&NECKRX.test(capShown||''))neckUntil=RT+4;
+ if(FEET==='on'&&(ex.id==='guitar'||ex.id==='desk'))neckUntil=RT+4;
+ return RT<neckUntil;}
+function drawNeckBox(W){if(!neckWanted()){hideBox('neckBox');return;}const ph=document.body.classList.contains('phone');
+ const w=ph?150:240,h=ph?160:230;const slot=($('feetBox')&&!$('feetBox').hidden)?1:0;const c=floatBox('neckBox',w,h,slot);
+ const mctx=ctx;ctx=c;const sv={M:cam.M,target:cam.target,cx:cam.cx,cy:cam.cy,s:cam.s,zoom:cam.zoom};
+ try{const fw=ap(W.pelvis.R,[0,0,1]);const fyaw=Math.atan2(fw[0],fw[2])/D;const top=wp(W,'head',[0,14,0]),low=wp(W,'chest',[0,6,0]);
+  cam.M=mm(rx(4*D),ry(-(fyaw+90)*D));cam.target=mix(top,low,.5);cam.zoom=1;const span=Math.hypot(...sub(top,low))+12;cam.s=(h-56)/span;cam.cx=w/2;cam.cy=(h-30)/2+14;
+  ctx.fillStyle='#050a14';ctx.beginPath();ctx.roundRect?ctx.roundRect(0,0,w,h,12):ctx.rect(0,0,w,h);ctx.fill();ctx.strokeStyle='rgba(255,79,216,.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.save();ctx.clip();
+  const lowY=low[1]-6;const hs=hits.length;const items=(LASTITEMS||[]).filter(it=>{if(it.k==='tree'||it.fx)return false;const ps=itemPts(it,W);return ps.length&&ps.every(q=>q[1]>=lowY);});
+  for(const it of items)it.z2=itemZ(it,W);items.sort((a,b)=>a.z2-b.z2);for(const it of items)drawItem(it,W,null);hits.length=hs;ctx.globalAlpha=1;ctx.shadowBlur=0;
+  // ear over shoulder plumb line
+  const ear=wp(W,'head',[0,3,-1]),sh=mix(W.Lupper.p,W.Rupper.p,.5);const pe=proj(ear),ps_=proj(sh);const fwd=dot(sub(ear,sh),[fw[0],0,fw[2]]);const P0=W._P||{};const bad=fwd>4.5||(P0['neck.f']||0)>20;
+  ctx.setLineDash([4,4]);ctx.strokeStyle=bad?'#ff6b6b':'#34d399';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(ps_[0],ps_[1]);ctx.lineTo(ps_[0],pe[1]-14);ctx.stroke();ctx.setLineDash([]);
+  for(const[p,col]of[[pe,'#ffd84d'],[ps_,'#7ef9ff']]){ctx.fillStyle=col;ctx.beginPath();ctx.arc(p[0],p[1],4,0,7);ctx.fill();}
+  ctx.restore();
+  const P=W._P||{};const f=Math.round(P['neck.f']||0),t_=Math.round(P['neck.t']||0),s_=Math.round(P['neck.s']||0);
+  ctx.textAlign='left';ctx.textBaseline='middle';ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#ff9be8';ctx.fillText('🔍 HEAD AND NECK · SIDE VIEW',9,12);
+  ctx.font=`700 ${ph?9:10.5}px Inter,system-ui,sans-serif`;ctx.fillStyle=bad?'#fca5a5':'#86efac';ctx.fillText(bad?((P0['neck.f']||0)>20?'✕ Head dropped forward':'✕ Head forward of the shoulders'):'✓ Ear over the shoulder',9,h-(ph?24:30));
+  ctx.fillStyle='#cbd5e1';ctx.font=`600 ${ph?8.5:10}px Inter,system-ui,sans-serif`;ctx.fillText(`nod ${f>0?'down':'up'} ${Math.abs(f)}° · turn ${Math.abs(t_)}° · tilt ${Math.abs(s_)}°`,9,h-(ph?10:13));
+ }finally{Object.assign(cam,sv);ctx=mctx;}}
+
+// =========================================================
+// NOW PLAYING: the left panel follows the exercise on screen
+// =========================================================
+let nowKey='',nowOpen=false;
+function nowBlock(){if(!ex||ex.explore||!ex.blocks)return null;return ex.blocks.find(b=>phase>=b.t0&&phase<b.t1)||ex.blocks[ex.blocks.length-1];}
+function nowTick(){const co=$('coach');if(!co)return;let card=$('nowCard');const B=document.body.classList;
+ const active=!ex.explore&&!B.contains('pick')&&!B.contains('yoga')&&!co.hidden&&(ex.blocks||ex.keys);
+ if(!active){if(card)card.hidden=true;co.classList.remove('nowOn');nowKey='';return;}
+ if(!card){card=document.createElement('div');card.id='nowCard';co.insertBefore(card,co.children[1]);}
+ const b=nowBlock();const bi=b?b.i:-1;const K=ex.K||[];let si=-1,steps=[];
+ if(b){const seen=new Set();K.forEach(k=>{if(k.bi===bi&&k.rep<=1&&k.cue&&!seen.has(k.cue)&&!/^(Get ready|Next)/.test(k.cue)){seen.add(k.cue);steps.push(k);}});
+  for(let i=0;i<steps.length;i++)if(capShown&&capShown.indexOf(steps[i].cue.slice(0,40))>=0)si=i;}
+ else{const seen=new Set();(ex.keys||[]).forEach(k=>{if(k.cap&&!seen.has(k.cap)){seen.add(k.cap);steps.push({cue:k.cap,ok:k.ok});}});for(let i=0;i<steps.length;i++)if(capShown&&capShown.indexOf(steps[i].cue.slice(0,40))>=0)si=i;}
+ const key=ex.name+'|'+bi+'|'+si+'|'+nowOpen;if(key===nowKey){card.hidden=false;return;}nowKey=key;card.hidden=false;co.classList.toggle('nowOn',!nowOpen);
+ const work=b?[...b.ws]:ex.work||[],stab=b?[...b.ss]:(ex.stab||[]).filter(x=>!(ex.work||[]).includes(x));const nm=id=>MDEFK[id]?MDEFK[id].short:id;
+ const chip=(id,col)=>`<button class="nwc" data-m="${id}" style="border-color:${col}">${nm(id)}</button>`;
+ const title=b?b.name:ex.name,sub=b?[b.label,b.src,b.dose].filter(Boolean).join(' · '):(ex.group||'');
+ let why='';if(ex.counterOf&&COUNTER[ex.counterOf])why=`Why: ${COUNTER[ex.counterOf].why}.`;
+ card.innerHTML=`<div class="nwh">▶ NOW PLAYING${b&&ex.blocks.length>1?` · ${bi+1} of ${ex.blocks.length}`:''}</div><div class="nwt">${title}</div><div class="nws">${sub}</div>${why?`<div class="nws">${why}</div>`:''}
+  <div class="nwl"><span style="color:#fca5a5">● Works</span> ${work.slice(0,8).map(id=>chip(id,'#f87171')).join('')}</div>
+  ${stab.length?`<div class="nwl"><span style="color:#fde047">● Steadies</span> ${stab.slice(0,6).map(id=>chip(id,'#facc15')).join('')}</div>`:''}
+  <ol class="nwst">${steps.map((k,i)=>`<li class="${i===si?'on':i<si?'done':''}">${k.ok===0?'✕ ':''}${k.cue}</li>`).join('')}</ol>
+  <button class="b" id="nwMore">${nowOpen?'▴ Hide the muscle coach':'▾ Muscle coach and full list'}</button>`;
+ card.querySelectorAll('.nwc').forEach(x=>x.onclick=()=>{cT=x.dataset.m;nowOpen=true;nowKey='';renderCoach();toast(MDEFK[cT].name+': details below');});
+ $('nwMore').onclick=()=>{nowOpen=!nowOpen;nowKey='';};
+ const on=card.querySelector('li.on');if(on&&on.scrollIntoView&&co.scrollTop<card.offsetTop+card.offsetHeight)try{on.scrollIntoView({block:'nearest'});}catch(_){}}
+
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-1215';
+const BUILD='2026-11-18-1400';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -3204,7 +3588,7 @@ function loop(now){
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();drawWater(W);drawEffort();drawFeet(W);drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawMudraBox(W);drawBalanceHUD(W);autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -3229,7 +3613,8 @@ function init(){
  $('buyPro').onclick=()=>payBtn('pro');$('buyProY').onclick=()=>payBtn(CONFIG.pay.proYear?'proYear':'pro');$('buyCoach').onclick=()=>payBtn('coach');
  $('payGo').onclick=()=>{if(tryCode($('payCode').value))$('pay').hidden=true;else toast('That code does not match.');};
  buildPick();$('pkBack').onclick=goMainMenu;$('rBack').onclick=goMainMenu;$('rX').onclick=()=>{document.body.classList.remove('listOpen');$('tMus').classList.remove('on');sel=null;};
- if(!readHash()){cT='deltLat';enterExplore();enterPick();}addEventListener('hashchange',()=>{readHash();applySettings(location.hash);});
+ setSimple(SIMPLE);
+ if(!readHash()){cT='deltLat';enterExplore();enterPick();let mp=true;try{mp=localStorage.getItem('ml_mp')!=='0';}catch(_){}if(mp)openModes();}addEventListener('hashchange',()=>{readHash();applySettings(location.hash);});
  const setPlay=v=>{playing=v;$('play').textContent=v?'❚❚ Pause':'▶ Play';};
  $('play').onclick=()=>setPlay(!playing);
  $('step').onclick=()=>{setPlay(false);phase=(phase+.01)%1;};
@@ -3243,11 +3628,11 @@ function init(){
  $('recBtn').onclick=recenter;cv.addEventListener('dblclick',recenter);
  $('keyBtn').onclick=()=>{$('colorKey').hidden=!$('colorKey').hidden;};$('keyX').onclick=()=>{$('colorKey').hidden=true;};
  {const map=['con','ecc','iso','str'];document.querySelectorAll('#colorKey .kr').forEach((r,i)=>{if(i<4){r.dataset.st=map[i];r.onclick=()=>setCF(CF===map[i]?'all':map[i]);}});}
- {const fb=$('tFeet');const lab=()=>{fb.textContent='🦶 Feet'+(FEET==='auto'?' · auto':FEET==='on'?' · on':' · off');fb.classList.toggle('on',FEET!=='off');};lab();fb.onclick=()=>{FEET=FEET==='auto'?'on':FEET==='on'?'off':'auto';lab();try{localStorage.setItem('ml_feet',FEET);}catch(_){}toast(FEET==='auto'?'Feet close-up: shows when foot position matters':FEET==='on'?'Feet close-up: always on':'Feet close-up: off');};}
+ {const fb=$('tFeet');const lab=()=>{fb.textContent='🔍 Close-ups'+(FEET==='auto'?' · auto':FEET==='on'?' · on':' · off');fb.classList.toggle('on',FEET!=='off');};lab();fb.onclick=()=>{FEET=FEET==='auto'?'on':FEET==='on'?'off':'auto';lab();try{localStorage.setItem('ml_feet',FEET);}catch(_){}toast(FEET==='auto'?'Close-ups (feet, neck): show when that part matters':FEET==='on'?'Close-ups: always on':'Close-ups: off');};}
  {const rb=$('tRead');rb.classList.toggle('on',READ);rb.onclick=()=>{READ=!READ;rb.classList.toggle('on',READ);try{localStorage.setItem('ml_read',READ?'1':'0');}catch(_){}toast(READ?'Reading pace on: the motion slows down for long instructions':'Reading pace off');};}
  $('cap').addEventListener('click',e=>{if(e.target.closest('button'))return;setPlay(!playing);toast(playing?'Playing':'Paused: read at your own pace, tap again to play');});
  $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
- $('actBtn').onclick=()=>openActs();$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
+ $('actBtn').onclick=()=>openActs();$('modeBtn').onclick=()=>openModes();$('tChan').onclick=()=>{setChan(!CHAN);toast(CHAN?'Channels on: up the back on the inhale, down the front on the exhale':'Channels off');};$('tChan').classList.toggle('on',CHAN);$('tSimple').onclick=()=>{setSimple(!SIMPLE);toast(SIMPLE?'Simple view: only the essentials':'Full lab: all panels and data');};$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
  document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
  setTimeout(()=>applySettings(location.hash),30);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
@@ -3270,7 +3655,7 @@ function init(){
  addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();setPlay(!playing);}if(e.code==='ArrowRight'){setPlay(false);phase=(phase+.01)%1;}if(e.code==='ArrowLeft'){setPlay(false);phase=(phase+.99)%1;}});
  // drag to rotate, click to pick, pinch / wheel to zoom
  const ptrs=new Map();let down=null,moved=false,pinch0=0,zoom0=1;
- cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);down=[e.clientX,e.clientY,cam.yaw,cam.pitch];moved=false;cv.classList.add('drag');
+ cv.addEventListener('pointerdown',e=>{lastCamUser=RT;cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);down=[e.clientX,e.clientY,cam.yaw,cam.pitch];moved=false;cv.classList.add('drag');
   if(ptrs.size===2){const p=[...ptrs.values()];pinch0=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);zoom0=cam.zoom;}});
  cv.addEventListener('pointermove',e=>{mouse=[e.clientX,e.clientY];
   if(ptrs.has(e.pointerId)){ptrs.set(e.pointerId,[e.clientX,e.clientY]);
@@ -3281,7 +3666,7 @@ function init(){
  const up=e=>{ptrs.delete(e.pointerId);cv.classList.remove('drag');if(!moved&&down){const id=pick(e.clientX,e.clientY);sel=id;if(id&&document.body.classList.contains('pick')){choosePicked(id);sel=id;}else if(id&&!$('coach').hidden)openCoach(id);else if(id&&document.body.classList.contains('phone')){document.body.classList.add('listOpen');document.body.classList.remove('movesOpen');}if(id&&innerWidth<=1000){$('right').classList.add('show');$('tMus').classList.add('on');}}down=null;};
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
  cv.addEventListener('pointerleave',()=>{hover=null;mouse=null;});
- cv.addEventListener('wheel',e=>{e.preventDefault();cam.zoom=clamp(cam.zoom*Math.exp(-e.deltaY*.0012),.4,4);},{passive:false});
+ cv.addEventListener('wheel',e=>{e.preventDefault();lastCamUser=RT;cam.zoom=clamp(cam.zoom*Math.exp(-e.deltaY*.0012),.4,4);},{passive:false});
  requestAnimationFrame(loop);
 }
 if(typeof document!=='undefined')init();

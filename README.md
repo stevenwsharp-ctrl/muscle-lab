@@ -106,3 +106,34 @@ When foot position matters (squats, ski stance, jumps, running, foot work, or ca
 - where the weight falls
 
 Use the 🦶 Feet button to set it to auto, on or off.
+
+### ◎ Modes and Simple view
+A mode picker opens at the start: Train a muscle, Activities, Yoga, Bath yoga, Mudras, Breath and channels, Musician relief, Tai chi and qigong, Animal mode.
+- **Simple view** (default) hides the lab panels (zoom, gravity data, layers).
+- **Full lab** shows everything.
+- Reopen the picker any time with ◎ Modes.
+
+### 🙏 Mudras
+16 hand seals (Gyan, Prana, Apana, Prithvi, Shuni, Varuna, Vayu, Shunya, Surya, Heart, Vishnu, Adi, Abhaya, Anjali, Hakini, Dhyana). Each one has:
+- a hand close-up that forms the seal, with element colors on the fingers
+- the hand muscles that hold the seal
+- breath-paced holds
+
+The meanings shown are traditional, not medical claims.
+
+### 🔆 Front and rear channels
+Shows the Daoist microcosmic orbit on the body:
+- The rear channel (Governing Vessel) rises up the spine on the inhale.
+- The front channel (Conception Vessel) descends down the front on the exhale.
+
+A meter shows whether the front body or the back body is lengthening.
+
+### 🎸 Musician relief (guitar)
+- Right-handed playing, tense vs balanced: the strumming shoulder lifts, the fretting shoulder rolls in, the head turns, and the fretting hand squeezes too hard.
+- A left–right balance meter.
+- 10 relief moves, including the least-pressure ladder and thumb-to-finger taps.
+
+### Easier viewing
+- The camera keeps the whole body (head to feet) in view.
+- A head-and-neck side close-up opens for neck work.
+- The left panel shows **Now playing**: the current move, the muscles it works and steadies, and its steps.
