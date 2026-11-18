@@ -137,6 +137,23 @@ body.shared #left{display:none}
 .cshr{padding:4px 7px}
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:rgba(10,20,35,.95);border:1px solid rgba(94,224,255,.5);color:#e6f6ff;padding:8px 14px;border-radius:10px;font-size:13px;z-index:50;transition:all .25s}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#feetBox{position:fixed;z-index:30;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#feetBox canvas{width:100%;height:100%;display:block}
+#idBar{margin:8px 0;background:rgba(40,8,40,.35);border:1px solid rgba(255,79,216,.45);border-radius:12px;padding:7px 9px;color:var(--txt);font-size:calc(12px*var(--tz,1));backdrop-filter:blur(6px)}
+#idBar .idh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+#idBar .idh b{color:#ffb3ef}
+#idBar .idk{font-size:.85em;color:var(--dim);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+#idBar .idk i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-left:5px}
+#idBar .idm{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+#idBar .idc{flex:0 0 auto;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:5px 10px;font:inherit;font-weight:700;cursor:pointer}
+#idBar .idc.now{border-color:#ff4fd8;box-shadow:0 0 10px rgba(255,79,216,.55)}
+#idBar .idc.pin{background:rgba(255,79,216,.25);border-color:#ff4fd8}
+#idBar .idt{margin-top:5px;line-height:1.35;color:#e2e8f0}
+#idBar .dim{color:var(--dim)}
+body.phone #idBar{font-size:calc(12.5px*var(--tz,1));padding:6px 8px}
+body.phone #idBar .idk{display:none}
+body.phone #idBar .idm{flex-wrap:wrap}
+
 #coach{top:14px;left:14px;bottom:96px;width:410px;padding:12px 14px;overflow:auto;z-index:9}
 #coach .chd{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--acc);margin-bottom:4px}
 #cMus{width:100%;background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--line);border-radius:8px;font:inherit;padding:6px}
@@ -326,7 +343,7 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
@@ -960,7 +977,7 @@ function drawMuscle(it,labels){
  const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
  const isSel=sel===mu.d.id,isHov=hover===mu.d.id;
  ctx.globalAlpha=Z?(mu.d.deep?.88:.97):anat?(mu.d.deep&&layer==='all'?.8:.97):(active?.96:.55);
- const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;else if(!Z&&ex.explore&&cT&&!document.body.classList.contains('pick')&&crole!=='target'&&mu.d.id!==cT)ctx.globalAlpha*=(crole&&crole!=='x'?.6:.32);
+ const crole=!Z&&ex.coach?coachRole(mu.d.id):'x';if(!crole&&!ex.explore)ctx.globalAlpha*=.18;if(!Z&&PICKSET&&ex.explore&&!PICKSET.has(mu.d.id))ctx.globalAlpha*=.22;else if(!Z&&ex.explore&&cT&&!document.body.classList.contains('pick')&&crole!=='target'&&mu.d.id!==cT)ctx.globalAlpha*=(crole&&crole!=='x'?.62:.16);
  if(!Z&&ex.effort!=null&&st!=='idle'&&st!=='str'){ctx.globalAlpha*=.35+.65*ex.effort;if(ex.effort>.6){ctx.shadowColor=scol;ctx.shadowBlur=8+14*ex.effort;}}
  if(!Z&&CF!=='all'){if(st===CF){ctx.shadowColor=scol;ctx.shadowBlur=18;}else ctx.globalAlpha*=.25;}
  if(st==='con'||st==='ecc'){ctx.shadowColor=scol;ctx.shadowBlur=(anat||Z?14:10)*clamp(Math.abs(mu.v)*4,.3,1.2);}
@@ -1035,7 +1052,7 @@ function render(W){
  if(svM){cam.M=svM;cam.target=svT;}
  drawVignette();
  if(labels)drawLabels(labels);
- if(showGrav&&!((ex.explore||ex.blocks)&&document.body.classList.contains('phone')))drawGravHUD();
+ if(showGrav&&!((ex.explore||ex.blocks)&&document.body.classList.contains('phone'))&&!idOn())drawGravHUD();
  // hover tip
  if(hover&&mouse){const d=MDEFK[hover];const mu=MUSL[hover];const txt=d.name+' — L: '+STATETXT[MUSK[hover+'L'].state]+' · R: '+STATETXT[MUSK[hover+'R'].state];ctx.font='600 12px system-ui,sans-serif';const tw=ctx.measureText(txt).width+14;
   ctx.fillStyle='rgba(5,10,20,.9)';ctx.fillRect(mouse[0]+14,mouse[1]+10,tw,22);ctx.fillStyle=STATECOL[mu.state];ctx.fillRect(mouse[0]+14,mouse[1]+10,3,22);ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.fillText(txt,mouse[0]+21,mouse[1]+21);}
@@ -1818,7 +1835,7 @@ function renderCoach(){
  if(more.length)h+=`<div class="ch3" style="margin-top:10px">More movements that use the ${d.short.toLowerCase()}</div><div>${more.map(k=>`<div class="cmrow"><button class="b cmore" data-k="${k}">▶ ${MOVES[k].name} <span class="src">${MOVES[k].src}</span></button><button class="b cmshr" data-k="${k}" title="Share this exercise for the ${d.short.toLowerCase()}">🔗</button></div>`).join('')}</div>`;
  h+=`</div><div class="cnote">Chain evidence: dissection studies support the superficial back line and the two functional lines strongly, and parts of the spiral and lateral lines (Wilke et al. 2016). Links from foot posture to the spine are still debated. This is education, not medical advice. If a movement hurts, stop and ask a physical therapist.</div>`;
  h+=brandFormHTML();
- $('cOut').innerHTML=h;wireCoachExtras();wireCF($('cOut'));$('cOut').querySelectorAll('[data-lad]').forEach(b=>b.onclick=()=>playStage(T,+b.dataset.lad));
+ $('cOut').innerHTML='<div id="idBar"></div>'+h;renderIdBar();wireCoachExtras();wireCF($('cOut'));$('cOut').querySelectorAll('[data-lad]').forEach(b=>b.onclick=()=>playStage(T,+b.dataset.lad));
  if(document.body.classList.contains('shared')){const ps=$('cPlanSec'),tg=$('cOut').querySelector('.ctgt');if(ps&&tg)tg.after(ps);$('coach').scrollTop=0;}
  if(ex.explore){ex.coach=cPlan.R;const zr=REG2ZOOM[cPlan.R.reg];if(zr&&zr!==zReg){zReg=zr;TRACE.ids=[];buildZTabs();}}
  const rp=$('replayShare');if(rp)rp.onclick=()=>{if(!/^#(plan|move)-/.test(location.hash))try{history.replaceState(null,'',planHash(cT,cGoal));}catch(_){}readHash();};
@@ -1869,7 +1886,7 @@ function readHash(){
  speed=.75;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x.dataset.s==='0.75'));playing=true;return true;}
 function initCoach(){
  const s=$('cMus');let h='';for(const r in REGION){h+=`<optgroup label="${REGNAME[r]}">`+REGION[r].map(id=>`<option value="${id}">${MDEFK[id].name}</option>`).join('')+'</optgroup>';}s.innerHTML=h;
- s.onchange=()=>{cT=s.value;renderCoach();};
+ s.onchange=()=>showMuscle(s.value);
  document.querySelectorAll('.cg').forEach(b=>b.onclick=()=>{cGoal=b.dataset.g;document.querySelectorAll('.cg').forEach(x=>x.classList.toggle('on',x===b));renderCoach();});
  $('coachX').onclick=()=>{$('coach').hidden=true;syncSheet();fitCamera();};
  $('cMin').onclick=()=>{const m=document.body.classList.toggle('sheetMini');$('coach').scrollTop=0;$('cMin').textContent=m?'▴':'▾';syncSheet();};
@@ -2629,13 +2646,14 @@ function currentHash(){
  if(EX.includes(ex))return'#act-'+ex.id;return'';}
 function currentTitle(){if(ex.counterOf)return'Counter moves for '+EX.find(e=>e.id===ex.counterOf).name;if(ex.explore)return MDEFK[sel&&MDEFK[sel]?sel:cT].name+' · Muscle coach';return ex.name;}
 // shared links carry the viewer settings after '&' in the #hash: speed, view, layers, toggles, breath, frame
-function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace};
+function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET};
  if(!sweep||orbit){o.cy=Math.round(((cam.yaw%360)+360)%360);o.cp=Math.round(cam.pitch);}if(orbit)o.ob=1;if(Math.abs(cam.zoom-1)>.02)o.cz=+cam.zoom.toFixed(2);
  if(ex.env==='run')o.rs=runSurf;if(!playing){o.pa=1;o.p=+phase.toFixed(3);}
  return'&'+Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');}
 function applySettings(hs){const i=hs.indexOf('&');if(i<0)return;const q=new URLSearchParams(hs.slice(i+1));const on=k=>q.get(k)==='1';const B=document.body.classList;
  if(q.has('s')){const v=+q.get('s');if(v>0&&v<=2){speed=v;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',+x.dataset.s===v));}}
  if(q.has('sw'))setSweep(on('sw'));
+ if(q.has('ft')&&/^(auto|on|off)$/.test(q.get('ft'))){FEET=q.get('ft');const fb=$('tFeet');if(fb){fb.textContent='🦶 Feet · '+FEET;fb.classList.toggle('on',FEET!=='off');}}
  if(q.has('ly')){const b=document.querySelector('.ly[data-l="'+q.get('ly')+'"]');if(b)b.click();}
  if(q.has('an')&&on('an')!==anat)$('tAnat').click();
  if(q.has('lb')&&on('lb')!==showLabels)$('tLab').click();
@@ -2720,9 +2738,9 @@ function whereText(T){const f=muscleFacing(T);if(!f)return'';const y=((f.yaw%360
 function focusOn(T){if(!ex.explore||document.body.classList.contains('pick'))return;const f=muscleFacing(T);if(!f)return;const ph=document.body.classList.contains('phone');
  let yaw=f.yaw;if(Math.abs(yaw)>20&&Math.abs(yaw)<160)yaw=yaw*.85;fitCamera();const base=cam.target.slice();
  const W=solve(ex,phase);const m=MUSK[T+'L'];let c=[0,0,0],n=0;for(const st of m.strands)for(const q of strandPts(W,st)){c=add(c,q);n++;}c=mulS(c,1/n);
- FC={yaw,pitch:8,zoom:ph?1.9:1.45,target:mix(base,c,ph?.9:.6),t0:RT};orbit=false;$('orbit').classList.remove('on');}
+ FC={yaw,pitch:8,zoom:ph?1.45:1.12,target:mix(base,c,ph?.9:.6),t0:RT};orbit=false;$('orbit').classList.remove('on');}
 function stepFocusCam(dt){if(!FC)return;const k=1-Math.exp(-dt*4);let dy=((FC.yaw-cam.yaw+540)%360)-180;cam.yaw+=dy*k;cam.pitch+=(FC.pitch-cam.pitch)*k;cam.zoom+=(FC.zoom-cam.zoom)*k;cam.target=mix(cam.target,FC.target,k);if(RT-FC.t0>2.5)FC=null;}
-function drawFocus(W){if(!ex.explore||!cT||document.body.classList.contains('pick'))return;const S=Math.sin(cam.yaw*D)>=0?'L':'R';const m=MUSK[cT+S];if(!m)return;
+function drawFocus(W){if(!(ex.explore||ex.idT===cT)||!cT||document.body.classList.contains('pick'))return;const S=Math.sin(cam.yaw*D)>=0?'L':'R';const m=MUSK[cT+S];if(!m)return;
  const pts=[];let c=[0,0,0],n=0;const O=[],I_=[];for(const st of m.strands){const q=strandPts(W,st);q.forEach(v=>{c=add(c,v);n++;});O.push(proj(q[0]));I_.push(proj(q[q.length-1]));}c=proj(mulS(c,1/n));
  const pulse=.5+.5*Math.sin(RT*3);ctx.save();
  // spotlight: darken the rest of the screen
@@ -2735,11 +2753,11 @@ function drawFocus(W){if(!ex.explore||!cT||document.body.classList.contains('pic
   if(i===0){const tx=p[0]+(p[0]<c[0]?-10:10);ctx.textAlign=p[0]<c[0]?'right':'left';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(lab,tx,p[1]);ctx.fillStyle=col;ctx.fillText(lab,tx,p[1]);}});}
  // callout label
  const d=MDEFK[cT];const left=c[0]>(camArea.x0+camArea.x1)/2;const lx=left?Math.max(camArea.x0+12,c[0]-rad*1.9-150):Math.min(camArea.x1-12-200,c[0]+rad*1.9);const ly=clamp(c[1]-rad*1.1,camArea.y0+10,camArea.y1-70);
- ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;const t1=d.short,w1=ctx.measureText(t1).width;ctx.font=`600 ${ph?10:11.5}px Inter,system-ui,sans-serif`;const t2=(whereText(cT)+' · '+REGNAME[regionOf(cT)]).toUpperCase();const w=Math.max(w1,ctx.measureText(t2).width)+22;
+ ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;const t1=d.short,w1=ctx.measureText(t1).width;ctx.font=`600 ${ph?10:11.5}px Inter,system-ui,sans-serif`;const IMn=IDMODES.find(x=>x[0]===(m.state||'idle'));const t2=(whereText(cT)+' · '+REGNAME[regionOf(cT)]).toUpperCase()+(IMn?'  ·  NOW: '+IMn[1]+' '+IMn[2].toUpperCase():'');const w=Math.max(w1,ctx.measureText(t2).width)+22;
  const bx=left?lx:lx,by=ly;ctx.strokeStyle='rgba(255,79,216,.8)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(c[0],c[1]);ctx.lineTo(left?bx+w:bx,by+22);ctx.stroke();
  ctx.fillStyle='rgba(20,6,26,.88)';ctx.beginPath();ctx.roundRect?ctx.roundRect(bx,by,w,ph?40:46,10):ctx.rect(bx,by,w,46);ctx.fill();ctx.strokeStyle='#ff4fd8';ctx.stroke();
  ctx.textAlign='left';ctx.fillStyle='#ffe0f7';ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;ctx.fillText(t1,bx+11,by+(ph?14:16));ctx.fillStyle='#f0abfc';ctx.font=`600 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;ctx.fillText(t2,bx+11,by+(ph?30:34));
- ctx.restore();}
+ ctx.restore();drawRoleTags(W,S,c,[bx,by,w,ph?40:46]);}
 // CONTRACTION FOCUS: show and train one type of muscle action
 var CF='all';
 const CTYPES={
@@ -2854,11 +2872,149 @@ Object.assign(MOVES,{
   keys:[{t:0,p:{},cap:'Lie on your side, hips and knees bent, feet together.'},{t:.4,p:{'L.hip.r':-38,'L.hip.a':16},cap:'Open the top knee like a clamshell, feet together. The glute medius and deep rotators work at low load.'},{t:.7,p:{},cap:'Close slowly.'}],
   work:['gluteMed','piriformis','gluteMax'],stab:['QL','oblique']}});
 for(const k of['wallAngel','deadBug','sideLift','clam']){const m=MOVES[k];m.id='mv_'+k;m.key=k;m.anchor=m.anchor||'ground';m.props=[];m.view=m.anchor==='floor'?[60,22]:[35,10];m.icon='•';m.focus=['core','hip','shoulder'];}
+
+// MUSCLE ID: show the selected muscle on the body, its connections, its roles and the ways it works
+const ACTW={'sh.flex':['lift the arm forward','raising the arm to reach a shelf','lowering a weight to the front slowly','holding the arms out in front','arm behind the back'],
+ 'sh.ext':['pull the arm back and down','the pull in a row','letting the arm rise slowly under a cable','a dead hang with the arms back','reaching overhead'],
+ 'sh.abd':['lift the arm out to the side','a side raise','lowering the arm slowly from the side','Warrior II arms','arm across the chest'],
+ 'sh.add':['pull the arm in to the body','the pull in a pull-up','lowering slowly from a pull-up','squeezing a ball under the arm','arm overhead, side bend'],
+ 'sh.ir':['turn the arm in','a band pull across the belly','letting the band turn the arm out slowly','pressing the palm into the belly','the sleeper stretch, reversed'],
+ 'sh.er':['turn the arm out','a band turn-out at the elbow','letting the band turn the arm in slowly','holding a band out','the sleeper stretch'],
+ 'sh.habd':['open the arm back at shoulder height','a reverse fly','closing the arms slowly','arms open in a T','arm across the chest'],
+ 'sh.hadd':['bring the arm across the chest','a push-up or a hug','lowering into a push-up','pressing the palms together','a doorway stretch'],
+ 'scap.elev':['lift the shoulder blade','a shrug','lowering a heavy bag slowly','carrying a heavy bag','ear away from the shoulder'],
+ 'scap.dep':['pull the shoulder blade down','a dip or a hang to set the shoulders','lowering into a dip','holding the shoulders down in a plank','a dead hang, relaxed'],
+ 'scap.ret':['pull the shoulder blades together','the end of a row','letting the blades open slowly','holding the blades back','a hug stretch, upper back round'],
+ 'scap.prot':['push the shoulder blade forward','the top of a push-up plus','lowering from a push-up plus','a plank, back wide','blades squeezed together'],
+ 'scap.upr':['turn the shoulder blade up','reaching overhead','lowering the arms from overhead','holding the arms overhead','arms down by the side'],
+ 'scap.downr':['turn the shoulder blade down','pulling down from overhead','letting the arms float up','hanging with the blades set','arms overhead'],
+ 'el.flex':['bend the elbow','a curl or a pull-up','lowering a curl slowly','holding a bag with the elbow bent','arm straight behind the back'],
+ 'el.ext':['straighten the elbow','a push-up or a press','lowering into a push-up','a plank on straight arms','elbow fully bent overhead'],
+ 'wr.flex':['bend the wrist toward the palm','gripping and curling','lowering a wrist curl','a strong grip','fingers back, palm forward'],
+ 'wr.ext':['lift the back of the hand','lifting a pan','lowering a reverse wrist curl','holding a tool level','fist bent down'],
+ 'tr.flex':['curl the trunk forward','a sit-up or crunch','lowering back slowly from a sit-up','a hollow hold or plank','a back bend (cobra)'],
+ 'tr.ext':['straighten the back','standing up from a bend','bending forward with control','holding a flat back in a hinge','a forward fold, relaxed'],
+ 'tr.rot':['turn the trunk','a twist or a throw','controlling the trunk on the way back','resisting a twist (a pallof press)','a seated twist'],
+ 'tr.side':['bend the trunk to the side','a side bend up','lowering into a side bend','a side plank','a standing side bend away'],
+ 'neck.flex':['nod the chin down','lifting the head from the floor','lowering the head back slowly','a chin tuck hold','looking up, relaxed'],
+ 'neck.ext':['lift the head back','looking up','lowering the chin slowly','holding the head up on all fours','chin to chest'],
+ 'neck.rot':['turn the head','looking over the shoulder','turning back slowly against the hand','pressing into the hand without moving','turning far the other way'],
+ 'neck.side':['tip the ear to the shoulder','lifting the head side-lying','lowering the head slowly side-lying','pressing the head into the hand','ear to the other shoulder'],
+ 'hip.flex':['lift the knee','a high knee or step up','lowering the leg slowly','holding a knee up (tree pose leg)','a low lunge'],
+ 'hip.ext':['push the hip forward','standing up, a bridge, push-off in running','lowering into a squat or hinge','holding a bridge','a deep squat or forward fold'],
+ 'hip.abd':['lift the leg out to the side','a side-lying leg lift','lowering the leg slowly','standing on one leg, pelvis level','legs crossed, hip across'],
+ 'hip.add':['squeeze the legs together','a ball squeeze or a ski edge','opening the legs slowly','squeezing a pillow between the knees','wide-leg forward fold'],
+ 'hip.er':['turn the leg out','a clamshell','closing slowly from a clamshell','knees pressed out in a squat','pigeon reversed: knee in'],
+ 'hip.ir':['turn the leg in','turning the foot in on one leg','turning out slowly','holding the knee in line','pigeon pose'],
+ 'kn.ext':['straighten the knee','standing up from a squat','sitting down slowly or landing','a wall sit','heel to the buttock'],
+ 'kn.flex':['bend the knee','a hamstring curl','lowering a curl or a Nordic slowly','holding the heel toward the buttock','a forward fold with straight legs'],
+ 'ank.pf':['point the foot, rise on the toes','a calf raise or push-off','lowering the heels slowly','holding on the toes','heel down off a step'],
+ 'ank.df':['lift the toes and foot up','walking on the heels','letting the foot point slowly','holding the toes up','kneeling on the tops of the feet'],
+ 'ft.ev':['turn the sole out','pushing the foot out against a band','letting the band turn the foot in','balancing on one foot','sole turned in'],
+ 'ft.inv':['turn the sole in, lift the arch','lifting the arch (short foot)','letting the arch lower slowly','holding the arch up on one leg','sole turned out'],
+ 'toe.flex':['curl the toes, grip the floor','picking up a towel with the toes','letting the toes lift slowly','pressing the toes into the floor','toes bent back'],
+ 'toe.ext':['lift the toes','lifting the toes off the floor','lowering the toes slowly','holding the toes up','toes curled under'],
+ 'toe.abd':['spread the toes','spreading the toes wide','letting them close slowly','holding the toes spread','toes squeezed'],
+ 'finger.spread':['spread the fingers','spreading against a band','closing slowly','holding the fingers wide','fist closed'],
+ 'thumb.opp':['bring the thumb to the fingers','a pinch','opening the pinch slowly','holding a pinch','thumb pulled back'],
+ 'breath.in':['breathe in','a full slow breath in','a slow breath out','holding a gentle breath','a full breath out'],
+ 'breath.out':['breathe out','a strong breath out','a slow breath in','holding a breath out','a full breath in'],
+ 'pelvis.hike':['lift one side of the pelvis','hip hike on a step','lowering the hip slowly','holding the pelvis level','side bend away'],
+ 'pelvis.level':['keep the pelvis level','single-leg stand','controlled hip drop','holding a level pelvis','hip dropped, relaxed']};
+const IDMODES=[['con','⬆','Shorten','Concentric'],['ecc','⬇','Lengthen under load','Eccentric'],['iso','⏸','Hold','Isometric'],['str','🌬','Stretch','Stretch'],['idle','😴','Rest','Rest']];
+function idOn(){return !!(cT&&(ex.explore||ex.idT===cT)&&!document.body.classList.contains('pick')&&!document.body.classList.contains('yoga'));}
+function idText(T,k){const a=ACTW[(ACTS[T]||[])[0]];const nm=MDEFK[T].short.toLowerCase();if(!a)return'';
+ return k==='con'?`The ${nm} shortens to ${a[0]}. Example: ${a[1]}.`:k==='ecc'?`The ${nm} gets longer while it works, to brake the movement. Example: ${a[2]}.`:k==='iso'?`The ${nm} works but does not change length. Example: ${a[3]}.`:k==='str'?`The ${nm} gets long and relaxed. Example: ${a[4]}.`:`The ${nm} is quiet. The bones and other muscles hold the body. Rest lets it recover and grow.`;}
+function showMuscle(T){if(!MDEFK[T])return;const B=document.body.classList;B.remove('pick');PICKSET=null;cT=T;cPlan=null;enterExplore();buildPick&&buildPick();renderIdBar();try{history.replaceState(null,'','#muscle-'+T);}catch(_){}}
+function idDemo(k){const T=cT;if(k==='idle'){enterExplore();renderIdBar();return;}const mv=stageMoves(T,1)[0]||stageMoves(T,2)[0];if(!mv){toast('No demo move for this muscle yet.');return;}
+ const R=rolesFor(T);const m=tempoMove(mv.m,T,k==='con'?'con':k);const IM=IDMODES.find(x=>x[0]===k);
+ const e=buildPlanEx(T,{R,blocks:[{m,label:IM[1]+' '+IM[3],k:mv.k,reps:2}],noCF:true},`${IM[1]} ${IM[3]} · ${MDEFK[T].short}`);e.idT=T;e.idMode=k;selectEx(e);sel=T;renderIdBar();}
+let idLast='';
+function renderIdBar(){const el=$('idBar');if(!el)return;
+ if(!idOn()){el.hidden=true;idLast='';return;}el.hidden=false;const T=cT;const pin=ex.idMode||'';
+ el.innerHTML=`<div class="idh"><b>How the ${MDEFK[T].short} works</b><span class="idk"><i style="background:#ff4fd8"></i>this muscle<i style="background:${ROLECOL.syn}"></i>helpers<i style="background:${ROLECOL.ant}"></i>opposers<i style="background:${ROLECOL.stab}"></i>steadiers</span></div>
+ <div class="idm">`+IDMODES.map(([k,ic,n,t])=>`<button class="idc${pin===k?' pin':''}" data-k="${k}" title="${t}: ${idText(T,k).replace(/"/g,'')}">${ic} ${n}</button>`).join('')+`</div><div class="idt" id="idTxt">${pin?'▶ '+idText(T,pin):'Tap a way of working to see it on the body. <span class="dim">Now: </span><b id="idNow"></b>'}</div>`;
+ el.querySelectorAll('.idc').forEach(b=>b.onclick=()=>idDemo(b.dataset.k));
+ el.onmouseover=e=>{const b=e.target.closest('.idc');if(b&&!ex.idMode)$('idTxt').innerHTML=IDMODES.find(x=>x[0]===b.dataset.k)[3]+': '+idText(T,b.dataset.k);};
+ el.onmouseleave=()=>{if(!ex.idMode)renderIdBar();};idLast='';}
+function idTick(){const el=$('idBar');if(!el)return;const on=idOn();if(el.hidden===on){renderIdBar();}if(!on)return;
+ const S=Math.sin(cam.yaw*D)>=0?'L':'R';const mu=MUSK[cT+S];if(!mu)return;const st=mu.state==='idle'?'idle':mu.state;if(st===idLast)return;idLast=st;
+ el.querySelectorAll('.idc').forEach(b=>b.classList.toggle('now',b.dataset.k===st));const n=$('idNow');if(n){const IM=IDMODES.find(x=>x[0]===st);n.textContent=IM?IM[1]+' '+IM[3]:'';}}
+function drawRoleTags(W,S,c,box){const R=ex.coach;if(!R)return;const ph=document.body.classList.contains('phone');const tags=[];
+ const pick=(ids,role,word,max)=>{let n=0;for(const id of ids){if(n>=max)break;const m=MUSK[id+S];if(!m||id===cT)continue;let q=[0,0,0],k=0;for(const st of m.strands)for(const v of strandPts(W,st)){q=add(q,v);k++;}const p=proj(mulS(q,1/k));
+  if(p[0]<camArea.x0+20||p[0]>camArea.x1-20||p[1]<camArea.y0||p[1]>camArea.y1-60)continue;tags.push({p,role,t:word+' · '+MDEFK[id].short});n++;}};
+ pick(R.syn,'syn','helper',ph?1:2);pick(R.ant,'ant','opposer',ph?1:2);pick(R.stab,'stab','steadier',ph?1:2);
+ ctx.save();ctx.font=`700 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.textBaseline='middle';const placed=[box];
+ for(const g of tags){const col=ROLECOL[g.role];ctx.strokeStyle=col;ctx.globalAlpha=.55;ctx.setLineDash([3,5]);ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(c[0],c[1]);ctx.lineTo(g.p[0],g.p[1]);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(g.p[0],g.p[1],4,0,7);ctx.fill();
+  const w=ctx.measureText(g.t).width+14,h=ph?18:20;let x=g.p[0]+(g.p[0]>c[0]?12:-12-w),y=g.p[1]-h/2;
+  for(let tries=0;tries<8;tries++){const hit=placed.find(b=>x<b[0]+b[2]&&x+w>b[0]&&y<b[1]+b[3]&&y+h>b[1]);if(!hit)break;y=hit[1]+hit[3]+3;}
+  x=clamp(x,camArea.x0+4,camArea.x1-w-4);placed.push([x,y,w,h]);
+  ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(g.p[0],g.p[1]);ctx.lineTo(x+(x>g.p[0]?0:w),y+h/2);ctx.stroke();
+  ctx.fillStyle='rgba(6,12,24,.86)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,7):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();ctx.fillStyle=col;ctx.textAlign='left';ctx.fillText(g.t,x+7,y+h/2+.5);}
+ ctx.restore();}
+
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+// FEET CLOSE-UP: a second camera on the feet when foot position, arch or alignment matters
+let FEET='auto';try{FEET=localStorage.getItem('ml_feet')||'auto';}catch(_){}
+const FOOTRX=/\b(foot|feet|arch|arches|toe|toes|heel|heels|ankle|ankles|tripod|sole|soles|knee over|knees over|knees track|knee track|knees out|knee caves|knees cave|ball of|balls of|stance|footwork|edge|edges|grip the floor|pronat|supinat|short foot)\b/i;
+let feetUntil=0;const FEETEX=new Set(['squat','skistance','ski','mogul','powder','jump','cliff','run','rope','dunk','footlab','stack','box']);
+function feetWanted(){if(FEET==='off')return false;if(FEET==='on')return true;if(document.body.classList.contains('pick'))return false;
+ if(ex.id==='footlab'||(ex.idT&&REGION.foot.includes(ex.idT))||(ex.explore&&cT&&(REGION.foot.includes(cT)||['tibAnt','peroneals','tibPost','gastroc','soleus','flexHalLong','extDigLong'].includes(cT))))feetUntil=RT+4;
+ else if(FEETEX.has(ex.id))feetUntil=RT+4;
+ else if(!ex.explore&&FOOTRX.test(capShown||''))feetUntil=RT+4;
+ else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>REGION.foot.includes(x)))feetUntil=RT+4;}
+ return RT<feetUntil;}
+function drawFeet(W){let box=$('feetBox');const want=feetWanted();if(!want){if(box)box.hidden=true;return;}const ph=document.body.classList.contains('phone');
+ const w=ph?150:250,h=ph?140:210;let X=camArea.x1-w-(ph?6:12),Y=camArea.y1-h-(ph?6:12);
+ const zp=$('zoom');if(!ph&&zOn&&zp&&!zp.hidden&&getComputedStyle(zp).display!=='none'){const r=zp.getBoundingClientRect();if(r.width>200&&r.height>h+60){X=r.right-w-10;Y=r.bottom-h-10;}}
+ if(!box){box=document.createElement('div');box.id='feetBox';box.innerHTML='<canvas></canvas>';box.title='Feet close-up. Tap to change: auto, on, off.';box.onclick=()=>{const fb=$('tFeet');if(fb)fb.click();};document.body.appendChild(box);}
+ box.hidden=false;box.style.left=X+'px';box.style.top=Y+'px';box.style.width=w+'px';box.style.height=h+'px';const fc=box.firstChild;const dp=Math.min(2,dpr);if(fc.width!==Math.round(w*dp)){fc.width=Math.round(w*dp);fc.height=Math.round(h*dp);}
+ const mctx=ctx;ctx=fc.getContext('2d');ctx.setTransform(dp,0,0,dp,0,0);ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.setLineDash([]);ctx.clearRect(0,0,w,h);const x=0,y=0;
+ try{drawFeetIn(W,x,y,w,h,ph);}finally{ctx=mctx;}}
+function drawFeetIn(W,x,y,w,h,ph){
+ const sv={M:cam.M,target:cam.target,cx:cam.cx,cy:cam.cy,s:cam.s,zoom:cam.zoom,yaw:cam.yaw,pitch:cam.pitch};
+ const fw=ap(W.pelvis.R,[0,0,1]);const fyaw=Math.atan2(fw[0],fw[2])/D;
+ const kL=W.Lshin.p,kR=W.Rshin.p;const fp=[];for(const S of['L','R'])for(const k of['heel','ball','toe'])fp.push(cpt(W,S,k));
+ let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];for(const q of[...fp,kL,kR])for(let j=0;j<3;j++){mn[j]=Math.min(mn[j],q[j]);mx[j]=Math.max(mx[j],q[j]);}
+ const lowY=Math.min(mn[1],0);const topY=lowY+.62*(mx[1]-lowY);mx[1]=topY;cam.target=[(mn[0]+mx[0])/2,(lowY+topY)/2,(mn[2]+mx[2])/2];
+ cam.M=mm(rx(32*D),ry(-fyaw*D));cam.cx=x+w/2;cam.cy=y+(h-(ph?26:44))/2+16;cam.zoom=1;
+ const spanX=Math.hypot(mx[0]-mn[0],mx[2]-mn[2])+14,spanY=(mx[1]-lowY)+10;cam.s=Math.min((h-(ph?50:70))/spanY,(w-14)/spanX);
+ ctx.save();ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,12):ctx.rect(x,y,w,h);ctx.fillStyle='#040912';ctx.fill();ctx.strokeStyle='rgba(126,249,255,.55)';ctx.lineWidth=1.5;ctx.stroke();ctx.clip();
+ // floor
+ const gy=0;ctx.strokeStyle='rgba(126,249,255,.13)';ctx.lineWidth=1;for(let i=-4;i<=4;i++){const a=proj([cam.target[0]+i*10,gy,cam.target[2]-40]),b=proj([cam.target[0]+i*10,gy,cam.target[2]+40]);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();const c=proj([cam.target[0]-40,gy,cam.target[2]+i*10]),d=proj([cam.target[0]+40,gy,cam.target[2]+i*10]);ctx.beginPath();ctx.moveTo(c[0],c[1]);ctx.lineTo(d[0],d[1]);ctx.stroke();}
+ // body below the knees
+ const top=Math.max(kL[1],kR[1])+6;const hs=hits.length;const items=(LASTITEMS||[]).filter(it=>{if(it.k==='tree'||it.fx||it.k==='face')return false;const ps=itemPts(it,W);return ps.length&&ps.every(q=>q[1]<=top);});
+ for(const it of items)it.z2=itemZ(it,W);items.sort((a,b)=>a.z2-b.z2);const ZM=ZMODE;for(const it of items)drawItem(it,W,null);hits.length=hs;
+ // tripod, knee line, arch, weight
+ const G=gravityCalc(W);const msg=[];let worst=0;
+ for(const S of['L','R']){const m=S==='L'?1:-1;const heel=cpt(W,S,'heel'),big=wp(W,S+'foot',[-3*m,-8,10.5]),lit=wp(W,S+'foot',[3.6*m,-8,9.2]),toe2=wp(W,S+'toes',[-.8*m,-.5,4]);
+  const onGround=Math.min(heel[1],big[1])<6;const ph3=[heel,big,lit].map(proj);
+  ctx.fillStyle=onGround?'rgba(52,211,153,.16)':'rgba(255,255,255,.06)';ctx.strokeStyle=onGround?'rgba(52,211,153,.75)':'rgba(255,255,255,.3)';ctx.lineWidth=1.2;ctx.beginPath();ph3.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fill();ctx.stroke();
+  [['#facc15',ph3[0]],['#34d399',ph3[1]],['#5fb4ff',ph3[2]]].forEach(([c,p])=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(p[0],p[1],ph?3:3.6,0,7);ctx.fill();});
+  // knee over the second toe: medial offset of the knee from the foot line
+  const knee=W[S+'shin'].p,ank=W[S+'foot'].p;const ax=sub(toe2,heel);ax[1]=0;const al=Math.hypot(ax[0],ax[2])||1;const med=[ax[2]/al*m,0,-ax[0]/al*m];
+  let medSign=dot(sub(big,lit),med)>0?1:-1;const d=dot(sub(knee,toe2),med)*medSign;const hip=W[S+'thigh'].p;const u1=sub(knee,hip),u2=sub(ank,knee);const bent2=Math.acos(clamp(dot(u1,u2)/((Math.hypot(...u1)*Math.hypot(...u2))||1),-1,1))/D>22;
+  const st=!onGround||!bent2?0:d>3.2?2:d<-4.5?1:0;worst=Math.max(worst,st);const col=st===2?'#ff4d4d':st===1?'#fbbf24':'#34d399';
+  const pk=proj(knee),pt=proj(toe2);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(pk[0],pk[1]);ctx.lineTo(pt[0],pt[1]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.arc(pk[0],pk[1],4,0,7);ctx.fill();
+  // arch on the inner side
+  const archUp=st===2?.8:4.2;const a0=proj(wp(W,S+'foot',[-2.6*m,-7.6,-3])),a1=proj(wp(W,S+'foot',[-3*m,-8,9])),am=proj(wp(W,S+'foot',[-3.4*m,-8+archUp,3.5]));
+  ctx.strokeStyle=st===2?'#ff4d4d':'#2dd4bf';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(a0[0],a0[1]);ctx.quadraticCurveTo(2*am[0]-(a0[0]+a1[0])/2,2*am[1]-(a0[1]+a1[1])/2,a1[0],a1[1]);ctx.stroke();
+  // weight on this foot: where the line of gravity falls between heel and ball
+  if(onGround){const fa=sub(mix(big,lit,.5),heel);const u=clamp(((G.COM[0]-heel[0])*fa[0]+(G.COM[2]-heel[2])*fa[2])/((fa[0]**2+fa[2]**2)||1),-.2,1.2);const wpnt=proj(add(heel,mulS(fa,clamp(u,0,1))));
+   const pul=.5+.5*Math.sin(RT*4);ctx.fillStyle=`rgba(255,79,216,${.55+.35*pul})`;ctx.beginPath();ctx.arc(wpnt[0],wpnt[1],(ph?3.5:4.5)+pul*1.5,0,7);ctx.fill();if(S==='L')msg.w=u<.25?'heels':u>.75?'front of the foot':'middle of the foot';}}
+ // text
+ ctx.textAlign='left';ctx.textBaseline='middle';ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#7ef9ff';ctx.fillText('🦶 FEET CLOSE-UP',x+9,y+12);
+ ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`;ctx.fillStyle=worst===2?'#ff8080':worst===1?'#fcd34d':'#86efac';
+ ctx.fillText(worst===2?'✕ Knee falls in: arch drops':worst===1?'Knee is outside the toes':'✓ Knee over the 2nd toe',x+9,y+h-(ph?22:40));
+ ctx.fillStyle='#cbd5e1';if(msg.w)ctx.fillText('Weight: '+msg.w,x+9,y+h-(ph?9:26));
+ if(!ph){let tx=x+9;for(const[c,t]of[['#facc15','● heel  '],['#34d399','● big toe  '],['#5fb4ff','● little toe  '],['#2dd4bf','⌒ arch']]){ctx.fillStyle=c;ctx.fillText(t,tx,y+h-11);tx+=ctx.measureText(t).width;}}
+ ctx.restore();Object.assign(cam,sv);}
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-1030';
+const BUILD='2026-11-18-1215';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -3039,7 +3195,7 @@ function loop(now){
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();drawWater(W);drawEffort();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();drawWater(W);drawEffort();drawFeet(W);drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -3078,6 +3234,7 @@ function init(){
  $('recBtn').onclick=recenter;cv.addEventListener('dblclick',recenter);
  $('keyBtn').onclick=()=>{$('colorKey').hidden=!$('colorKey').hidden;};$('keyX').onclick=()=>{$('colorKey').hidden=true;};
  {const map=['con','ecc','iso','str'];document.querySelectorAll('#colorKey .kr').forEach((r,i)=>{if(i<4){r.dataset.st=map[i];r.onclick=()=>setCF(CF===map[i]?'all':map[i]);}});}
+ {const fb=$('tFeet');const lab=()=>{fb.textContent='🦶 Feet'+(FEET==='auto'?' · auto':FEET==='on'?' · on':' · off');fb.classList.toggle('on',FEET!=='off');};lab();fb.onclick=()=>{FEET=FEET==='auto'?'on':FEET==='on'?'off':'auto';lab();try{localStorage.setItem('ml_feet',FEET);}catch(_){}toast(FEET==='auto'?'Feet close-up: shows when foot position matters':FEET==='on'?'Feet close-up: always on':'Feet close-up: off');};}
  {const rb=$('tRead');rb.classList.toggle('on',READ);rb.onclick=()=>{READ=!READ;rb.classList.toggle('on',READ);try{localStorage.setItem('ml_read',READ?'1':'0');}catch(_){}toast(READ?'Reading pace on: the motion slows down for long instructions':'Reading pace off');};}
  $('cap').addEventListener('click',e=>{if(e.target.closest('button'))return;setPlay(!playing);toast(playing?'Playing':'Paused: read at your own pace, tap again to play');});
  $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();

@@ -89,3 +89,20 @@ Every muscle page has 4 stages, based on the size principle (small motor units s
 
 An effort meter shows the stage. Muscles glow more as effort goes up. Share a stage with `#stage-<muscle>-<1-4>`.
 New low-load moves: wall angel, dead bug, side-lying leg lift, clamshell.
+
+### 🎯 Muscle ID view
+Choose a muscle (tap it, or pick it from the full list) and the body shows it clearly:
+- The muscle glows pink. Unrelated muscles fade.
+- Green and blue dots show where it starts and where it attaches.
+- Tags with lines show its **helpers**, **opposers** and **steadiers**.
+- The label shows what the muscle does **now** (shortening, lengthening, holding, stretching or resting).
+- "How it works" buttons (Shorten, Lengthen under load, Hold, Stretch, Rest) play a short demo of each way it works, with an example.
+
+### 🦶 Feet close-up
+When foot position matters (squats, ski stance, jumps, running, foot work, or captions about the feet), a small front view of the feet opens. It shows:
+- the foot tripod (heel, big toe, little toe)
+- the arch
+- whether the knee tracks over the 2nd toe
+- where the weight falls
+
+Use the 🦶 Feet button to set it to auto, on or off.
