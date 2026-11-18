@@ -137,3 +137,20 @@ A meter shows whether the front body or the back body is lengthening.
 - The camera keeps the whole body (head to feet) in view.
 - A head-and-neck side close-up opens for neck work.
 - The left panel shows **Now playing**: the current move, the muscles it works and steadies, and its steps.
+
+### ⚖ Front and back power
+Trains the back line and the front line for 4 jobs:
+- **Back line** (calves, hamstrings, glutes, erectors): drives you forward and holds you upright.
+- **Front line** (shin, quads, hip flexors, abs): pulls the leg through, braces the trunk and brakes.
+
+The 4 jobs:
+- 🪑 sit tall
+- 🧍 stand up and sit down
+- 🏃 move forward with power
+- ↩ move backward and brake
+
+Each job has 4 stages: 🌱 Wake → 🌿 Control → 🔥 Strength → ⚡ Power.
+- 12 new moves: seated rock, bird dog, hip hinge, hip swing, calf raise, toe lift, hollow hold, plank, knee drive, sit to stand, reverse lunge, wall drive.
+- Back-line muscles have a gold edge and front-line muscles a blue edge.
+- A live meter shows which line does the work.
+- Share a program with `#fb-<sit|stand|fwd|back>-<1-4>`.
