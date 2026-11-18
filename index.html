@@ -202,7 +202,9 @@ body.phone #legend{display:none}
 body.phone #coach{left:0;right:0;top:auto;bottom:0;width:auto;height:var(--sheet);border-radius:16px 16px 0 0;padding:8px 12px;z-index:12}
 body.phone.sheetMini #coach{overflow:hidden}
 body.phone #right{display:none!important}
-body.phone.listOpen #right{display:block!important;left:0;right:0;top:auto;bottom:0;width:auto;max-height:55vh;border-radius:16px 16px 0 0;z-index:14}
+body.phone.listOpen #right{display:block!important;left:0;right:0;top:auto;bottom:0;width:auto;max-height:55vh;overflow:auto;border-radius:16px 16px 0 0;z-index:14;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.rph{display:none}body.phone .rph{display:flex;gap:8px;justify-content:space-between;position:sticky;top:-12px;margin:-12px -12px 8px;padding:10px 12px;background:rgba(8,14,28,.97);z-index:2;border-bottom:1px solid rgba(126,249,255,.18)}
+body.phone #mList:empty{display:none}
 body.phone #zoom{display:none}
 body.phone.zoomOpen #zoom{display:flex;left:0;right:0;top:0;bottom:0;width:auto;height:auto;border-radius:0;z-index:40;transform:none}
 body.phone #zBig{display:none}
@@ -276,7 +278,7 @@ body:not(.phone) #tText{display:none}
 </div>
 
 <div id="coach" class="panel" hidden>
-  <div class="chd"><b>🎯 Muscle coach</b><span><button class="b" id="pkBack" title="Pick another muscle">◀ Body parts</button> <button class="b ph" id="cMin" aria-label="Minimize">▾</button> <button class="b" id="coachX" aria-label="Close">✕</button></span></div>
+  <div class="chd"><b>🎯 Muscle coach</b><span><button class="b" id="pkBack" title="Back to the main menu: body parts and activities">◀ Main menu</button> <button class="b ph" id="cMin" aria-label="Minimize">▾</button> <button class="b" id="coachX" aria-label="Close">✕</button></span></div>
   <div id="pick"><div class="pk1">Tap a muscle on the body, or pick a body part:</div><div class="pkrow" id="pkParts"></div><div class="pkrow" id="pkMus"></div><div class="pk1" style="margin-top:8px">Or watch an activity:</div><div class="pkrow" id="pkAct"></div></div>
   <div class="csub" style="margin-bottom:6px">Or choose from the full list:</div>
   <select id="cMus" aria-label="Muscle"></select>
@@ -286,6 +288,7 @@ body:not(.phone) #tText{display:none}
 <div id="cap" class="panel"><div class="t" id="capT"></div><div class="c" id="capC"></div><div id="readTag">📖 Slowed down so you can read · tap the caption to pause</div><div id="capX"></div><div id="ctr"></div><div class="prog" id="capPW"><i id="capP"></i></div></div>
 
 <div id="right" class="panel">
+  <div class="rph"><button class="b" id="rBack">◀ Main menu</button><button class="b" id="rX" aria-label="Close">✕ Close</button></div>
   <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Muscles in this movement</h2><button class="b" id="rZoom" style="font-size:11px;padding:3px 7px">⊕ Zoom</button></div>
   <div id="mList"></div>
   <div id="info"></div>
@@ -1624,6 +1627,7 @@ function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<but
  P.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{pickReg=pickReg===b.dataset.r?null:b.dataset.r;PICKSET=pickReg&&pickReg!=='all'?new Set(REGION[pickReg]):null;buildPick();});
  const M=$('pkMus');M.innerHTML=pickReg?regList(pickReg).map(id=>`<button class="pk m${id===cT&&!document.body.classList.contains('pick')?' on':''}" data-m="${id}">${MDEFK[id].short}</button>`).join(''):'';
  M.querySelectorAll('.pk').forEach(b=>b.onclick=()=>choosePicked(b.dataset.m));
+ {const h1=$('pick').querySelector('.pk1');if(h1)h1.textContent=pickReg?'Now tap a muscle to see its exercises:':'Tap a muscle on the body, or pick a body part:';}
  const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button><button class="pk" data-a="bath">🛁 Bath yoga</button><button class="pk" data-a="koala">🐾 Animal mode</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
   A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='yoga'||id==='bath')return enterYoga(id);const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
    const B=document.body.classList;B.remove('pick');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();});}
@@ -1631,6 +1635,8 @@ function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<but
 function choosePicked(id){const B=document.body.classList;B.remove('pick');$('coach').scrollTop=0;PICKSET=null;cT=id;if(ex.explore||B.contains('phone'))enterExplore();else openCoach(id);buildPick();layoutCam();}
 function enterPick(){const B=document.body.classList;if(!B.contains('phone'))return;FC=null;cam.zoom=1;B.add('pick');B.remove('sheetMini');PICKSET=pickReg?new Set(REGION[pickReg]):null;if(!ex.explore)enterExplore();$('coach').hidden=false;
  document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+60)+'px');buildPick();setTimeout(()=>{document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');syncSheet();},50);syncSheet();}
+function showExercises(id){const B=document.body.classList;B.remove('listOpen','pick','movesOpen','sheetMini');PICKSET=null;$('cMin').textContent='▾';$('tMus').classList.remove('on');openCoach(id||sel||cT);$('coach').scrollTop=0;fitCamera();}
+function goMainMenu(){const B=document.body.classList;B.remove('listOpen','movesOpen','showMore');$('actMenu').hidden=true;$('colorKey').hidden=true;$('tMus').classList.remove('on');if(B.contains('phone'))enterPick();else{enterExplore();}fitCamera();}
 function syncSheet(){document.body.classList.toggle('noSheet',$('coach').hidden);layoutCam();}
 function applyPhone(){const ph=detectPhone();const was=document.body.classList.contains('phone');document.body.classList.toggle('phone',ph);
  if(ph&&!was&&LOWQ<1){LOWQ=1;setTimeout(resize,0);}if(ph&&!was){zOn=false;document.body.classList.add('zhide');document.body.classList.remove('zoomOpen');$('tZoom').classList.remove('on');}syncSheet();}
@@ -1893,9 +1899,9 @@ const G=GR;if(!G)return;const ph=document.body.classList.contains('phone');const
 function wrapText(t,x,y,mw,lh,max){const ws=t.split(' ');let line='',n=0;for(const w_ of ws){const tl=line?line+' '+w_:w_;if(ctx.measureText(tl).width>mw&&line){ctx.fillText(line,x,y);y+=lh;line=w_;if(++n>=max-1){}}else line=tl;}ctx.fillText(line,x,y);}
 function openActs(){const G=$('actGrid');let h='',lastG=null,open=false;
  const card=(id,ic,nm)=>`<button class="ac${(ex.id===id||(id==='explore'&&ex.explore))?' on':''}" data-go="${id}"><span class="ai">${ic}</span>${nm}</button>`;
- h+=`<h3>Coach and yoga</h3><div class="ag">${card('explore','🎯','Train one muscle')}${card('yoga','🧘','Yoga flow')}${card('bath','🛁','Bath yoga')}</div>`;
+ h+=`<h3>Coach and yoga</h3><div class="ag">${card('menu','🧍','Pick a body part')}${card('explore','🎯','Train one muscle')}${card('yoga','🧘','Yoga flow')}${card('bath','🛁','Bath yoga')}</div>`;
  for(const e of EX){if(e.group!==lastG){if(open)h+='</div>';lastG=e.group;h+=`<h3>${e.group||'Activities'}</h3><div class="ag">`;open=true;}h+=card(e.id,e.icon,e.name);}if(open)h+='</div>';
- G.innerHTML=h;G.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{$('actMenu').hidden=true;const btn=document.querySelector('#exList .ex[data-id="'+b.dataset.go+'"]');
+ G.innerHTML=h;G.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{$('actMenu').hidden=true;if(b.dataset.go==='menu')return goMainMenu();document.body.classList.remove('listOpen');const btn=document.querySelector('#exList .ex[data-id="'+b.dataset.go+'"]');
   document.body.classList.remove('pick','movesOpen');if(btn){btn.click();if(document.body.classList.contains('phone')&&!['explore','yoga','bath'].includes(b.dataset.go)){$('coach').hidden=true;syncSheet();fitCamera();}}});
  $('actMenu').hidden=false;}
 function recenter(){FC=null;orbit=false;$('orbit').classList.remove('on');setSweep(false);cam.zoom=1;fitCamera();if(ex&&ex.view){cam.yaw=ex.view[0];cam.pitch=ex.view[1];}
@@ -2812,8 +2818,8 @@ function updateInfo(force){
  if(sel){const d=MDEFK[sel];const sd=S=>{const m=MUSK[sel+S];return`<div style="margin-top:6px"><b style="color:${STATECOL[m.state]}">${S==='L'?'Left':'Right'}: ${STATETXT[m.state]}</b> · ${Math.round(m.L/m.L0*100)}% length<div style="color:var(--dim)">${STATELONG[m.state]}</div></div>`;};
   h=`<div class="h">${d.name}</div><div>${d.does}</div>${sd('L')}${sd('R')}`;}
  else h=`<div class="h">How to use</div><div>Click a muscle on the body or in the list. Drag to turn the body. Scroll or pinch to zoom.</div><div style="margin-top:6px;color:var(--dim)">Thicker muscle = shorter muscle. Compare "Raise arms to the sides" and "Arms in front of you": the same shoulder, but a different part of the deltoid does the work.</div>`;
- if(sel)h+=`<button class="b" id="iCoach" style="margin-top:8px">🎯 Train this muscle</button>`;
- if(force||h!==lastInfo){$('info').innerHTML=h;lastInfo=h;const b=$('iCoach');if(b)b.onclick=()=>openCoach(sel);}
+ if(sel)h+=`<button class="b on" id="iCoach" style="margin-top:8px">🎯 Exercises for this muscle</button>`;
+ if(force||h!==lastInfo){$('info').innerHTML=h;lastInfo=h;const b=$('iCoach');if(b)b.onclick=()=>showExercises(sel);}
 }
 function updateUI(){
  const IP=interp(ex,phase);
@@ -2865,7 +2871,7 @@ function init(){
  $('pPro').textContent=CONFIG.price.pro;$('pCoach').textContent=CONFIG.price.coach;
  $('buyPro').onclick=()=>payBtn('pro');$('buyProY').onclick=()=>payBtn(CONFIG.pay.proYear?'proYear':'pro');$('buyCoach').onclick=()=>payBtn('coach');
  $('payGo').onclick=()=>{if(tryCode($('payCode').value))$('pay').hidden=true;else toast('That code does not match.');};
- buildPick();$('pkBack').onclick=enterPick;
+ buildPick();$('pkBack').onclick=goMainMenu;$('rBack').onclick=goMainMenu;$('rX').onclick=()=>{document.body.classList.remove('listOpen');$('tMus').classList.remove('on');sel=null;};
  if(!readHash()){cT='deltLat';enterExplore();enterPick();}addEventListener('hashchange',()=>{readHash();applySettings(location.hash);});
  const setPlay=v=>{playing=v;$('play').textContent=v?'❚❚ Pause':'▶ Play';};
  $('play').onclick=()=>setPlay(!playing);
@@ -2897,7 +2903,7 @@ function init(){
  const setZ=v=>{zOn=v;document.body.classList.toggle('zhide',!zOn);document.body.classList.toggle('zoomOpen',zOn&&document.body.classList.contains('phone'));$('tZoom').classList.toggle('on',zOn);layoutCam();};
  $('tZoom').onclick=()=>setZ(!zOn);$('zList').onclick=()=>setZ(false);$('rZoom').onclick=()=>setZ(true);
  document.querySelectorAll('.sf').forEach(b=>b.onclick=()=>{runSurf=b.dataset.s;document.querySelectorAll('.sf').forEach(x=>x.classList.toggle('on',x===b));});
- addEventListener('keydown',e=>{if(e.code==='Escape'&&zBig)$('zBig').click();});
+ addEventListener('keydown',e=>{if(e.code==='Escape'){if(zBig)$('zBig').click();document.body.classList.remove('listOpen');$('actMenu').hidden=true;}});
  $('pMoves').onclick=()=>openActs();
  $('pCoach').onclick=()=>{document.body.classList.remove('movesOpen','listOpen');enterExplore();};
  $('pMore').onclick=()=>{document.body.classList.toggle('showMore');};
@@ -2913,7 +2919,7 @@ function init(){
    const dx=e.clientX-down[0],dy=e.clientY-down[1];if(Math.abs(dx)+Math.abs(dy)>4)moved=true;
    if(moved){cam.yaw=down[2]-dx*.4;cam.pitch=clamp(down[3]+dy*.3,-15,75);orbit=false;$('orbit').classList.remove('on');setSweep(false);}}
   else hover=pick(e.clientX,e.clientY);});
- const up=e=>{ptrs.delete(e.pointerId);cv.classList.remove('drag');if(!moved&&down){const id=pick(e.clientX,e.clientY);sel=id;if(id&&document.body.classList.contains('pick')){choosePicked(id);sel=id;}else if(id&&!$('coach').hidden)openCoach(id);if(id&&innerWidth<=1000){$('right').classList.add('show');$('tMus').classList.add('on');}}down=null;};
+ const up=e=>{ptrs.delete(e.pointerId);cv.classList.remove('drag');if(!moved&&down){const id=pick(e.clientX,e.clientY);sel=id;if(id&&document.body.classList.contains('pick')){choosePicked(id);sel=id;}else if(id&&!$('coach').hidden)openCoach(id);else if(id&&document.body.classList.contains('phone')){document.body.classList.add('listOpen');document.body.classList.remove('movesOpen');}if(id&&innerWidth<=1000){$('right').classList.add('show');$('tMus').classList.add('on');}}down=null;};
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
  cv.addEventListener('pointerleave',()=>{hover=null;mouse=null;});
  cv.addEventListener('wheel',e=>{e.preventDefault();cam.zoom=clamp(cam.zoom*Math.exp(-e.deltaY*.0012),.4,4);},{passive:false});
