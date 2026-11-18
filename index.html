@@ -175,7 +175,7 @@ body.zhide #zoom{display:none}
 }
 /* ---------- phone mode (set by script when a phone is detected) ---------- */
 .ph{display:none}
-body.phone{--sheet:46vh}body.phone.sheetMini{--sheet:56px}body.phone.noSheet{--sheet:0px}
+body.phone{--sheet:46vh}body.phone.sheetMini{--sheet:64px}body.phone.noSheet{--sheet:0px}
 body.phone .ph{display:inline-block}
 body.phone #bot .pm{display:none}body.phone.showMore #bot .pm{display:flex}
 body.phone #bot button.pm{display:none}body.phone.showMore #bot button.pm{display:inline-block}
@@ -197,6 +197,32 @@ body.phone #zoom{display:none}
 body.phone.zoomOpen #zoom{display:flex;left:0;right:0;top:0;bottom:0;width:auto;height:auto;border-radius:0;z-index:40;transform:none}
 body.phone #zBig{display:none}
 #zTabs{flex-basis:100%;order:5}body.phone #zoom .zh{gap:6px}
+
+/* PHONE READABILITY: larger text and touch targets */
+body.phone{font-size:16px}
+body.phone #coach{font-size:15.5px;line-height:1.45;padding:10px 14px}
+body.phone #coach .chd b{font-size:18px}
+body.phone .csub{font-size:14px;line-height:1.45}
+body.phone .ctip{font-size:15px;line-height:1.5}
+body.phone .ch3{font-size:13px}
+body.phone .chip{font-size:14.5px;padding:6px 12px;margin:3px 5px 3px 0}
+body.phone .cblk{font-size:15px;padding:11px 13px}
+body.phone .b{font-size:15px;padding:9px 13px;min-height:42px}
+body.phone #bot .b,body.phone.xpl #bot .b{font-size:14.5px;padding:8px 12px;min-height:42px}
+body.phone #cap .t{font-size:12.5px}
+body.phone #cap .c{font-size:16.5px;line-height:1.4}
+body.phone.follow #cap .c{font-size:17.5px}
+body.phone #capX{font-size:13px}
+body.phone #ctr .cb{font-size:14px;padding:7px 12px}
+body.phone .ypose{font-size:15.5px;padding:10px 12px}
+body.phone .pk{font-size:15.5px;padding:10px 15px}
+body.phone #pick .pk1{font-size:14.5px}
+body.phone #actGrid .ac{font-size:16px;padding:12px 14px}body.phone #actGrid .ac .ai{font-size:28px}body.phone #actGrid .ag{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+body.phone #actGrid h3{font-size:13px}body.phone #actMenu .amh b{font-size:20px}
+body.phone #actBtn{font-size:15px;padding:10px 15px}
+body.phone #coach select,body.phone #yPace{font-size:15px;padding:7px}
+body.phone{--sheet:52vh}
+body.phone #bot{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;gap:6px}body.phone #bot::-webkit-scrollbar{display:none}body.phone #bot .grp{flex-wrap:nowrap;flex:0 0 auto}body.phone #bot .b{flex:0 0 auto;white-space:nowrap}body.phone #bot #tl{flex:0 0 130px;min-width:130px}
 </style>
 </head>
 <body>
@@ -803,7 +829,7 @@ function fitCamera(){
 }
 let camArea={x0:0,x1:0,y0:0,y1:0};
 function layoutCam(){
- const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?56:VH*.46):0;x0=0;x1=VW;y0=B.contains('xpl')?56:B.contains('follow')?150:96;y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
+ const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:B.contains('follow')?150:96;y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
  camArea={x0,x1,y0,y1};cam.cx=(x0+x1)/2;cam.cy=(y0+y1)/2+8;
  const b=cam.box||[100,200,100];const horiz=Math.hypot(b[0],b[2]);
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
@@ -926,10 +952,10 @@ function drawMuscle(it,labels){
  if(labels&&ex.workSet.has(mu.d.id)&&(layer==='deep'||!mu.d.deep)){const k=mu.d.id;const z=(A[2]+B[2])/2;if(!labels[k]||labels[k].z<z)labels[k]={z,x:mx,y:my,name:mu.d.short,col,id:k};}
 }
 function drawLabels(labels){
- const placed=[];ctx.font='600 11px system-ui,sans-serif';ctx.textBaseline='middle';
+ const UF=document.body.classList.contains('phone')?1.25:1;const placed=[];ctx.font=`600 ${Math.round(11*UF)}px system-ui,sans-serif`;ctx.textBaseline='middle';
  for(const k in labels){const L_=labels[k];const side=L_.x>=cam.cx?1:-1;const tw=ctx.measureText(L_.name).width+24;
   let x=L_.x+side*26,y=L_.y;let ok=false;
-  for(let i=0;i<8&&!ok;i++){const yy=y+((i%2)?1:-1)*Math.ceil(i/2)*15;const r=[side>0?x:x-tw,yy-8,tw,16];
+  for(let i=0;i<8&&!ok;i++){const yy=y+((i%2)?1:-1)*Math.ceil(i/2)*15*UF;const r=[side>0?x:x-tw,yy-8*UF,tw,16*UF];
    if(!placed.some(p=>r[0]<p[0]+p[2]&&r[0]+r[2]>p[0]&&r[1]<p[1]+p[3]&&r[1]+r[3]>p[1])){placed.push(r);ok=true;
     ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L_.x,L_.y);ctx.lineTo(side>0?r[0]:r[0]+r[2],yy);ctx.stroke();
     ctx.fillStyle='rgba(5,10,20,.72)';ctx.fillRect(r[0],r[1],r[2],r[3]);ctx.fillStyle=L_.col;ctx.fillRect(side>0?r[0]:r[0]+r[2]-2,r[1],2,r[3]);
@@ -1806,8 +1832,10 @@ function drawGravity(W){
   if(top.includes(j)){const t=`${JNAME[j.k]} ${Math.round(j.M)} N·m`;ctx.font='700 11px "JetBrains Mono",monospace';const tw=ctx.measureText(t).width+10;const tx=q[0]-rr-tw-6,ty=q[1]-8;
    ctx.fillStyle='rgba(5,10,20,.8)';ctx.fillRect(tx,ty,tw,16);ctx.fillStyle=col;ctx.fillRect(tx,ty,2,16);ctx.fillStyle='#f4f7fb';ctx.textBaseline='middle';ctx.fillText(t,tx+6,ty+8);}}
 }
-function drawGravHUD(){const G=GR;if(!G)return;const ph=document.body.classList.contains('phone');const B=document.body.classList;
- const x=ph?8:Math.max(14,camArea.x0+10),y=ph?(B.contains('follow')?150:96):(B.contains('follow')?170:100);const w=ph?206:226;
+const GHY=()=>camArea.y1-84;
+function drawGravHUD(){if(document.body.classList.contains('phone')&&!drawGravHUD._in){const y=GHY();ctx.save();ctx.translate(8,y);ctx.scale(1.22,1.22);ctx.translate(-8,-y);drawGravHUD._in=1;try{drawGravHUD();}finally{drawGravHUD._in=0;ctx.restore();}return;}
+const G=GR;if(!G)return;const ph=document.body.classList.contains('phone');const B=document.body.classList;
+ const x=ph?8:Math.max(14,camArea.x0+10),y=ph?GHY():(B.contains('follow')?170:100);const w=ph?206:226;
  const rows=ph?[]:G.J;const h=ph?62:84+rows.length*17+34;
  ctx.fillStyle='rgba(6,12,24,.78)';ctx.strokeStyle='rgba(126,249,255,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,12):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();
  ctx.font='700 10px Inter,system-ui,sans-serif';ctx.fillStyle='#7ef9ff';ctx.textBaseline='middle';ctx.fillText('GRAVITY · EASE',x+10,y+13);
@@ -1832,7 +1860,7 @@ function openActs(){const G=$('actGrid');let h='',lastG=null,open=false;
  $('actMenu').hidden=false;}
 function drawSideBadge(){if(!SIDE||!(ex.blocks||ex.both))return;const ph=document.body.classList.contains('phone');const L_=SIDE==='L';const t=L_?'◀  LEFT SIDE':'RIGHT SIDE  ▶';
  ctx.save();ctx.font=`900 ${ph?13:17}px Inter,system-ui,sans-serif`;const w=ctx.measureText(t).width+(ph?22:30),h=ph?28:36;const x=L_?camArea.x0+(ph?8:16):camArea.x1-w-(ph?8:16);const cr=$('cap').getBoundingClientRect();
- const y=(getComputedStyle($('cap')).display!=='none'&&cr.height?cr.bottom+(ph?6:10):camArea.y0)+(ph?0:0);const col=L_?'#7ef9ff':'#ff5fd2';
+ const IPv=interp(ex,phase);const y=(getComputedStyle($('cap')).display!=='none'&&cr.height?cr.bottom+(ph?6:10):camArea.y0)+(ph&&IPv._ok!=null?40:0);const col=L_?'#7ef9ff':'#ff5fd2';
  ctx.fillStyle='rgba(6,12,24,.82)';ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,h/2):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();
  ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=col;ctx.shadowBlur=10;ctx.fillText(t,x+w/2,y+h/2+1);ctx.restore();}
 function drawCountdown(){if(!ex.events||!ex.events.length)return;const sp=Math.max(speed,.05);const ph=document.body.classList.contains('phone');
@@ -2409,7 +2437,7 @@ let MIRROR=false;
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-2130';
+const BUILD='2026-11-17-2145';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
