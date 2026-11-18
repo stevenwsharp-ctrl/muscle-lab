@@ -239,6 +239,13 @@ body.phone #coach .chd{display:flex;flex-wrap:nowrap;gap:6px;align-items:center}
 body.phone #ctr .cb:not(.all):not(.bk){display:none}
 body.phone #bot{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;gap:6px}body.phone #bot::-webkit-scrollbar{display:none}body.phone #bot .grp{flex-wrap:nowrap;flex:0 0 auto}body.phone #bot .b{flex:0 0 auto;white-space:nowrap}body.phone #bot #tl{flex:0 0 130px;min-width:130px}
 body:not(.phone) #tText{display:none}
+#mvNav{z-index:13;left:50%;transform:translateX(-50%);bottom:84px;display:flex;align-items:center;gap:8px;padding:6px 8px;width:min(560px,calc(100% - 28px))}
+#mvNav.nvOff,body.pick #mvNav,body.listOpen #mvNav,body.movesOpen #mvNav,body.yoga #mvNav{display:none}
+#nvMid{flex:1;min-width:0;text-align:center;line-height:1.25}#nvName{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e6faff}
+#nvSub{font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#mvNav .b{min-height:40px;white-space:nowrap}#nvNext{font-weight:800}
+body.phone #readTag.on{display:none}body.phone #capX span:not(.rp){display:none}body.phone #cap .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.phone #mvNav{left:6px;right:6px;width:auto;transform:none;border-radius:12px;padding:6px}
+body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone #nvName{font-size:15.5px}body.phone #nvSub{font-size:12.5px}
 </style>
 </head>
 <body>
@@ -310,8 +317,8 @@ body:not(.phone) #tText{display:none}
   <button class="b" id="play">❚❚ Pause</button>
   <button class="b ph" id="pMoves">▦ Activities</button><button class="b ph" id="pCoach">🎯 Coach</button>
   <button class="b pm" id="step">Step ▸</button>
-  <input type="range" id="tl" min="0" max="1000" value="0" aria-label="Timeline">
-  <div class="grp"><span class="lbl">Speed</span>
+  <input type="range" class="pm" id="tl" min="0" max="1000" value="0" aria-label="Timeline">
+  <button class="b ph" id="pSpeed" title="Speed">🐢 ¾×</button><div class="grp pm"><span class="lbl">Speed</span>
     <button class="b sp" data-s="1">1×</button><button class="b sp on" data-s="0.75">¾×</button><button class="b sp" data-s="0.5">½×</button><button class="b sp" data-s="0.25">¼×</button><button class="b sp" data-s="0.1">⅒×</button>
   </div>
   <div class="grp" id="surfG" style="display:none"><span class="lbl">Surface</span><button class="b sf on" data-s="road">Asphalt</button><button class="b sf" data-s="trail">Trail</button><button class="b sf" data-s="track">Track</button></div>
@@ -319,9 +326,10 @@ body:not(.phone) #tText{display:none}
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
+<div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
 <script>
 'use strict';
 /* =========================================================
@@ -867,7 +875,7 @@ function fitCamera(){
 }
 let camArea={x0:0,x1:0,y0:0,y1:0};
 function layoutCam(){
- const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:(()=>{const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return 96;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return c.getBoundingClientRect().bottom+(hasV?48:10);})();y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108);}
+ const B=document.body.classList;const wide=VW>1000;const coOpen=(()=>{const c=document.getElementById('coach');return c&&!c.hidden;})();let x0=wide?(coOpen?438:250):0,x1=wide?VW-(zOn?458:322):VW,y0=wide?(()=>{const base=B.contains('follow')?160:96;const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return base;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return Math.max(base,c.getBoundingClientRect().bottom+(hasV?62:12));})():120,y1=VH-(wide?84:150)-(NAVON?60:0);if(B.contains('phone')){const co=document.getElementById('coach');const sh=co&&!co.hidden?(B.contains('pick')?(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pickH'))||170):B.contains('sheetMini')?64:VH*.52):0;x0=0;x1=VW;y0=B.contains('xpl')?56:(()=>{const c=document.getElementById('cap');if(!c||getComputedStyle(c).display==='none')return 96;const hasV=ex&&ex.keys&&ex.keys.some(k=>k.ok!=null);return c.getBoundingClientRect().bottom+(hasV?48:10);})();y1=VH-sh-(B.contains('showMore')?160:B.contains('xpl')?66:108)-(NAVON?62:0);}
  camArea={x0,x1,y0,y1};cam.cx=(x0+x1)/2;cam.cy=(y0+y1)/2+8;
  const b=cam.box||[100,200,100];const horiz=Math.hypot(b[0],b[2]);
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
@@ -1027,7 +1035,7 @@ function render(W){
  if(svM){cam.M=svM;cam.target=svT;}
  drawVignette();
  if(labels)drawLabels(labels);
- if(showGrav&&!(ex.explore&&document.body.classList.contains('phone')))drawGravHUD();
+ if(showGrav&&!((ex.explore||ex.blocks)&&document.body.classList.contains('phone')))drawGravHUD();
  // hover tip
  if(hover&&mouse){const d=MDEFK[hover];const mu=MUSL[hover];const txt=d.name+' — L: '+STATETXT[MUSK[hover+'L'].state]+' · R: '+STATETXT[MUSK[hover+'R'].state];ctx.font='600 12px system-ui,sans-serif';const tw=ctx.measureText(txt).width+14;
   ctx.fillStyle='rgba(5,10,20,.9)';ctx.fillRect(mouse[0]+14,mouse[1]+10,tw,22);ctx.fillStyle=STATECOL[mu.state];ctx.fillRect(mouse[0]+14,mouse[1]+10,3,22);ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.fillText(txt,mouse[0]+21,mouse[1]+21);}
@@ -1544,9 +1552,154 @@ const MOVES={
    {t:.75,p:{},cap:'Hold. Tuck the pelvis a little.'},
    {t:.92,p:{'L.kn':0,'L.hip.f':0,'L.sh.f':0,'L.el':0,'L.an':0},cap:'Release.'}],
   work:['hamstrings','gluteMax'],stab:['gluteMed','peroneals','abdHallucis','tibPost','QL']},
+ /* ---- Qigong: Baduanjin (Eight Pieces of Brocade) and standing practice ---- */
+ bdjBow:{name:'Draw the bow to shoot the hawk',src:'Qigong (Baduanjin)',dur:8,dose:'4 slow draws each side',
+  base:{'B.hip.a':18,'B.hip.r':-10,'B.hip.f':25,'B.kn':50,'B.an':25},
+  keys:[{t:0,p:{'B.sh.f':70,'B.sh.a':-10,'B.el':120,'neck.t':0},cap:'Horse stance: feet wide, knees bent. Cross the wrists in front of the chest.'},
+   {t:.3,p:{'L.sh.f':0,'L.sh.a':90,'L.el':0,'L.wr':40,'R.sh.f':-25,'R.sh.a':85,'R.el':140,'R.clav.p':-8,'neck.t':70},cap:'Draw the bow: push one hand out to the side, index finger up. Pull the other elbow back. The rhomboids and middle trapezius pull the shoulder blades together.'},
+   {t:.6,p:{},cap:'Hold and look past the front hand. The quads and glutes hold the horse stance.'},
+   {t:.85,p:{'B.sh.f':70,'B.sh.a':-10,'B.el':120,'L.wr':0,'R.clav.p':0,'neck.t':0},cap:'Bring the hands back to the chest. Breathe in.'}],
+  work:['rhomboid','trapMid','deltPost','deltLat','triceps','forearmExt','infraspinatus','vastLat','vastMed','gluteMax','adductors'],stab:['trapLower','serratus','multifidus','longusColli','splenius','tibPost']},
+ bdjSep:{name:'Separate heaven and earth',src:'Qigong (Baduanjin)',dur:8,dose:'4 slow reps each side',
+  base:{},
+  keys:[{t:0,p:{'B.sh.f':35,'B.sh.a':0,'B.el':90,'B.wr':0,'B.kn':10,'B.hip.f':5,'B.an':5},cap:'Stand. Hold the hands in front of the belly, palms up.'},
+   {t:.35,p:{'L.sh.f':170,'L.sh.a':15,'L.el':5,'L.wr':70,'L.clav.e':8,'R.sh.f':-10,'R.sh.a':12,'R.el':5,'R.wr':70,'B.kn':0,'B.hip.f':0,'B.an':0},cap:'Push one palm up above the head and the other palm down by the hip. The serratus and lower trapezius turn the top shoulder blade up. The lats press the low hand down.'},
+   {t:.6,p:{},cap:'Hold. Stretch long from the top hand down to the opposite foot.'},
+   {t:.85,p:{'B.sh.f':35,'B.sh.a':0,'B.el':90,'B.wr':0,'L.clav.e':0,'B.kn':10,'B.hip.f':5,'B.an':5},cap:'Bring the hands back to the belly. Breathe out.'}],
+  work:['serratus','trapLower','deltAnt','deltLat','triceps','lats','teresMajor','oblique','forearmExt'],stab:['QL','intOblique','multifidus','peroneals','abdHallucis']},
+ bdjOwl:{name:'Wise owl looks backward',src:'Qigong (Baduanjin)',dur:8,dose:'4 slow turns each side',
+  base:{'B.sh.a':15,'B.el':5},
+  keys:[{t:0,p:{'neck.t':0,'chest.t':0,'B.clav.p':0,'B.sh.f':0},cap:'Stand tall. The arms hang a little away from the body.'},
+   {t:.35,p:{'neck.t':70,'chest.t':20,'B.clav.p':-6,'B.sh.f':-10},cap:'Turn the head and the upper back to look behind you. Turn the palms out. The SCM and splenius turn the head. The rhomboids pull the shoulder blades back.'},
+   {t:.6,p:{},cap:'Hold. Keep the chin level. Breathe.'},
+   {t:.85,p:{'neck.t':0,'chest.t':0,'B.clav.p':0,'B.sh.f':0},cap:'Turn back to the front slowly.'}],
+  work:['scm','splenius','suboccipitals','oblique','intOblique','rhomboid','trapMid','infraspinatus','teresMinor','deltPost'],stab:['longusColli','multifidus','gluteMed','abdHallucis']},
+ bdjSway:{name:'Sway the head and swing the tail',src:'Qigong (Baduanjin)',dur:9,dose:'4 slow swings each way',
+  base:{'B.hip.a':20,'B.hip.r':-10,'B.hip.f':25,'B.kn':50,'B.an':25,'B.sh.f':30,'B.sh.a':20,'B.el':20},
+  keys:[{t:0,p:{'root.pitch':0,'spine.s':0,'chest.s':0,'root.roll':0,'neck.s':0,'spine.f':0},cap:'Horse stance. The hands rest on the thighs.'},
+   {t:.25,p:{'root.pitch':25,'spine.s':15,'chest.s':10,'root.roll':-6,'neck.s':10},cap:'Lean forward and to one side. The weight moves over one leg.'},
+   {t:.5,p:{'root.pitch':30,'spine.s':0,'chest.s':0,'root.roll':0,'neck.s':0,'spine.f':10},cap:'Swing the head low through the middle. The tailbone swings the other way.'},
+   {t:.75,p:{'root.pitch':25,'spine.s':-15,'chest.s':-10,'root.roll':6,'neck.s':-10,'spine.f':0},cap:'Swing to the other side. The QL and obliques bend the trunk. The adductors and glutes hold the stance.'},
+   {t:.92,p:{'root.pitch':0,'spine.s':0,'chest.s':0,'root.roll':0,'neck.s':0},cap:'Come up through the center.'}],
+  work:['QL','oblique','intOblique','erector','multifidus','adductors','gluteMax','gluteMed','vastLat','vastMed'],stab:['tibPost','peroneals','abdHallucis','longusColli']},
+ bdjFeet:{name:'Two hands hold the feet',src:'Qigong (Baduanjin)',dur:9,dose:'6 slow reps, knees soft',
+  base:{},
+  keys:[{t:0,p:{'B.sh.f':0,'B.el':0},cap:'Stand tall.'},
+   {t:.2,p:{'B.sh.f':175,'B.el':5},cap:'Reach both arms up.'},
+   {t:.5,p:{'root.pitch':70,'B.hip.f':40,'spine.f':25,'chest.f':15,'neck.f':20,'B.kn':8,'B.sh.f':90},cap:'Fold forward. Slide the hands down the backs of the legs to the feet. The hamstrings and the back muscles get longer.'},
+   {t:.7,p:{},cap:'Hold the feet. Breathe out.'},
+   {t:.9,p:{'root.pitch':0,'B.hip.f':0,'spine.f':0,'chest.f':0,'neck.f':0,'B.kn':0,'B.sh.f':175},cap:'Come up with a long back and the arms up. The glutes and hamstrings lift you.'}],
+  work:['hamstrings','gluteMax','erector','multifidus','gastroc','soleus','serratus','trapLower'],stab:['rectusAbd','tva','abdHallucis','flexDigBrev']},
+ bdjFist:{name:'Clench the fists and glare',src:'Qigong (Baduanjin)',dur:7,dose:'5 slow punches each side',
+  base:{'B.hip.a':18,'B.hip.r':-10,'B.hip.f':25,'B.kn':50,'B.an':25},
+  keys:[{t:0,p:{'B.sh.f':-15,'B.sh.a':0,'B.el':100,'B.wr':0,'B.clav.p':0},cap:'Horse stance. Fists at the waist.'},
+   {t:.3,p:{'L.sh.f':85,'L.el':0,'L.sh.a':5,'L.clav.p':6},cap:'Punch slowly forward with one fist. Look hard at it. The triceps, front deltoid and serratus push.'},
+   {t:.5,p:{'L.wr':-30},cap:'Open the hand, turn it, then grasp. The forearm flexors close the fist.'},
+   {t:.75,p:{'L.sh.f':-15,'L.el':100,'L.sh.a':0,'L.clav.p':0,'L.wr':0},cap:'Pull the fist back to the waist. The lats and rear deltoid pull.'}],
+  work:['triceps','deltAnt','serratus','pec','forearmFlex','forearmExt','lats','vastLat','vastMed','adductors','gluteMax'],stab:['oblique','intOblique','multifidus','tibPost','longusColli']},
+ bdjHeels:{name:'Bounce on the heels',src:'Qigong (Baduanjin)',dur:5,dose:'7 rises and drops',
+  base:{},
+  keys:[{t:0,p:{'B.an':0,'B.toe':0},cap:'Stand. Feet close together. Arms by the sides.'},
+   {t:.35,p:{'B.an':-30,'B.toe':40},cap:'Rise high on the balls of the feet. The calves lift. The peroneals and tibialis posterior keep the ankles straight.'},
+   {t:.6,p:{},cap:'Hold for one breath. Stand tall.'},
+   {t:.75,p:{'B.an':0,'B.toe':0},cap:'Drop the heels down softly. Let the body shake a little.'}],
+  work:['gastroc','soleus','peroneals','tibPost','flexHalLong','flexDigBrev','abdHallucis'],stab:['multifidus','longusColli','pelvicFloor','tva']},
+ zhanzhuang:{name:'Standing post (hug the tree)',src:'Qigong (zhan zhuang)',dur:8,dose:'3 × 1 min; slowly build to 5 min',
+  base:{'B.hip.a':10},
+  keys:[{t:0,p:{'B.sh.f':0,'B.sh.a':8,'B.el':0,'B.kn':0,'B.hip.f':0,'B.an':0},cap:'Stand. Feet hip width apart.'},
+   {t:.25,p:{'B.kn':30,'B.hip.f':15,'B.an':15,'B.sh.f':70,'B.sh.a':35,'B.el':60},cap:'Bend the knees a little. Raise the arms round, as if you hug a big tree.'},
+   {t:.7,p:{},cap:'Hold still. The deltoids and serratus hold the arms. The quads and soleus hold the knees. Breathe low and slow.'},
+   {t:.9,p:{'B.kn':0,'B.hip.f':0,'B.an':0,'B.sh.f':0,'B.sh.a':8,'B.el':0},cap:'Lower the arms slowly and stand up.'}],
+  work:['deltAnt','deltLat','supraspinatus','serratus','trapLower','vastLat','vastMed','rectFem','soleus','tibAnt','gluteMax'],stab:['diaphragm','tva','pelvicFloor','multifidus','longusColli','abdHallucis']},
+ swingArms:{name:'Swing the arms (loose spine turn)',src:'Qigong',dur:4,dose:'1 min, easy',
+  base:{'B.hip.a':12,'B.kn':10,'B.hip.f':5,'B.an':5},
+  keys:[{t:0,p:{'spine.t':0,'chest.t':0,'B.sh.f':0,'B.sh.a':10,'B.el':0,'neck.t':0},cap:'Stand loose. Knees soft.'},
+   {t:.25,p:{'spine.t':25,'chest.t':20,'L.sh.f':-20,'L.sh.a':30,'L.el':40,'R.sh.f':60,'R.sh.a':-20,'R.el':40,'neck.t':30},cap:'Turn the waist. The arms swing loose and wrap around the body. The obliques turn the trunk.'},
+   {t:.5,p:{'spine.t':0,'chest.t':0,'B.sh.f':0,'B.sh.a':10,'B.el':0,'neck.t':0},cap:'Swing through the center.'},
+   {t:.75,p:{'spine.t':-25,'chest.t':-20,'R.sh.f':-20,'R.sh.a':30,'R.el':40,'L.sh.f':60,'L.sh.a':-20,'L.el':40,'neck.t':-30},cap:'Turn to the other side. Let the hands tap the body softly.'}],
+  work:['oblique','intOblique','multifidus','erector','deltPost','deltAnt','lats','gluteMed'],stab:['adductors','tibPost','peroneals','abdHallucis','longusColli']},
+ pushMtn:{name:'Push the mountain',src:'Qigong',dur:7,dose:'6 slow pushes',
+  base:{'B.hip.a':10},
+  keys:[{t:0,p:{'B.sh.f':10,'B.sh.a':20,'B.el':120,'B.wr':0,'B.clav.p':0,'B.kn':0,'B.hip.f':0,'B.an':0},cap:'Stand. Hands up by the chest, palms forward.'},
+   {t:.35,p:{'B.sh.f':85,'B.sh.a':10,'B.el':5,'B.wr':70,'B.clav.p':8,'B.kn':25,'B.hip.f':12,'B.an':12},cap:'Sink in the legs and push both palms forward. The serratus, triceps and chest push. The wrists bend back.'},
+   {t:.6,p:{},cap:'Hold. Feel the push go from the feet to the hands.'},
+   {t:.85,p:{'B.sh.f':10,'B.sh.a':20,'B.el':120,'B.wr':0,'B.clav.p':0,'B.kn':0,'B.hip.f':0,'B.an':0},cap:'Draw the hands back slowly and stand up. Breathe in.'}],
+  work:['serratus','triceps','pec','deltAnt','forearmExt','vastLat','vastMed','gluteMax'],stab:['rectusAbd','tva','intOblique','longusColli','tibAnt']},
+ /* ---- Tai chi: Yang style (24 form) ---- */
+ horseMane:{name:'Part the wild horse\'s mane',src:'Tai chi (24 form)',dur:8,dose:'6 slow steps, change sides',
+  base:{},
+  keys:[{t:0,p:{'L.sh.f':60,'L.el':95,'L.sh.a':-5,'R.sh.f':15,'R.el':80,'R.sh.a':-5,'R.wr':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'neck.t':0},cap:'Hold a ball: one hand at the chest, one hand at the belly.'},
+   {t:.4,p:{'L.hip.f':30,'L.kn':55,'L.an':25,'R.hip.f':-28,'R.an':24,'L.sh.f':80,'L.sh.a':35,'L.el':25,'R.sh.f':-5,'R.sh.a':15,'R.el':15,'R.wr':60,'neck.t':10},cap:'Step forward into a bow stance. The front hand sweeps up and out to eye level. The back hand presses down by the hip.'},
+   {t:.65,p:{},cap:'Hold. The front glutes and quads carry the weight. The back leg stays long.'},
+   {t:.9,p:{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'L.sh.f':60,'L.el':95,'L.sh.a':-5,'R.sh.f':15,'R.el':80,'R.sh.a':-5,'R.wr':0,'neck.t':0},cap:'Shift back and hold the ball again.'}],
+  work:['deltAnt','deltLat','serratus','supraspinatus','lats','triceps','gluteMax','gluteMed','vastLat','vastMed','adductors','oblique'],stab:['tibPost','peroneals','abdHallucis','multifidus','longusColli','iliopsoas']},
+ whiteCrane:{name:'White crane spreads its wings',src:'Tai chi (24 form)',dur:8,dose:'4 slow reps each side',
+  base:{'R.kn':25,'R.hip.f':15,'R.an':15},
+  keys:[{t:0,p:{'L.sh.f':60,'L.sh.a':0,'L.el':95,'L.wr':0,'R.sh.f':15,'R.sh.a':0,'R.el':80,'L.hip.f':0,'L.kn':0},cap:'Sit the weight back on one leg. Hold a ball in front of you.'},
+   {t:.4,p:{'R.sh.f':150,'R.sh.a':25,'R.el':45,'L.sh.f':5,'L.sh.a':15,'L.el':15,'L.wr':60,'L.hip.f':20,'L.kn':30},cap:'Spread the wings: the back-side hand rises by the forehead. The other hand presses down by the hip. The front toes touch the floor lightly.'},
+   {t:.7,p:{},cap:'Hold. The glute medius and the foot of the standing leg keep you steady. The quads and soleus hold the bent knee.'},
+   {t:.9,p:{'R.sh.f':15,'R.sh.a':0,'R.el':80,'L.sh.f':60,'L.sh.a':0,'L.el':95,'L.wr':0,'L.hip.f':0,'L.kn':0},cap:'Bring the hands together again.'}],
+  work:['deltLat','deltAnt','serratus','trapLower','supraspinatus','gluteMed','gluteMax','vastLat','vastMed','soleus','tibPost','peroneals'],stab:['abdHallucis','flexDigBrev','intOblique','multifidus','longusColli']},
+ brushKnee:{name:'Brush knee and push',src:'Tai chi (24 form)',dur:8,dose:'6 slow steps, change sides',
+  base:{},
+  keys:[{t:0,p:{'R.sh.f':30,'R.sh.a':50,'R.el':110,'R.wr':0,'R.clav.p':0,'L.sh.f':50,'L.sh.a':-10,'L.el':90,'L.wr':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0},cap:'One hand rises by the ear. The other hand comes across the chest.'},
+   {t:.4,p:{'L.hip.f':30,'L.kn':55,'L.an':25,'R.hip.f':-28,'R.an':24,'L.sh.f':10,'L.sh.a':20,'L.el':10,'L.wr':60,'R.sh.f':85,'R.sh.a':5,'R.el':10,'R.wr':70,'R.clav.p':6},cap:'Step into a bow stance. The low hand brushes past the front knee. The high hand pushes forward: triceps, serratus and front deltoid.'},
+   {t:.65,p:{},cap:'Hold. Sink the hips. The front glutes and quads hold you.'},
+   {t:.9,p:{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'R.sh.f':30,'R.sh.a':50,'R.el':110,'R.wr':0,'R.clav.p':0,'L.sh.f':50,'L.sh.a':-10,'L.el':90,'L.wr':0},cap:'Shift back and get ready again.'}],
+  work:['triceps','serratus','deltAnt','pec','forearmExt','lats','gluteMax','gluteMed','vastLat','vastMed','oblique','intOblique'],stab:['tibPost','peroneals','abdHallucis','multifidus','iliopsoas']},
+ repulse:{name:'Repulse the monkey (step back)',src:'Tai chi (24 form)',dur:8,dose:'6 slow steps back',
+  base:{},
+  keys:[{t:0,p:{'L.sh.f':80,'L.sh.a':0,'L.el':15,'L.wr':40,'R.sh.f':-20,'R.sh.a':30,'R.el':60,'R.wr':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.kn':0,'R.an':0},cap:'One hand is forward. The other hand circles back and up by the ear.'},
+   {t:.4,p:{'L.hip.f':20,'L.kn':5,'L.an':-15,'R.hip.f':-10,'R.kn':25,'R.an':20,'R.sh.f':85,'R.sh.a':5,'R.el':15,'R.wr':60,'L.sh.f':-15,'L.sh.a':20,'L.el':30,'L.wr':0},cap:'Step back and sit on the back leg. The back-side palm pushes forward past the ear. The front hand pulls back to the hip.'},
+   {t:.65,p:{},cap:'Hold. The back glutes and quads hold the weight. The front foot is light.'},
+   {t:.9,p:{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.kn':0,'R.an':0,'L.sh.f':80,'L.sh.a':0,'L.el':15,'L.wr':40,'R.sh.f':-20,'R.sh.a':30,'R.el':60,'R.wr':0},cap:'Change hands and step back again.'}],
+  work:['triceps','serratus','deltAnt','lats','deltPost','gluteMax','vastLat','vastMed','hamstrings','tibAnt','oblique'],stab:['gluteMed','tibPost','abdHallucis','multifidus','longusColli']},
+ singleWhip:{name:'Single whip',src:'Tai chi (24 form)',dur:8,dose:'4 slow reps each side',
+  base:{},
+  keys:[{t:0,p:{'R.sh.f':80,'R.sh.a':30,'R.el':10,'R.wr':-70,'L.sh.f':40,'L.sh.a':0,'L.el':100,'L.wr':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'neck.t':0},cap:'Make a hook with one hand: the fingers point down (forearm flexors). The other hand is by the chest.'},
+   {t:.4,p:{'L.hip.f':30,'L.kn':55,'L.an':25,'R.hip.f':-28,'R.an':24,'L.sh.f':80,'L.sh.a':40,'L.el':15,'L.wr':60,'R.sh.f':60,'R.sh.a':70,'neck.t':30},cap:'Step into a bow stance. Turn and push the open palm out. The hook stays back. The arms open wide.'},
+   {t:.65,p:{},cap:'Hold. Keep the shoulders down. The side deltoids hold the arms up.'},
+   {t:.9,p:{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'R.sh.f':80,'R.sh.a':30,'L.sh.f':40,'L.sh.a':0,'L.el':100,'L.wr':0,'neck.t':0},cap:'Shift back and get ready again.'}],
+  work:['deltLat','deltPost','deltAnt','supraspinatus','infraspinatus','triceps','forearmFlex','forearmExt','gluteMax','gluteMed','vastLat','vastMed','adductors'],stab:['trapLower','serratus','oblique','tibPost','peroneals']},
+ graspTail:{name:'Grasp the sparrow\'s tail',src:'Tai chi (24 form)',dur:10,dose:'3 slow rounds each side',
+  base:{'L.hip.f':30,'L.an':25,'R.an':24},
+  keys:[{t:0,p:{'L.kn':55,'R.kn':0,'R.hip.f':-28,'root.yaw':0,'L.sh.f':80,'L.sh.a':-20,'L.el':70,'R.sh.f':20,'R.sh.a':0,'R.el':30,'B.wr':0},cap:'Ward off: the front forearm rounds in front of the chest. The weight is forward.'},
+   {t:.25,p:{'L.kn':25,'R.kn':30,'R.hip.f':-15,'root.yaw':-20,'L.sh.f':60,'R.sh.f':50,'R.el':60},cap:'Roll back: sit back and turn the waist. The hands pull down and back. The lats and rear deltoids pull.'},
+   {t:.5,p:{'L.kn':55,'R.kn':0,'R.hip.f':-28,'root.yaw':0,'L.sh.f':80,'L.el':80,'R.sh.f':70,'R.el':80},cap:'Press: one hand presses on the other wrist. Shift forward. The chest and serratus press.'},
+   {t:.75,p:{'L.sh.f':85,'R.sh.f':85,'L.sh.a':5,'R.sh.a':5,'L.el':15,'R.el':15,'B.wr':60},cap:'Push: both palms push forward from the legs. The triceps straighten the arms.'}],
+  work:['serratus','pec','triceps','lats','deltPost','deltAnt','infraspinatus','oblique','intOblique','gluteMax','vastLat','vastMed'],stab:['tibPost','peroneals','multifidus','longusColli','gluteMed']},
+ kickHeel:{name:'Kick with the heel',src:'Tai chi (24 form)',dur:8,dose:'3 slow kicks each leg',
+  base:{},
+  keys:[{t:0,p:{'B.sh.f':60,'B.sh.a':-15,'B.el':90,'B.wr':0,'L.hip.f':0,'L.kn':0,'L.an':0,'R.kn':0},cap:'Stand on one leg. Cross the wrists in front of the chest.'},
+   {t:.35,p:{'L.hip.f':85,'L.kn':90,'R.kn':12},cap:'Lift the knee high. The hip flexors (iliopsoas, rectus femoris) lift it.'},
+   {t:.55,p:{'L.kn':5,'L.an':15,'B.sh.f':20,'B.sh.a':85,'B.el':15,'B.wr':60},cap:'Kick slowly with the heel. The quads straighten the knee. The arms open wide for balance. The glute medius of the standing leg holds the pelvis level.'},
+   {t:.75,p:{'L.kn':90},cap:'Bend the knee back in.'},
+   {t:.9,p:{'L.hip.f':0,'L.kn':0,'L.an':0,'R.kn':0,'B.sh.f':60,'B.sh.a':-15,'B.el':90,'B.wr':0},cap:'Lower the foot slowly.'}],
+  work:['iliopsoas','rectFem','vastLat','vastMed','tibAnt','gluteMed','gluteMin','deltLat','supraspinatus'],stab:['peroneals','tibPost','abdHallucis','flexDigBrev','QL','intOblique','longusColli']},
+ snakeDown:{name:'Snake creeps down',src:'Tai chi (24 form)',dur:9,dose:'3 slow reps each side; go only as low as is easy',
+  base:{'B.hip.a':24,'B.hip.r':-10},
+  keys:[{t:0,p:{'R.sh.f':60,'R.sh.a':70,'R.el':10,'R.wr':-70,'L.sh.f':40,'L.el':90,'L.sh.a':0,'R.hip.f':0,'R.kn':0,'R.an':0,'root.pitch':0,'L.hip.a':24},cap:'Wide stance. One hand is a hook behind you.'},
+   {t:.4,p:{'R.hip.f':80,'R.kn':115,'R.an':30,'root.pitch':30,'L.kn':0,'L.hip.a':38,'L.sh.f':30,'L.el':5},cap:'Sit low over the bent leg. The other hand slides along the inside of the long leg. Its adductors get longer. The glutes and quads of the bent leg control the squat.'},
+   {t:.65,p:{},cap:'Hold low. Keep the foot flat and the back long.'},
+   {t:.9,p:{'R.hip.f':0,'R.kn':0,'R.an':0,'root.pitch':0,'L.hip.a':24,'L.sh.f':40,'L.el':90},cap:'Push back up slowly.'}],
+  work:['adductors','gracilis','gluteMax','gluteMed','vastLat','vastMed','rectFem','soleus','tibAnt','hamstrings'],stab:['tibPost','peroneals','abdHallucis','QL','intOblique','multifidus','forearmFlex']},
+ needle:{name:'Needle at sea bottom',src:'Tai chi (24 form)',dur:8,dose:'4 slow reps each side',
+  base:{},
+  keys:[{t:0,p:{'R.sh.f':40,'R.sh.a':30,'R.el':110,'L.sh.f':30,'L.el':60,'root.pitch':0,'B.hip.f':0,'R.kn':15,'R.an':10,'L.kn':0,'spine.f':0,'neck.f':0,'L.sh.a':0},cap:'Sit the weight on the back leg. Lift one hand up by the ear.'},
+   {t:.4,p:{'root.pitch':40,'B.hip.f':10,'R.kn':35,'R.an':20,'L.kn':10,'spine.f':10,'R.sh.f':100,'R.el':10,'R.sh.a':5,'L.sh.f':-10,'L.el':10,'neck.f':10},cap:'Hinge forward from the hips. The high hand points down like a needle. The hamstrings and back muscles get longer and control the hinge.'},
+   {t:.65,p:{},cap:'Hold. Keep the back long. The glutes hold the hips.'},
+   {t:.9,p:{'R.sh.f':40,'R.sh.a':30,'R.el':110,'L.sh.f':30,'L.el':60,'root.pitch':0,'B.hip.f':0,'R.kn':15,'R.an':10,'L.kn':0,'spine.f':0,'neck.f':0},cap:'Come up slowly.'}],
+  work:['hamstrings','gluteMax','erector','multifidus','deltAnt','vastLat','vastMed','soleus'],stab:['gluteMed','tibPost','abdHallucis','rectusAbd','longusColli']},
+ fanBack:{name:'Fan through the back',src:'Tai chi (24 form)',dur:8,dose:'4 slow reps each side',
+  base:{},
+  keys:[{t:0,p:{'L.sh.f':60,'L.sh.a':0,'L.el':80,'L.wr':0,'R.sh.f':50,'R.sh.a':0,'R.el':80,'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0},cap:'Bring the hands up in front of the chest.'},
+   {t:.4,p:{'L.hip.f':30,'L.kn':55,'L.an':25,'R.hip.f':-28,'R.an':24,'R.sh.f':150,'R.sh.a':40,'R.el':40,'L.sh.f':85,'L.sh.a':10,'L.el':10,'L.wr':70},cap:'Step forward. One hand rises above the head, palm out. The other palm pushes forward. The arms open like a fan across the back.'},
+   {t:.65,p:{},cap:'Hold. The serratus and lower trapezius hold the top arm up.'},
+   {t:.9,p:{'L.hip.f':0,'L.kn':0,'L.an':0,'R.hip.f':0,'R.an':0,'L.sh.f':60,'L.sh.a':0,'L.el':80,'L.wr':0,'R.sh.f':50,'R.sh.a':0,'R.el':80},cap:'Bring the hands back to the chest.'}],
+  work:['serratus','trapLower','deltAnt','deltLat','triceps','infraspinatus','rhomboid','gluteMax','vastLat','vastMed'],stab:['oblique','intOblique','tibPost','peroneals','multifidus']},
 };
-const STRETCH=new Set(['crossbody','opener','fold','calf','quad']);
-const STRETCHES={crossbody:['deltPost','deltLat','infraspinatus','teresMinor','rhomboid','trapMid','supraspinatus'],opener:['pec','deltAnt','pecMinor','biceps','coracobrach','subscap'],fold:['hamstrings','gastroc','soleus','erector','gluteMax','semispinalis','multifidus'],calf:['gastroc','soleus','flexHalLong','flexDigBrev','abdHallucis'],quad:['rectFem','vastLat','vastMed','iliopsoas','tibAnt','extDigLong','sartorius'],triangle:['adductors','QL','oblique','intOblique','tfl','hamstrings','gracilis'],sky:['lats','QL','oblique','teresMajor','intOblique'],neck:['scm','scalenes','levScap','trapUpper','splenius','semispinalis'],warrior2:['adductors','iliopsoas','gracilis'],sidelunge:['adductors','gracilis'],climb:['lats','teresMajor'],kick:['hamstrings']};const SPORTY=/Karate|Boxing|Tennis|Climbing|Swimming|Kyudo|Muay|Tai chi|Ballet|Weightlifting|Skiing/;
+const STRETCH=new Set(['crossbody','opener','fold','calf','quad','bdjFeet','snakeDown']);
+const STRETCHES={crossbody:['deltPost','deltLat','infraspinatus','teresMinor','rhomboid','trapMid','supraspinatus'],opener:['pec','deltAnt','pecMinor','biceps','coracobrach','subscap'],fold:['hamstrings','gastroc','soleus','erector','gluteMax','semispinalis','multifidus'],calf:['gastroc','soleus','flexHalLong','flexDigBrev','abdHallucis'],quad:['rectFem','vastLat','vastMed','iliopsoas','tibAnt','extDigLong','sartorius'],triangle:['adductors','QL','oblique','intOblique','tfl','hamstrings','gracilis'],sky:['lats','QL','oblique','teresMajor','intOblique'],neck:['scm','scalenes','levScap','trapUpper','splenius','semispinalis'],warrior2:['adductors','iliopsoas','gracilis'],sidelunge:['adductors','gracilis'],climb:['lats','teresMajor'],kick:['hamstrings'],bdjSep:['lats','pec','oblique','rectusAbd'],bdjFeet:['hamstrings','gastroc','soleus','erector','gluteMax'],kickHeel:['hamstrings','gastroc'],snakeDown:['adductors','gracilis','hamstrings'],needle:['hamstrings','erector']};const SPORTY=/Qigong|Karate|Boxing|Tennis|Climbing|Swimming|Kyudo|Muay|Tai chi|Ballet|Weightlifting|Skiing/;
 for(const k in MOVES){const m=MOVES[k];m.id='mv_'+k;m.key=k;m.anchor='ground';m.props=[];m.view=[35,10];m.icon='•';}
 
 /* =========================================================
@@ -1567,7 +1720,8 @@ function buildPlan(T,goal){
   return{k,m,met,inT:m.work.includes(T),stT:m.stab.includes(T),ant:m.work.filter(x=>antS.has(x)).length,syn:m.work.filter(x=>synS.has(x)).length,stab:all.filter(x=>stabS.has(x)).length,
    chainCov:all.filter(x=>chainS.has(x)).length,foot:all.filter(x=>FOOTM.has(x)).length,neck:all.filter(x=>REGION.neck.includes(x)).length};});
  const used=new Set(),blocks=[];
- const pick=(f,label,why,filter)=>{const c=sc.filter(x=>!used.has(x.k)&&(!filter||filter(x))).sort((a,b)=>f(b)-f(a))[0];if(!c)return;used.add(c.k);blocks.push(Object.assign({},c,{label,why:why(c)}));};
+ const jit=k=>{if(!PSEED)return 0;let h=PSEED*2654435761>>>0;for(const ch of k)h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0;return(h%1000)/1000*3;};
+ const pick=(f0,label,why,filter)=>{const f=x=>f0(x)+jit(x.k);const c=sc.filter(x=>!used.has(x.k)&&(!filter||filter(x))).sort((a,b)=>f(b)-f(a))[0];if(!c)return;used.add(c.k);blocks.push(Object.assign({},c,{label,why:why(c)}));};
  const lines2=R.lines.slice(0,2).map(l=>CHAINS[l].name.replace(/ \(.*\)/,'').toLowerCase()).join(' and ');
  if(T!=='longusColli'&&!REGION.foot.includes(T))pick(x=>x.foot*1.5+x.chainCov+(x.inT?1:0),'Ground up',()=>'Start at the feet. The foot muscles set the base for the whole chain up to the neck.');
  if(goal==='wake'){
@@ -1615,7 +1769,7 @@ function drawChainPath(W){const R=ex.coach;if(!R||!R.path.length)return;const S=
 /* =========================================================
    COACH PANEL
    ========================================================= */
-let cGoal='wake',cT=null,cPlan=null;
+let cGoal='wake',cT=null,cPlan=null,PSEED=0;
 function chip(id,role){const d=MDEFK[id];return`<span class="chip" data-id="${id}" style="border-color:${ROLECOL[role]};color:${role==='target'?ROLECOL.target:'var(--txt)'}">${d.short}</span>`;}
 function openCoach(T){exitYoga();const prevT=cT;cT=T||cT||'deltLat';if(ex.explore&&cT!==prevT){EXPLORE.coach=rolesFor(cT);setTimeout(()=>focusOn(cT),40);}$('coach').hidden=false;$('cMus').value=cT;renderCoach();syncSheet();}
 function detectPhone(){const coarse=matchMedia('(pointer:coarse)').matches;const small=Math.min(screen.width,screen.height)<=820;
@@ -1628,8 +1782,8 @@ function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<but
  const M=$('pkMus');M.innerHTML=pickReg?regList(pickReg).map(id=>`<button class="pk m${id===cT&&!document.body.classList.contains('pick')?' on':''}" data-m="${id}">${MDEFK[id].short}</button>`).join(''):'';
  M.querySelectorAll('.pk').forEach(b=>b.onclick=()=>choosePicked(b.dataset.m));
  {const h1=$('pick').querySelector('.pk1');if(h1)h1.textContent=pickReg?'Now tap a muscle to see its exercises:':'Tap a muscle on the body, or pick a body part:';}
- const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="yoga">🧘 Yoga flow</button><button class="pk" data-a="bath">🛁 Bath yoga</button><button class="pk" data-a="koala">🐾 Animal mode</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
-  A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='yoga'||id==='bath')return enterYoga(id);const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
+ const A=$('pkAct');if(A&&!A.dataset.built){A.dataset.built=1;A.innerHTML=`<button class="pk" data-a="rand">🎲 Surprise me</button><button class="pk" data-a="taichi">☯ Tai chi and qigong</button><button class="pk" data-a="yoga">🧘 Yoga flow</button><button class="pk" data-a="bath">🛁 Bath yoga</button><button class="pk" data-a="koala">🐾 Animal mode</button>`+EX.map(e=>`<button class="pk" data-a="${e.id}">${e.icon} ${e.name}</button>`).join('');
+  A.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const id=b.dataset.a;if(id==='rand')return surpriseMe();if(id==='taichi')return playTaiChi();if(id==='yoga'||id==='bath')return enterYoga(id);const e=EX.find(x=>x.id===id);if(!canEx(e))return openPay('pro');
    const B=document.body.classList;B.remove('pick');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();});}
  if(document.body.classList.contains('pick')){document.documentElement.style.setProperty('--pickH',($('pick').offsetHeight+58)+'px');layoutCam();}}
 function choosePicked(id){const B=document.body.classList;B.remove('pick');$('coach').scrollTop=0;PICKSET=null;cT=id;if(ex.explore||B.contains('phone'))enterExplore();else openCoach(id);buildPick();layoutCam();}
@@ -1657,7 +1811,7 @@ function renderCoach(){
  h+=`<div class="csec"><div class="ch3"><span class="dot" style="background:${ROLECOL.chain}"></span>Connected chain, feet to head</div><div class="csub">Fascial lines after Myers. The dashed line on the body shows the path.</div>`;
  for(const l of R.lines){const C=CHAINS[l];h+=`<div class="cline"><div><b>${C.name}</b> <span class="ev ev-${C.ev.startsWith('strong')?'s':C.ev.startsWith('partial')?'p':'n'}">${C.ev}</span></div><div class="cpath">${C.m.map(i=>i===T?chip(i,'target'):chip(i,'chain')).join('<span class="arr">›</span>')}</div></div>`;}
  h+=`</div><div class="csec" id="cPlanSec"><div class="ch3">Your movement plan — ${cGoal==='wake'?'wake it up':'calm it down'}</div>
-  <div style="display:flex;gap:6px"><button class="b on cplay" id="cPlayAll" style="flex:1;width:auto">▶ Play the whole plan</button><button class="b cplay" id="cShareBtn" style="flex:0 0 auto;width:auto;white-space:nowrap">🔗 Share this plan</button><button class="b cplay" id="cExplore" style="flex:0 0 auto;width:auto" title="Coach mode: click any muscle">🎯</button></div>${coachExtrasHTML()}
+  <div style="display:flex;gap:6px"><button class="b on cplay" id="cPlayAll" style="flex:1;width:auto">▶ Play the whole plan</button><button class="b cplay" id="cShuf" style="flex:0 0 auto;width:auto;white-space:nowrap" title="Build the plan from different moves">🔀 New moves</button><button class="b cplay" id="cShareBtn" style="flex:0 0 auto;width:auto;white-space:nowrap">🔗 Share</button><button class="b cplay" id="cExplore" style="flex:0 0 auto;width:auto" title="Coach mode: click any muscle">🎯</button></div>${coachExtrasHTML()}
   <div id="cShare" class="cshare" hidden><div class="csub">Send this link. It opens straight to this plan, playing.</div><input readonly aria-label="Share link"><button class="b" id="cCopy">Copy</button></div>`;
  cPlan.blocks.forEach((b,i)=>{h+=`<div class="cblk"><div class="cbh"><span class="num">${i+1}</span><div><div class="cbl">${b.label}</div><div class="cbm">${b.m.name} <span class="src">${b.m.src}</span></div></div><button class="b cone" data-i="${i}" title="Play this block">▶</button><button class="b cshr" data-i="${i}" title="Share this block">🔗</button></div><div class="cbw">${b.why}</div><div class="cbd">Dose: ${b.m.dose}</div></div>`;});
  const more=cPlan.more.filter(k=>!cPlan.blocks.some(b=>b.k===k));
@@ -1672,7 +1826,7 @@ function renderCoach(){
  const xs=$('exitShare');if(xs)xs.onclick=()=>{document.body.classList.remove('shared');try{history.replaceState(null,'',location.pathname);}catch(_){}renderCoach();};
  $('cOut').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{sel=c.dataset.id;});
  $('cPlayAll').onclick=()=>playPlan(cPlan.blocks,`Coach plan: ${d.short}`,planHash(T,cGoal));
- $('cShareBtn').onclick=()=>sharePlan(null);$('cExplore').onclick=()=>enterExplore();
+ $('cShareBtn').onclick=()=>sharePlan(null);$('cShuf').onclick=()=>{PSEED=(PSEED%997)+1+Math.floor(Math.random()*50);renderCoach();const ps=$('cPlanSec');if(ps)ps.scrollIntoView({block:'start',behavior:'smooth'});toast('New moves in your plan');};$('cExplore').onclick=()=>enterExplore();
  $('cCopy').onclick=async()=>{const inp=$('cShare').querySelector('input');try{await navigator.clipboard.writeText(inp.value);toast('Link copied');}catch(e){inp.select();toast('Select the link and copy it');}};
  $('cOut').querySelectorAll('.cshr').forEach(b=>b.onclick=()=>sharePlan(+b.dataset.i));
  $('cOut').querySelectorAll('.cmshr').forEach(b=>b.onclick=()=>shareMove(b.dataset.k));
@@ -1899,9 +2053,9 @@ const G=GR;if(!G)return;const ph=document.body.classList.contains('phone');const
 function wrapText(t,x,y,mw,lh,max){const ws=t.split(' ');let line='',n=0;for(const w_ of ws){const tl=line?line+' '+w_:w_;if(ctx.measureText(tl).width>mw&&line){ctx.fillText(line,x,y);y+=lh;line=w_;if(++n>=max-1){}}else line=tl;}ctx.fillText(line,x,y);}
 function openActs(){const G=$('actGrid');let h='',lastG=null,open=false;
  const card=(id,ic,nm)=>`<button class="ac${(ex.id===id||(id==='explore'&&ex.explore))?' on':''}" data-go="${id}"><span class="ai">${ic}</span>${nm}</button>`;
- h+=`<h3>Coach and yoga</h3><div class="ag">${card('menu','🧍','Pick a body part')}${card('explore','🎯','Train one muscle')}${card('yoga','🧘','Yoga flow')}${card('bath','🛁','Bath yoga')}</div>`;
+ h+=`<h3>Coach and yoga</h3><div class="ag">${card('menu','🧍','Pick a body part')}${card('rand','🎲','Surprise me')}${card('taichi','☯','Tai chi and qigong flow')}${card('explore','🎯','Train one muscle')}${card('yoga','🧘','Yoga flow')}${card('bath','🛁','Bath yoga')}</div>`;
  for(const e of EX){if(e.group!==lastG){if(open)h+='</div>';lastG=e.group;h+=`<h3>${e.group||'Activities'}</h3><div class="ag">`;open=true;}h+=card(e.id,e.icon,e.name);}if(open)h+='</div>';
- G.innerHTML=h;G.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{$('actMenu').hidden=true;if(b.dataset.go==='menu')return goMainMenu();document.body.classList.remove('listOpen');const btn=document.querySelector('#exList .ex[data-id="'+b.dataset.go+'"]');
+ G.innerHTML=h;G.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{$('actMenu').hidden=true;if(b.dataset.go==='menu')return goMainMenu();if(b.dataset.go==='rand')return surpriseMe();if(b.dataset.go==='taichi')return playTaiChi();document.body.classList.remove('listOpen');const btn=document.querySelector('#exList .ex[data-id="'+b.dataset.go+'"]');
   document.body.classList.remove('pick','movesOpen');if(btn){btn.click();if(document.body.classList.contains('phone')&&!['explore','yoga','bath'].includes(b.dataset.go)){$('coach').hidden=true;syncSheet();fitCamera();}}});
  $('actMenu').hidden=false;}
 function recenter(){FC=null;orbit=false;$('orbit').classList.remove('on');setSweep(false);cam.zoom=1;fitCamera();if(ex&&ex.view){cam.yaw=ex.view[0];cam.pitch=ex.view[1];}
@@ -2795,13 +2949,51 @@ function updateMuscles(W){
 /* =========================================================
    UI
    ========================================================= */
+/* =========================================================
+   MOVE NAVIGATOR: step through moves and activities
+   ========================================================= */
+let NAV={T:null,list:[],key:''},NAVON=false,navT=0;
+function navList(T){const key=T+'|'+cGoal+'|'+PSEED;if(NAV.key===key&&NAV.list.length)return NAV.list;
+ const P=(cPlan&&cPlan.R.T===T)?cPlan:buildPlan(T,cGoal);const seen=new Set(),L=[];const add=k=>{if(k&&MOVES[k]&&!seen.has(k)){seen.add(k);L.push(k);}};
+ P.blocks.forEach(b=>add(b.k));P.more.forEach(add);const reg=REGION[regionOf(T)]||[];
+ const rel=k=>{const m=MOVES[k];return(m.work.includes(T)?5:0)+(m.stab.includes(T)?2:0)+m.work.filter(x=>reg.includes(x)).length*.5;};
+ Object.keys(MOVES).filter(k=>!seen.has(k)).sort((a,b)=>rel(b)-rel(a)).forEach(add);NAV={T,list:L,key};return L;}
+function navMode(){const B=document.body.classList;if(!ex||B.contains('yoga'))return null;if(ex.id==='coach'||ex.explore)return'move';if(EX.includes(ex))return'act';return null;}
+const rndOther=(n,cur)=>{if(n<2)return 0;let r;do r=Math.floor(Math.random()*n);while(r===cur);return r;};
+function playMoveK(k){if(!cT)cT=sel||'deltLat';if(!cPlan||cPlan.R.T!==cT)cPlan=buildPlan(cT,cGoal);const m=MOVES[k];
+ if($('coach').hidden){$('coach').hidden=false;renderCoach();}
+ playPlan([{m,label:'For the '+MDEFK[cT].short.toLowerCase(),k}],m.name,'#move-'+cT+'-'+k);ex.navK=k;phase=0;playing=true;$('play').textContent='❚❚ Pause';}
+function navGo(d){const md=navMode();const ph=document.body.classList.contains('phone');
+ if(md==='act'){const L=EX.filter(e=>canEx(e));let i=L.indexOf(ex);i=d==='rand'?rndOther(L.length,i):(i<0?0:(i+d+L.length)%L.length);
+  exitYoga();selectEx(L[i]);if(ph){$('coach').hidden=true;syncSheet();}fitCamera();return;}
+ if(md!=='move')return;
+ if(ex.id==='coach'&&!ex.navK&&ex.blocks&&ex.blocks.length>1&&d!=='rand'){const bi=Math.max(0,ex.blocks.findIndex(b=>phase>=b.t0&&phase<b.t1));const nb=bi+d;
+  if(nb>=0&&nb<ex.blocks.length){phase=ex.blocks[nb].t0+.0005;playing=true;$('play').textContent='❚❚ Pause';return;}}
+ const L=navList(cT||sel||'deltLat');let i=ex.navK?L.indexOf(ex.navK):-1;
+ if(d==='rand')i=rndOther(L.length,i);else if(i<0)i=d>0?0:L.length-1;else i=(i+d+L.length)%L.length;playMoveK(L[i]);}
+function navTick(){const nv=$('mvNav');if(!nv)return;const md=navMode();const show=!!md;
+ if(NAVON!==show){NAVON=show;nv.classList.toggle('nvOff',!show);layoutCam();}if(!show)return;
+ const r=$('bot').getBoundingClientRect();if(r.height)nv.style.bottom=Math.max(8,innerHeight-r.top+6)+'px';
+ let nm='',sb='',nx='Next ▶';
+ if(md==='act'){const L=EX.filter(e=>canEx(e));nm=ex.icon+' '+ex.name;sb=`Activity ${L.indexOf(ex)+1} of ${L.length} · tap Next for another`;}
+ else{const T=cT||'deltLat',sh=MDEFK[T].short.toLowerCase();const L=navList(T);
+  if(ex.explore){nm=`Moves for the ${sh}`;sb=`${L.length} moves to try · tap Start`;nx='▶ Start';}
+  else if(ex.navK){const m=MOVES[ex.navK];nm=m.name;sb=`${m.src} · move ${L.indexOf(ex.navK)+1} of ${L.length} for the ${sh}`;}
+  else if(ex.blocks){const bi=Math.max(0,ex.blocks.findIndex(b=>phase>=b.t0&&phase<b.t1));const b=ex.blocks[bi];nm=b.name;sb=`Part ${bi+1} of ${ex.blocks.length} · ${b.src}`;}}
+ if($('nvName').textContent!==nm)$('nvName').textContent=nm;if($('nvSub').textContent!==sb)$('nvSub').textContent=sb;if($('nvNext').textContent!==nx)$('nvNext').textContent=nx;}
+function playTaiChi(){const ks=Object.keys(MOVES).filter(k=>/Tai chi|Qigong/.test(MOVES[k].src));const B=document.body.classList;exitYoga();B.remove('pick','listOpen','movesOpen');PICKSET=null;
+ if(!cT)cT='deltLat';openCoach(cT);playPlan(ks.map(k=>({m:MOVES[k],label:/Tai chi/.test(MOVES[k].src)?'Tai chi':'Qigong',k})),'Tai chi and qigong flow');
+ playing=true;$('play').textContent='❚❚ Pause';toast('Tai chi and qigong flow: tap Next ▶ to skip a move');}
+function surpriseMe(){const all=Object.values(REGION).flat();const B=document.body.classList;B.remove('pick','listOpen');PICKSET=null;
+ cT=all[Math.floor(Math.random()*all.length)];cPlan=buildPlan(cT,cGoal);const L=navList(cT).filter(k=>MOVES[k].work.includes(cT));const pool=L.length?L:navList(cT);
+ openCoach(cT);playMoveK(pool[Math.floor(Math.random()*pool.length)]);buildPick();toast('Surprise: '+MDEFK[cT].name);}
 let rows=[],uiTick=0,lastT=0;
 function buildZTabs(){const t=$('zTabs');t.innerHTML='';const ord=[...ex.focus,...REGORDER.filter(r=>!ex.focus.includes(r))];
  for(const r of ord){const b=document.createElement('button');b.className='b'+(r===zReg?' on':'');b.textContent=REG[r].name;b.onclick=()=>{zReg=r;TRACE.ids=[];buildZTabs();};t.appendChild(b);}}
 const $=id=>document.getElementById(id);
 function setSweep(v){sweep=v;const b=$('sweep');if(b)b.classList.toggle('on',v);if(ex)ex._sw=null;}
 function selectEx(e){
- ex=e;prep(ex);document.body.classList.toggle('xpl',!!ex.explore);setTimeout(renderCounter,0);phase=0;sel=null;hover=null;document.body.classList.remove('movesOpen');
+ capAt=0;capNext='';ex=e;prep(ex);document.body.classList.toggle('xpl',!!ex.explore);setTimeout(renderCounter,0);phase=0;sel=null;hover=null;document.body.classList.remove('movesOpen');
  document.querySelectorAll('.ex').forEach(b=>b.classList.toggle('on',b.dataset.id===ex.id));
  cam.yaw=ex.view[0];cam.pitch=ex.view[1];cam.zoom=1;fitCamera();
  zReg=ex.focus[0];buildZTabs();TRK.L=[];TRK.R=[];COMTRAIL.length=0;TRACE.ids=[];$('surfG').style.display=ex.id==='run'?'flex':'none';
@@ -2831,7 +3023,7 @@ function updateUI(){
   if($('capX').innerHTML!==x)$('capX').innerHTML=x;$('capP').style.width=clamp((phase-b.t0)/(b.t1-b.t0),0,1)*100+'%';if(!document.body.classList.contains('follow')){document.body.classList.add('follow');layoutCam();}}
  else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=(IP._okA===0?'✕ AVOID — ':IP._okA===1?'✓ ':'')+IP._cap;setCap(cap);{const c=$('cap').classList;c.toggle('vBad',IP._ok===0);c.toggle('vGood',IP._ok===1);}if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
  if(!scrubbing)$('tl').value=Math.round(phase*1000);
- if(++uiTick%3)return;
+ if(++uiTick%3)return;if(uiTick%9===0)navTick();
  for(const r of rows){const a=MUSK[r.id+'L'],b=MUSK[r.id+'R'];const ca=STATECOL[a.state],cb=STATECOL[b.state];r.dL.style.background=ca;r.dR.style.background=cb;
   const pa=Math.round(a.L/a.L0*100),pb=Math.round(b.L/b.L0*100);r.st.textContent=a.state===b.state?`${STATETXT[a.state]} · L ${pa}% · R ${pb}%`:`L ${STATETXT[a.state]} · R ${STATETXT[b.state]}`;
   r.bL.style.width=clamp((a.L/a.L0-.6)/.8,0,1)*100+'%';r.bL.style.background=ca;r.bR.style.width=clamp((b.L/b.L0-.6)/.8,0,1)*100+'%';r.bR.style.background=cb;r.r.classList.toggle('sel',sel===r.id);}
@@ -2904,9 +3096,10 @@ function init(){
  $('tZoom').onclick=()=>setZ(!zOn);$('zList').onclick=()=>setZ(false);$('rZoom').onclick=()=>setZ(true);
  document.querySelectorAll('.sf').forEach(b=>b.onclick=()=>{runSurf=b.dataset.s;document.querySelectorAll('.sf').forEach(x=>x.classList.toggle('on',x===b));});
  addEventListener('keydown',e=>{if(e.code==='Escape'){if(zBig)$('zBig').click();document.body.classList.remove('listOpen');$('actMenu').hidden=true;}});
- $('pMoves').onclick=()=>openActs();
+ $('pMoves').onclick=()=>openActs();$('nvNext').onclick=()=>navGo(1);$('nvPrev').onclick=()=>navGo(-1);$('nvShuf').onclick=()=>navGo('rand');
  $('pCoach').onclick=()=>{document.body.classList.remove('movesOpen','listOpen');enterExplore();};
- $('pMore').onclick=()=>{document.body.classList.toggle('showMore');};
+ $('pMore').onclick=()=>{const m=document.body.classList.toggle('showMore');$('pMore').textContent=m?'✕ Less':'⋯ More';layoutCam();};
+ $('pSpeed').onclick=()=>{const L=[1,.75,.5,.25];speed=L[(L.indexOf(speed)+1)%L.length];document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',+x.dataset.s===speed));$('pSpeed').textContent=(speed<.6?'🐢 ':'🐇 ')+({1:'1×',.75:'¾×',.5:'½×',.25:'¼×'})[speed];toast('Speed '+$('pSpeed').textContent.slice(2));};
  $('tMus').onclick=()=>{if(document.body.classList.contains('phone')){document.body.classList.toggle('listOpen');document.body.classList.remove('movesOpen');return;}$('right').classList.toggle('show');$('tMus').classList.toggle('on');};
  addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();setPlay(!playing);}if(e.code==='ArrowRight'){setPlay(false);phase=(phase+.01)%1;}if(e.code==='ArrowLeft'){setPlay(false);phase=(phase+.99)%1;}});
  // drag to rotate, click to pick, pinch / wheel to zoom
