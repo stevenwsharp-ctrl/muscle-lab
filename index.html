@@ -112,6 +112,16 @@ body:not(.phone) #left,body:not(.phone) #coach{top:62px}
 body.phone #actBtn{top:max(8px,env(safe-area-inset-top));left:10px;padding:8px 13px;font-size:13px}
 body.phone:not(.xpl) #cap{top:calc(max(8px,env(safe-area-inset-top)) + 44px)}
 body.phone #actMenu{inset:8px 8px 8px 8px}
+#capC.fadeIn{animation:capIn .45s ease}@keyframes capIn{from{opacity:.15;transform:translateY(4px)}to{opacity:1;transform:none}}
+#cap{cursor:pointer}#readTag{display:none;font-size:10.5px;color:#a5f3fc;margin-top:4px;letter-spacing:.04em}#readTag.on{display:block}
+#viewTools{position:fixed;z-index:29;display:flex;gap:6px;top:12px;right:14px}
+#viewTools button{font:700 13px Inter,system-ui,sans-serif;padding:8px 12px;border-radius:11px;border:1px solid rgba(126,249,255,.45);background:rgba(8,16,30,.85);color:#e6faff;cursor:pointer;backdrop-filter:blur(6px)}
+#viewTools button:hover{background:rgba(126,249,255,.15)}
+body:not(.phone) #viewTools{right:auto;left:172px}body:not(.phone) #colorKey{right:auto;left:172px}
+#colorKey{position:fixed;z-index:35;top:58px;right:14px;width:min(360px,92vw);background:rgba(8,14,28,.95);border:1px solid rgba(126,249,255,.35);border-radius:14px;padding:10px 14px;font:13px/1.45 Inter,system-ui,sans-serif;color:#dfeaf7;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+#colorKey .kh{display:flex;align-items:center;margin-bottom:6px}#colorKey .kh b{font-size:15px;color:#7ef9ff}#colorKey .kh button{margin-left:auto;background:none;border:0;color:#cbd5e1;font-size:16px;cursor:pointer}
+#colorKey .kr{display:flex;align-items:flex-start;gap:8px;margin:5px 0;cursor:default}#colorKey .kr[data-st]{cursor:pointer}#colorKey .sw{flex:0 0 22px;height:12px;border-radius:6px;margin-top:4px}#colorKey .dot2{flex:0 0 12px;height:12px;border-radius:50%}
+body.phone #viewTools{top:max(8px,env(safe-area-inset-top));right:10px}body.phone #viewTools button{font-size:13.5px;padding:9px 11px}body.phone #colorKey{top:62px;right:8px;font-size:14.5px}
 #capX{display:none;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px;font-size:11.5px;color:var(--dim)}
 #capX span{padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06)}#capX .rp{background:rgba(94,224,255,.18);color:var(--acc);font-weight:700}
 #capPW{display:none;height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}#capP{display:block;height:100%;width:0;background:linear-gradient(90deg,#5ee0ff,#ff4fd8)}
@@ -246,6 +256,18 @@ body:not(.phone) #tText{display:none}
 </div></div>
 
 <button id="actBtn" aria-label="Open activities">▦ Activities</button>
+<div id="viewTools"><button id="recBtn" title="Recenter on the whole body (or double-tap the body)">⌖ Recenter</button><button id="keyBtn" title="What the colors mean">🎨 Key</button></div>
+<div id="colorKey" hidden><div class="kh"><b>Color key</b><button id="keyX" aria-label="Close">✕</button></div>
+ <div class="kr"><span class="sw" style="background:var(--con)"></span><b>Red · shortening</b> — working to lift or pull (concentric)</div>
+ <div class="kr"><span class="sw" style="background:var(--ecc)"></span><b>Orange · lengthening under load</b> — working to lower or brake (eccentric)</div>
+ <div class="kr"><span class="sw" style="background:var(--iso)"></span><b>Yellow · holding</b> — working without moving (isometric)</div>
+ <div class="kr"><span class="sw" style="background:var(--str)"></span><b>Blue · stretching</b> — getting longer while relaxed</div>
+ <div class="kr"><span class="sw" style="background:var(--idle)"></span><b>Dark red · resting</b> — not working right now</div>
+ <div class="kr"><span class="sw" style="background:#ff4fd8;box-shadow:0 0 8px #ff4fd8"></span><b>Pink glow</b> — the muscle you picked</div>
+ <div class="kr"><span class="sw dot2" style="background:#34d399"></span><b>Green dot</b> — where a muscle starts &nbsp;<span class="sw dot2" style="background:#5fb4ff"></span><b>Blue dot</b> — where it attaches</div>
+ <div class="kr"><span class="sw" style="background:linear-gradient(90deg,#ffd84d 50%,transparent 50%);background-size:6px 3px;height:3px;margin-top:6px"></span><b>Gold dashed line</b> — line of gravity, from the gold center of mass</div>
+ <div class="kr"><span class="sw" style="background:#f2e9d8"></span><b>Cream</b> — bones and tendons</div>
+ <div class="kr" style="color:var(--dim)">Brighter and thicker means working harder. Tap a color in the key to show only those muscles.</div></div>
 <div id="actMenu" hidden><div class="amh"><b>▦ Activities</b><span class="csub">Pick what to watch or train</span><button class="b" id="actX" aria-label="Close">✕</button></div><div id="actGrid"></div></div>
 <div id="left" class="panel">
   <h1>Muscle Lab</h1>
@@ -261,7 +283,7 @@ body:not(.phone) #tText{display:none}
   <div class="grp" style="margin:8px 0;flex-wrap:wrap"><button class="b cg on" data-g="wake">Wake it up (underactive)</button><button class="b cg" data-g="calm">Calm it down (overactive)</button></div>
   <div id="cOut"></div>
 </div>
-<div id="cap" class="panel"><div class="t" id="capT"></div><div class="c" id="capC"></div><div id="capX"></div><div id="ctr"></div><div class="prog" id="capPW"><i id="capP"></i></div></div>
+<div id="cap" class="panel"><div class="t" id="capT"></div><div class="c" id="capC"></div><div id="readTag">📖 Slowed down so you can read · tap the caption to pause</div><div id="capX"></div><div id="ctr"></div><div class="prog" id="capPW"><i id="capP"></i></div></div>
 
 <div id="right" class="panel">
   <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Muscles in this movement</h2><button class="b" id="rZoom" style="font-size:11px;padding:3px 7px">⊕ Zoom</button></div>
@@ -294,7 +316,7 @@ body:not(.phone) #tText{display:none}
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tText" title="Text size">Aa</button><button class="b" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on" id="tZoom">Zoom</button><button class="b" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <script>
@@ -657,10 +679,10 @@ function interp(ex,t){
  const a=K[i],b=K[(i+1)%n];const t1=(i+1<n)?b.t:1;
  if(ex.cr){const u=clamp((t-a.t)/((t1-a.t)||1),0,1);const k0=K[(i-1+n)%n].P,k1=a.P,k2=b.P,k3=K[(i+2)%n].P;const P={};
   for(const k of ex.keyList){const p0=k0[k]||0,p1=k1[k]||0,p2=k2[k]||0,p3=k3[k]||0;P[k]=.5*(2*p1+(-p0+p2)*u+(2*p0-5*p1+4*p2-p3)*u*u+(-p0+3*p1-3*p2+p3)*u*u*u);}
-  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;{const v=u<.5||b.ok==null?a:b;P._ok=v.ok;P._okl=v.okl;}return P;}
+  P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;{const v=u<.5||b.ok==null?a:b;P._ok=v.ok;P._okl=v.okl;P._okA=a.ok;}return P;}
  let u=clamp((t-a.t)/((t1-a.t)||1),0,1);const e=u*u*(3-2*u);
  const P={};for(const k of ex.keyList){const va=a.P[k]||0,vb=b.P[k]||0;P[k]=va+(vb-va)*e;}
- P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;{const v=u<.5||b.ok==null?a:b;P._ok=v.ok;P._okl=v.okl;}return P;
+ P._cap=a.cap;P._cue=a.cue;P._rep=a.rep;P._bi=a.bi;P._sd=a.sd;P._br=a.br;P._u=u;P._seg=t1-a.t;{const v=u<.5||b.ok==null?a:b;P._ok=v.ok;P._okl=v.okl;P._okA=a.ok;}return P;
 }
 // push-up: find body tilt so hands and toes both touch the floor; keep hands from sliding
 function pitchSolve(P){let lo=10,hi=89.5,W;
@@ -1875,6 +1897,9 @@ function openActs(){const G=$('actGrid');let h='',lastG=null,open=false;
  G.innerHTML=h;G.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{$('actMenu').hidden=true;const btn=document.querySelector('#exList .ex[data-id="'+b.dataset.go+'"]');
   document.body.classList.remove('pick','movesOpen');if(btn){btn.click();if(document.body.classList.contains('phone')&&!['explore','yoga','bath'].includes(b.dataset.go)){$('coach').hidden=true;syncSheet();fitCamera();}}});
  $('actMenu').hidden=false;}
+function recenter(){FC=null;orbit=false;$('orbit').classList.remove('on');setSweep(false);cam.zoom=1;fitCamera();if(ex&&ex.view){cam.yaw=ex.view[0];cam.pitch=ex.view[1];}
+ if(ex)ex._sw=null;toast('Recentered on the whole body');}
+function readTagTick(){const t=$('readTag');if(t)t.classList.toggle('on',READ&&playing&&RF<.85);if(capNext&&(!playing||performance.now()/1000-capAt>=Math.min(needSec(capShown)*.55,5))){const n=capNext;capNext='';capShown='';setCap(n);}}
 function drawSideBadge(){if(!SIDE||!(ex.blocks||ex.both))return;const ph=document.body.classList.contains('phone');const L_=SIDE==='L';const t=L_?'◀  LEFT SIDE':'RIGHT SIDE  ▶';
  ctx.save();ctx.font=`900 ${ph?13:17}px Inter,system-ui,sans-serif`;const w=ctx.measureText(t).width+(ph?22:30),h=ph?28:36;const x=L_?camArea.x0+(ph?8:16):camArea.x1-w-(ph?8:16);const cr=$('cap').getBoundingClientRect();
  const IPv=interp(ex,phase);const y=(getComputedStyle($('cap')).display!=='none'&&cr.height?cr.bottom+(ph?6:10):camArea.y0)+(ph&&IPv._ok!=null?40:0);const col=L_?'#7ef9ff':'#ff5fd2';
@@ -2601,11 +2626,25 @@ let MIRROR=false;
   if(e.terr){const o=e.terr;e.terr=(x,z,t)=>o(x,z,H(t));}
   if(e.extra){const o=e.extra;e.extra=(W,t,items)=>{MIRROR=t>=.5;o(W,H(t),items);MIRROR=false;};}
   if(e.events)e.events=[...e.events.map(v=>Object.assign({},v,{t:v.t/2})),...e.events.map(v=>Object.assign({},v,{t:.5+v.t/2}))];}})();
+
+// READING PACE: give every caption enough time to read (about 200 words a minute plus a pause)
+let READ=true;try{const v=localStorage.getItem('ml_read');if(v!==null)READ=v==='1';}catch(_){}
+const needSec=t=>1.6+(String(t||'').trim().split(/\s+/).length)*.3;
+function capSpans(e){if(e._spans&&e._spansK===e.K)return e._spans;const K=e.K||[];const sp=[];
+ for(let i=0;i<K.length;i++){const c=K[i].cue||K[i].cap||'';if(sp.length&&sp[sp.length-1].c===c){sp[sp.length-1].t1=i+1<K.length?K[i+1].t:1;continue;}sp.push({c,t0:K[i].t,t1:i+1<K.length?K[i+1].t:1});}
+ for(const x of sp)x.need=needSec(x.c);e._spans=sp;e._spansK=e.K;return sp;}
+let RF=1,RFT=1;
+function readFactor(){if(!READ||!ex||!ex.K||ex.yoga||ex.explore){RF=1;return 1;}const sp=capSpans(ex);const x=sp.find(v=>phase>=v.t0&&phase<v.t1);if(!x){RF=1;return 1;}
+ const real=(x.t1-x.t0)*ex.dur/Math.max(speed,.05);RFT=clamp(real/x.need,.25,1);RF+=(RFT-RF)*.08;return RF;}
+let capShown='',capAt=0,capNext='';
+function setCap(t){const el=$('capC');if(t===capShown)return;const now=performance.now()/1000;
+ if(READ&&capShown&&now-capAt<Math.min(needSec(capShown)*.55,5)&&playing){capNext=t;return;}
+ capShown=t;capAt=now;capNext='';el.textContent=t;el.classList.remove('fadeIn');void el.offsetWidth;el.classList.add('fadeIn');}
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-0900';
+const BUILD='2026-11-18-0950';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2727,10 +2766,10 @@ function updateUI(){
  if(ex.blocks){const b=ex.blocks[IP._bi!=null?IP._bi:0]||ex.blocks[0];const n=ex.blocks.length;
   const t=(n>1?`Block ${b.i+1} of ${n} · ${b.label} · `:'')+b.name;if($('capT').textContent!==t)$('capT').textContent=t;
   let cue=IP._cue||'';if(!IP._rep){const s_=Math.max(1,Math.ceil((b.r1-phase)*ex.dur/Math.max(speed,.01)));cue='Get ready: '+b.name+' … '+s_;}
-  if($('capC').textContent!==cue)$('capC').textContent=cue;
+  setCap(cue);
   const x=`<span class="rp">${IP._rep?(b.reps>1?'Rep '+IP._rep+' of '+b.reps:'')+(IP._sd||''):'Get ready'}</span><span>${b.src}</span><span>Dose: ${b.dose}</span>${b.next?`<span>Next: ${b.next}</span>`:''}`;
   if($('capX').innerHTML!==x)$('capX').innerHTML=x;$('capP').style.width=clamp((phase-b.t0)/(b.t1-b.t0),0,1)*100+'%';if(!document.body.classList.contains('follow')){document.body.classList.add('follow');layoutCam();}}
- else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=(IP._ok===0?'✕ AVOID — ':IP._ok===1?'✓ ':'')+IP._cap;if($('capC').textContent!==cap)$('capC').textContent=cap;{const c=$('cap').classList;c.toggle('vBad',IP._ok===0);c.toggle('vGood',IP._ok===1);}if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
+ else{if(document.body.classList.contains('follow')){document.body.classList.remove('follow');layoutCam();}const cap=(IP._okA===0?'✕ AVOID — ':IP._okA===1?'✓ ':'')+IP._cap;setCap(cap);{const c=$('cap').classList;c.toggle('vBad',IP._ok===0);c.toggle('vGood',IP._ok===1);}if($('capT').textContent!==ex.name)$('capT').textContent=ex.name;}
  if(!scrubbing)$('tl').value=Math.round(phase*1000);
  if(++uiTick%3)return;
  for(const r of rows){const a=MUSK[r.id+'L'],b=MUSK[r.id+'R'];const ca=STATECOL[a.state],cb=STATECOL[b.state];r.dL.style.background=ca;r.dR.style.background=cb;
@@ -2741,14 +2780,14 @@ function updateUI(){
 let scrubbing=false;
 function loop(now){
  const rawFt=now-(lastT||now);const dt=Math.min(.05,rawFt/1000);lastT=now;if(rawFt>0&&rawFt<500)perfTick(now,rawFt);FRN++;
- const prevP=phase;if(playing&&!scrubbing){phase=(phase+dt*speed/ex.dur)%1;simT+=dt*speed;}
+ const prevP=phase;if(playing&&!scrubbing){const sp=speed*readFactor();phase=(phase+dt*sp/ex.dur)%1;simT+=dt*sp;}
  if(ex.playOnce&&playing&&!scrubbing&&phase<prevP){ex.playOnce=false;enterExplore();}
  if(orbit)cam.yaw+=dt*14;
  {const IPs=(ex.blocks||ex.both)?interp(ex,phase):null;const ns=IPs&&IPs._sd?(/right/.test(IPs._sd)?'R':'L'):null;
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}drawWater(W);drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();drawWater(W);drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -2784,6 +2823,11 @@ function init(){
  $('sweep').onclick=()=>setSweep(!sweep);
  $('tBreath').onclick=()=>setBreath(!breathOn);
  $('tShare').onclick=shareNow;
+ $('recBtn').onclick=recenter;cv.addEventListener('dblclick',recenter);
+ $('keyBtn').onclick=()=>{$('colorKey').hidden=!$('colorKey').hidden;};$('keyX').onclick=()=>{$('colorKey').hidden=true;};
+ {const map=['con','ecc','iso','str'];document.querySelectorAll('#colorKey .kr').forEach((r,i)=>{if(i<4){r.dataset.st=map[i];r.onclick=()=>setCF(CF===map[i]?'all':map[i]);}});}
+ {const rb=$('tRead');rb.classList.toggle('on',READ);rb.onclick=()=>{READ=!READ;rb.classList.toggle('on',READ);try{localStorage.setItem('ml_read',READ?'1':'0');}catch(_){}toast(READ?'Reading pace on: the motion slows down for long instructions':'Reading pace off');};}
+ $('cap').addEventListener('click',e=>{if(e.target.closest('button'))return;setPlay(!playing);toast(playing?'Playing':'Paused: read at your own pace, tap again to play');});
  $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
  $('actBtn').onclick=()=>openActs();$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
  document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
