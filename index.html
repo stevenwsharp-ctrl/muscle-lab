@@ -435,6 +435,14 @@ const MDEF=[
  {id:'abdHallucis',name:'Abductor hallucis',short:'Abd. hallucis',w:2,s:[[['foot',-2.8,-8.4,-3],['toes',-2.6,-1.2,.8]]],does:'Moves the big toe out. Supports the inner arch.'},
  {id:'abdDigMin',name:'Abductor digiti minimi',short:'Abd. dig. min.',w:1.6,s:[[['foot',2.8,-8.6,-3],['toes',2.6,-1.3,.5]]],does:'Supports the outer edge of the foot.'},
  {id:'extDigBrev',name:'Extensor digitorum brevis',short:'Short toe ext.',w:1.8,s:[[['foot',2.2,-5.5,3],['toes',1,-.2,1.5]]],does:'Lifts the toes from the top of the foot.'},
+ {id:'diaphragm',deep:1,drive:'breath',name:'Diaphragm',short:'Diaphragm',w:3,s:[[['chest',11,5,1],['chest',3,12,1]],[['chest',9,4,-6],['chest',2,11,-1]],[['chest',8,4,7],['chest',2,11,3]]],does:'The main breathing muscle. It domes up under the lungs and pulls down like a piston to breathe in. It also builds pressure in the belly that steadies the spine.'},
+ {id:'intercostals',deep:1,drive:'breath',name:'Intercostals',short:'Intercostals',w:1.6,s:[[['chest',10,9,8],['chest',12,14,6]],[['chest',12,8,-6],['chest',13,13,-5]]],does:'Muscles between the ribs. They lift and spread the rib cage to breathe in, and steady the ribs.'},
+ {id:'tva',deep:1,drive:'core',name:'Transversus abdominis',short:'TVA',w:2.4,s:[[['spine',5,4,-6],['spine',8,5,6]],[['pelvis',8,6,2],['pelvis',3,3,8]]],does:'The deepest belly muscle. It wraps the waist like a corset, helps you breathe out, and braces the spine before you move.'},
+ {id:'pelvicFloor',deep:1,drive:'floor',name:'Pelvic floor',short:'Pelvic floor',w:2.2,s:[[['pelvis',1.5,-8,6],['pelvis',1.5,-9,-6]],[['pelvis',5,-8,3],['pelvis',2,-9,-5]]],does:'A muscle sling under the pelvis. It moves with the diaphragm: it lowers a little on the in-breath and lifts on the out-breath.'},
+ {id:'suboccipitals',deep:1,name:'Suboccipitals',short:'Suboccipitals',w:1.5,s:[[['neck',2,8,-3],['head',3,1,-6]],[['neck',3.5,7,-2],['head',5,1,-5]]],does:'Tiny muscles under the base of the skull. They fine-tune head position and link to eye movement; they tire when the chin pokes forward.'},
+ {id:'thenar',drive:'grip',name:'Thenar muscles (thumb)',short:'Thumb pad',w:1.8,s:[[['hand',-2.4,-2,1.4],['hand',-3.4,-8.5,1.2]]],does:'The pad at the base of the thumb. It brings the thumb across to the fingers (opposition) for pinch and power grip.'},
+ {id:'hypothenar',drive:'grip',name:'Hypothenar muscles (little finger)',short:'Pinky pad',w:1.5,s:[[['hand',2.6,-2,1.1],['hand',3.2,-9,.9]]],does:'The pad on the little-finger side. It cups the palm and moves the little finger.'},
+ {id:'handIntr',drive:'grip',name:'Lumbricals and interossei',short:'Hand intrinsics',w:1.3,s:[[['hand',-1,-3,.6],['hand',-1,-10,.8]],[['hand',1,-3,.6],['hand',1.2,-10,.8]]],does:'Small muscles between the finger bones. They spread and close the fingers, keep the hand arches, and give fine control.'},
 ];
 const MDEFK={};MDEF.forEach(d=>MDEFK[d.id]=d);
 const MUS=[];
@@ -685,7 +693,7 @@ function fitArms(P,fit){const gap=d=>{const Q=Object.assign({},P);Q['L.sh.f']=(Q
 let BR=null,BRAPPLY=false;
 function solve(ex,t){
 const P=interp(ex,t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
- if(BRAPPLY&&BR){const b=BR.lvl;P['chest.f']=(P['chest.f']||0)-3.5*b;P['spine.f']=(P['spine.f']||0)-1.2*b;P['neck.f']=(P['neck.f']||0)+1.5*b;for(const S of['L','R'])P[S+'.clav.e']=(P[S+'.clav.e']||0)+1.6*b;}
+ if(BRAPPLY&&BR){const b=BR.lvl,cs=clamp(P.brs||0,0,1);P['chest.f']=(P['chest.f']||0)-(3.5+3*cs)*b;P['spine.f']=(P['spine.f']||0)-1.2*b;P['neck.f']=(P['neck.f']||0)+(1.5-7*cs)*b;for(const S of['L','R'])P[S+'.clav.e']=(P[S+'.clav.e']||0)+(1.6+10*cs)*b;}
  if(ex.anchor==='floor'&&(P.fit||0)>.02)fitArms(P,clamp(P.fit,0,1));
  const W=ex.anchor==='pushup'?solvePush(ex,P):fk(P);
  if(ex.anchor==='floor'){let mn=1e9;for(const c of floorPts(W))if(c.p[1]<mn)mn=c.p[1];const fl=clamp(P['anc.fl']||0,0,1);
@@ -1270,14 +1278,15 @@ const ACTS={deltAnt:['sh.flex','sh.ir'],deltLat:['sh.abd'],deltPost:['sh.ext','s
  supraspinatus:['sh.abd','sh.er'],infraspinatus:['sh.er'],teresMinor:['sh.er'],subscap:['sh.ir'],teresMajor:['sh.add','sh.ext','sh.ir'],pecMinor:['scap.prot','scap.downr','scap.dep'],coracobrach:['sh.flex','sh.add'],
  splenius:['neck.ext','neck.rot'],levScap:['scap.elev','scap.downr','neck.side'],scalenes:['neck.side','neck.flex'],longusColli:['neck.flex'],semispinalis:['neck.ext'],
  intOblique:['tr.rot','tr.side','tr.flex'],QL:['tr.side','pelvis.hike'],multifidus:['tr.ext'],tfl:['hip.abd','hip.flex','hip.ir'],sartorius:['hip.flex','hip.er','kn.flex'],gracilis:['hip.add','kn.flex'],gluteMin:['hip.abd','hip.ir'],piriformis:['hip.er'],
- peroneals:['ft.ev','ank.pf'],tibPost:['ft.inv','ank.pf','arch'],extDigLong:['toe.ext','ank.df'],flexHalLong:['toe.flex','ank.pf','arch'],flexDigBrev:['toe.flex','arch'],abdHallucis:['arch','toe.abd'],abdDigMin:['arch'],extDigBrev:['toe.ext']};
+ peroneals:['ft.ev','ank.pf'],tibPost:['ft.inv','ank.pf','arch'],extDigLong:['toe.ext','ank.df'],flexHalLong:['toe.flex','ank.pf','arch'],flexDigBrev:['toe.flex','arch'],abdHallucis:['arch','toe.abd'],abdDigMin:['arch'],extDigBrev:['toe.ext'],
+ diaphragm:['breath.in','brace'],intercostals:['breath.in'],tva:['brace','breath.out'],pelvicFloor:['brace'],suboccipitals:['neck.ext','neck.rot'],thenar:['thumb.opp','grip'],hypothenar:['grip'],handIntr:['finger.spread','grip']};
 const OPP={};[['sh.flex','sh.ext'],['sh.abd','sh.add'],['sh.ir','sh.er'],['sh.habd','sh.hadd'],['scap.elev','scap.dep'],['scap.ret','scap.prot'],['scap.upr','scap.downr'],['el.flex','el.ext'],['wr.flex','wr.ext'],['tr.flex','tr.ext'],['neck.flex','neck.ext'],['hip.flex','hip.ext'],['hip.abd','hip.add'],['hip.er','hip.ir'],['kn.ext','kn.flex'],['ank.pf','ank.df'],['ft.ev','ft.inv'],['toe.flex','toe.ext']].forEach(([a,b])=>{OPP[a]=b;OPP[b]=a;});
 const REGION={shoulder:['deltAnt','deltLat','deltPost','pec','lats','trapUpper','trapMid','trapLower','rhomboid','serratus','supraspinatus','infraspinatus','teresMinor','subscap','teresMajor','pecMinor','coracobrach','levScap'],
- arm:['biceps','brachialis','triceps','brachiorad','forearmFlex','forearmExt'],neck:['scm','splenius','scalenes','longusColli','semispinalis'],trunk:['rectusAbd','oblique','intOblique','erector','QL','multifidus'],
+ arm:['biceps','brachialis','triceps','brachiorad','forearmFlex','forearmExt'],neck:['scm','splenius','scalenes','longusColli','semispinalis','suboccipitals'],trunk:['rectusAbd','oblique','intOblique','erector','QL','multifidus','diaphragm','intercostals','tva','pelvicFloor'],hand:['thenar','hypothenar','handIntr'],
  hip:['gluteMax','gluteMed','gluteMin','piriformis','iliopsoas','tfl','adductors','sartorius','gracilis'],thigh:['rectFem','vastLat','vastMed','hamstrings'],
  leg:['gastroc','soleus','tibAnt','peroneals','tibPost','extDigLong','flexHalLong'],foot:['flexDigBrev','abdHallucis','abdDigMin','extDigBrev']};
-const REGNAME={shoulder:'Shoulder and shoulder blade',arm:'Arm and forearm',neck:'Neck',trunk:'Trunk and core',hip:'Hip',thigh:'Thigh',leg:'Lower leg',foot:'Foot'};
-const REG2ZOOM={shoulder:'shoulder',arm:'shoulder',neck:'neck',trunk:'core',hip:'hip',thigh:'knee',leg:'leg',foot:'foot'};
+const REGNAME={hand:'Hand',shoulder:'Shoulder and shoulder blade',arm:'Arm and forearm',neck:'Neck',trunk:'Trunk and core',hip:'Hip',thigh:'Thigh',leg:'Lower leg',foot:'Foot'};
+const REG2ZOOM={hand:'shoulder',shoulder:'shoulder',arm:'shoulder',neck:'neck',trunk:'core',hip:'hip',thigh:'knee',leg:'leg',foot:'foot'};
 const regionOf=id=>Object.keys(REGION).find(r=>REGION[r].includes(id));
 const STABS={shoulder:['supraspinatus','infraspinatus','teresMinor','subscap','serratus','trapLower','longusColli','intOblique','multifidus'],arm:['supraspinatus','infraspinatus','subscap','serratus','trapLower'],
  neck:['longusColli','semispinalis','trapLower','serratus','multifidus'],trunk:['multifidus','intOblique','gluteMed','gluteMax','longusColli'],hip:['intOblique','multifidus','QL','abdHallucis','peroneals','tibPost'],
@@ -1586,7 +1595,7 @@ function openCoach(T){exitYoga();const prevT=cT;cT=T||cT||'deltLat';if(ex.explor
 function detectPhone(){const coarse=matchMedia('(pointer:coarse)').matches;const small=Math.min(screen.width,screen.height)<=820;
  const ua=/iPhone|iPod|Android.+Mobile|Windows Phone/i.test(navigator.userAgent);return(coarse&&small)||ua||innerWidth<=640;}
 let PICKSET=null,pickReg=null;
-const PKPARTS=[['all','All muscles'],['neck','Neck'],['shoulder','Shoulder'],['arm','Arm'],['trunk','Core and back'],['hip','Hip'],['thigh','Thigh'],['leg','Lower leg'],['foot','Foot']];
+const PKPARTS=[['all','All muscles'],['neck','Neck'],['hand','Hand'],['shoulder','Shoulder'],['arm','Arm'],['trunk','Core and back'],['hip','Hip'],['thigh','Thigh'],['leg','Lower leg'],['foot','Foot']];
 function buildPick(){const P=$('pkParts');P.innerHTML=PKPARTS.map(([k,n])=>`<button class="pk${k===pickReg?' on':''}" data-r="${k}">${n}</button>`).join('');
  const regList=r=>r==='all'?Object.values(REGION).flat():REGION[r];
  P.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{pickReg=pickReg===b.dataset.r?null:b.dataset.r;PICKSET=pickReg&&pickReg!=='all'?new Set(REGION[pickReg]):null;buildPick();});
@@ -1609,6 +1618,7 @@ function renderCoach(){
  let h=(document.body.classList.contains('shared')?`<div class="sban"><div><b>Shared movement plan</b><div class="csub" style="margin:0">${/#move-/.test(decodeURIComponent(location.hash))?'The exercise repeats. Tap 🎯 Coach mode to explore any muscle.':'The plan plays once. Then coach mode opens: click any muscle.'}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px"><button class="b" id="replayShare">▶ Replay plan</button><button class="b" id="exploreShare">🎯 Coach mode</button><button class="b" id="exitShare">Full Muscle Lab</button></div></div>${ctaHTML()}`:'')+`<div class="ctgt"><div class="cn" style="color:${ROLECOL.target}">${d.name}</div><div>${d.does}</div>
   ${ANAT[T]?`<div class="ctip"><b>📍 Where:</b> ${whereText(T)} of the body · ${REGNAME[regionOf(T)]}<br><b style="color:#34d399">● Starts:</b> ${ANAT[T][0]}<br><b style="color:#5fb4ff">● Attaches:</b> ${ANAT[T][1]}</div>`:''}
   <div class="ctip" style="color:#fde68a"><b>Work with gravity:</b> ${GRAVTIP[regionOf(T)]||''}</div>
+  ${BREATHLINK(T)?`<div class="ctip" style="color:#a5f3fc"><b>🫁 Breath link:</b> ${BREATHLINK(T)}</div>`:''}
   <div class="ctip"><b>${cGoal==='wake'?'If it is underactive':'If it is overactive'}:</b> ${cGoal==='wake'?tip:`It often stays tight to protect a weak neighbor. Strengthen the opposing muscles and the chain, then lengthen it with slow breathing.`}</div></div>`;
  h+=cfHTML();
  const sec=(t,ids,role,sub)=>ids.length?`<div class="csec"><div class="ch3"><span class="dot" style="background:${ROLECOL[role]}"></span>${t}</div>${sub?`<div class="csub">${sub}</div>`:''}<div>${ids.map(i=>chip(i,role)).join('')}</div></div>`:'';
@@ -2161,6 +2171,51 @@ function playCounter(id,keys){const c=COUNTER[id],a=EX.find(e=>e.id===id);const 
  Object.assign(COUNTER,{koala:{T:'pec',k:['opener','crossbody','calf'],why:'open the chest and shoulders after gripping and hugging'},vine:{T:'lats',k:['opener','fold'],why:'lengthen the chest and back body after hanging'},hang:{T:'forearmFlex',k:['opener','row'],why:'balance the hang with chest opening and rowing'},
   bear:{T:'iliopsoas',k:['quad','opener','fold'],why:'open the hip flexors and chest after crawling'},crab:{T:'pec',k:['fold','crossbody'],why:'fold forward after the backbend of the crab'},ape:{T:'vastLat',k:['quad','calf'],why:'lengthen the quads and calves'},lizard:{T:'pec',k:['opener','quad'],why:'open the chest and hip flexors'}});
 })();
+// BODY SYSTEMS LESSONS: breath, neck, hand and foot, and how they link to the rest of the body
+(function(){const G='Breath, neck, hand and foot';
+ const breath={id:'breathlab',group:G,name:'Breath mechanics',icon:'🫁',dur:40,anchor:'ground',view:[30,6],props:[],forceBreath:true,
+  base:{'B.sh.a':8},work:['diaphragm','intercostals'],stab:['tva','pelvicFloor','multifidus','longusColli'],
+  keys:[{t:0,p:{brs:0},ok:1,okl:'360° belly breath',cap:'Breathe in through the nose: the diaphragm pulls down like a piston. The belly, sides and back widen; the shoulders stay still. The pelvic floor lowers a little as the pressure rises.'},
+   {t:.16,p:{},ok:1,okl:'slow exhale',cap:'Breathe out slowly: the diaphragm rises, the transversus abdominis (TVA) gently draws the waist in, and the pelvic floor lifts. Diaphragm, TVA, pelvic floor and multifidus make one pressure canister around the spine.'},
+   {t:.36,p:{brs:1},ok:0,okl:'upper-chest breathing',cap:'Upper-chest breathing: the shoulders and collarbones lift on every breath. The scalenes, SCM, upper trapezius and pec minor do the diaphragm\'s job. At 12–20 breaths a minute, that is thousands of extra neck contractions a day.'},
+   {t:.55,p:{brs:1},ok:0,okl:'neck muscles breathing',cap:'Watch the neck light up on each in-breath. This pattern often goes with stress, slumped sitting and neck tension.'},
+   {t:.7,p:{brs:0},ok:1,okl:'back to the diaphragm',cap:'Back to low, wide breathing: let the belly and lower ribs move, and let the neck rest.'},
+   {t:.84,p:{'B.sh.f':90,'B.el':4},ok:1,okl:'brace, then move',cap:'Brace: breathe in, then keep a little of that pressure as the arms lift. The diaphragm and TVA switch on just before the arms move, to steady the spine first.'}],
+  focus:['core','neck']};
+ const neck={id:'necklab',group:G,name:'Neck: deep and superficial',icon:'🧠',dur:16,anchor:'ground',view:[70,4],props:[],
+  base:{'B.sh.a':8},work:['longusColli','scm','splenius','scalenes','suboccipitals','semispinalis','levScap'],stab:['trapLower','serratus','multifidus'],
+  keys:[{t:0,p:{},ok:1,okl:'tall neck',cap:'Tall neck: the head balances on the top of the spine. The deep neck flexors (longus colli and capitis) and the suboccipitals hold it with little effort.'},
+   {t:.1,p:{'neck.f':9},ok:1,okl:'chin nod',cap:'Chin nod: a tiny "yes" at the top of the neck. The deep neck flexors work; the SCM stays quiet. This is the deep neck flexor exercise physical therapists teach.'},
+   {t:.22,p:{'neck.f':-14,'chest.f':12,'spine.f':6},ok:0,okl:'chin poke',cap:'Chin poke: the head slides forward and the chin lifts. The SCM and scalenes take over, the suboccipitals shorten and tire, and the deep flexors switch off.'},
+   {t:.36,p:{'neck.f':0,'chest.f':0,'spine.f':0},ok:1,okl:'tall again',cap:'Back to tall.'},
+   {t:.46,p:{'neck.t':60},ok:1,okl:'turn left: a team',cap:'Turn left: muscles work as a team across the neck. The right SCM, the left splenius and the left suboccipitals pull together; the eyes lead the turn.'},
+   {t:.6,p:{'neck.t':-60},ok:1,okl:'turn right: mirror team',cap:'Turn right: the mirror team.'},
+   {t:.72,p:{'neck.t':0,'neck.s':24},ok:1,okl:'side bend',cap:'Side bend left: the left scalenes and levator scapulae shorten; the right side lengthens. The scalenes also lift the first ribs when you breathe in.'},
+   {t:.86,p:{'neck.s':0},ok:1,okl:'tall neck',cap:'Tall again: ears over shoulders. The head weighs about as much as a bowling ball, so every centimetre forward adds load.'}],
+  focus:['neck','shoulder']};
+ const HB={'B.sh.f':78,'B.sh.a':10,'B.el':92,'B.sh.r':10};
+ const hand={id:'handlab',group:G,name:'Hand: grip and fine control',icon:'✋',dur:16,anchor:'ground',view:[50,10],props:[],base:HB,
+  work:['forearmFlex','forearmExt','thenar','hypothenar','handIntr'],stab:['brachiorad','biceps','triceps','infraspinatus','serratus'],
+  keys:[{t:0,p:{grip:-1,'B.wr':0},ok:1,okl:'spread the fingers',cap:'Spread the fingers wide: the dorsal interossei spread them, and the finger extensors with the lumbricals straighten them.'},
+   {t:.16,p:{grip:1,'B.wr':-22},ok:1,okl:'power grip, wrist back',cap:'Power grip: the long forearm flexors close the fingers, the thumb pad (thenar) wraps around, and the wrist extensors co-contract to keep the wrist slightly back. That wrist angle gives the strongest grip.'},
+   {t:.34,p:{grip:1,'B.wr':40},ok:0,okl:'grip with a bent wrist',cap:'Grip with the wrist bent forward: the finger flexors are already short, so the grip is weak and the wrist strains. Keep the wrist slightly back.'},
+   {t:.5,p:{grip:0,'B.wr':-10},ok:1,okl:'pinch',cap:'Pinch: the thenar muscles bring the thumb across to the fingertips (opposition). The small intrinsic muscles give the fine control.'},
+   {t:.66,p:{grip:1,'B.sh.f':170,'B.el':6,'B.wr':-10},ok:1,okl:'hook grip overhead',cap:'Hang or carry: the grip links up the arm to the lats and shoulder blade. A strong hand lets the shoulder do its job.'},
+   {t:.84,p:{grip:-1,'B.sh.f':78,'B.el':92,'B.wr':-30},ok:1,okl:'open and lengthen',cap:'Open the hand and bend the wrist back to lengthen the flexors after gripping: the counter-move for phones, keyboards and climbing.'}],
+  focus:['shoulder']};
+ const foot={id:'footlab',group:G,name:'Foot: arches and the windlass',icon:'🦶',dur:18,anchor:'ground',view:[60,-6],props:[],base:{'B.sh.a':8},
+  work:['abdHallucis','flexDigBrev','abdDigMin','extDigBrev','flexHalLong','tibPost','peroneals','gastroc','soleus'],stab:['tibAnt','gluteMed','extDigLong'],
+  keys:[{t:0,p:{},ok:1,okl:'tripod foot',cap:'Tripod foot: weight on the heel, the big-toe ball and the little-toe ball. The intrinsic foot muscles are the foot\'s core.'},
+   {t:.12,p:{'B.toe':-8},ok:1,okl:'short foot',cap:'Short foot: draw the big-toe ball toward the heel without curling the toes. The abductor hallucis and the short toe flexor lift the inner arch.'},
+   {t:.26,p:{'B.toe':0},ok:1,okl:'relax',cap:'Relax the arch.'},
+   {t:.36,p:{'B.an':-34,'B.toe':42},ok:1,okl:'windlass heel raise',cap:'Heel raise: the toes bend up, which winds the plantar fascia like a rope on a winch (the windlass). The arch rises and the foot becomes a stiff lever for push-off.'},
+   {t:.52,p:{'B.an':0,'B.toe':0},ok:1,okl:'slow lowering',cap:'Lower slowly: the calf and foot muscles lengthen under load (eccentric), the way they absorb each step when you run.'},
+   {t:.64,p:{'L.hip.f':40,'L.kn':70,'anc.R':1},ok:1,okl:'one-leg balance',cap:'Stand on the right foot: the foot muscles make many tiny corrections, and the glute medius holds the pelvis level. Feet, hips and core work as one balance system.'},
+   {t:.84,p:{'L.hip.f':0,'L.kn':0},ok:1,okl:'tripod foot',cap:'Back to both feet.'}],
+  focus:['foot','leg','hip']};
+ EX.push(breath,neck,hand,foot);
+ Object.assign(COUNTER,{necklab:{T:'scm',k:['neck','opener'],why:'release the neck and open the chest'},handlab:{T:'forearmFlex',k:['opener'],why:'open the chest after hand work'},footlab:{T:'gastroc',k:['calf'],why:'lengthen the calves'}});
+})();
 // teaching movements: gravity and ease
 EX.push({id:'stack',group:'Gravity and ease',name:'Stacked vs slumped posture',icon:'⇣',dur:12,anchor:'ground',view:[80,6],props:[],
  base:{'B.sh.a':6,'B.el':8},
@@ -2193,7 +2248,7 @@ let breathOn=false,bPace='calm';
 const cyc=()=>PACES[bPace].s.reduce((a,b)=>a+b,0);
 function breathAt(sec){const[a,b,c,d]=PACES[bPace].s;const T=a+b+c+d;let x=((sec%T)+T)%T;const e=u=>u*u*(3-2*u);
  if(x<a)return{ph:'Inhale',lvl:e(x/a),left:a-x};x-=a;if(x<b)return{ph:'Hold',lvl:1,left:b-x};x-=b;if(x<c)return{ph:'Exhale',lvl:1-e(x/c),left:c-x};x-=c;return{ph:'Hold',lvl:0,left:d-x};}
-function breathCalc(){if(!breathOn||!ex||!ex.K)return null;const IP=interp(ex,phase);const segSec=(IP._seg||0)*ex.dur/Math.max(speed,.05);const u=IP._u||0;const e=v=>v*v*(3-2*v);
+function breathCalc(){if(!(breathOn||(ex&&ex.forceBreath))||!ex||!ex.K)return null;const IP=interp(ex,phase);const segSec=(IP._seg||0)*ex.dur/Math.max(speed,.05);const u=IP._u||0;const e=v=>v*v*(3-2*v);
  if(IP._br==='in')return{ph:'Inhale',lvl:e(u),left:segSec*(1-u)};
  if(IP._br==='out')return{ph:'Exhale',lvl:1-e(u),left:segSec*(1-u)};
  if(IP._br==='cyc'){const n=Math.max(1,Math.round(segSec/cyc()));const loc=u*n,k=Math.floor(loc);const b=breathAt((loc-k)*cyc());b.n=n;b.k=Math.min(n,k+1);return b;}
@@ -2426,6 +2481,7 @@ function readYogaHash(hs){const m=hs.match(/#(yoga|bath)-([a-z.]*)-(short|full)(
  enterYoga(md);document.body.classList.add('shared');startYoga(buildYoga(),md==='bath'?'Bath yoga':'Yoga flow');return true;}
 // breath drawing: lungs + diaphragm on the body, and a breath circle
 function drawLungs(W){if(!BR)return;const b=BR.lvl;ctx.save();
+ {const cs=clamp((W._P&&W._P.brs)||0,0,1);const bc=proj(wp(W,'spine',[0,4,8]));const r=(6+5*b*(1-cs))*bc[3];const g=ctx.createRadialGradient(bc[0],bc[1],1,bc[0],bc[1],r*1.6);g.addColorStop(0,`rgba(255,210,120,${.25+.3*b*(1-cs)})`);g.addColorStop(1,'rgba(255,210,120,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(bc[0],bc[1],r*1.3,r,0,0,7);ctx.fill();}
  for(const m of[1,-1]){const c=proj(wp(W,'chest',[6.2*m,15,.5]));const r=(7.2+2.4*b)*c[3];const g=ctx.createRadialGradient(c[0],c[1],r*.1,c[0],c[1],r*1.4);g.addColorStop(0,`rgba(140,240,255,${.20+.22*b})`);g.addColorStop(1,'rgba(140,240,255,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(c[0],c[1],r*.85,r*1.35,0,0,7);ctx.fill();ctx.strokeStyle=`rgba(170,245,255,${.25+.3*b})`;ctx.lineWidth=1;ctx.stroke();}
  const a=proj(wp(W,'chest',[-11,4-2.6*b,1])),z=proj(wp(W,'chest',[11,4-2.6*b,1])),top=proj(wp(W,'chest',[0,9-3.5*b,1]));
@@ -2437,7 +2493,10 @@ function drawBreathHUD(){if(!BR)return;const ph=document.body.classList.contains
  ctx.font=`600 ${ph?9.5:10.5}px "JetBrains Mono",monospace`;ctx.fillStyle='#cfe3ff';ctx.fillText(BR.n?`${Math.ceil(BR.left)}s · ${BR.k}/${BR.n}`:Math.ceil(BR.left)+'s',x,y+(ph?7:8));ctx.textAlign='left';ctx.restore();}
 
 // origin (where it starts) and insertion (where it attaches) — standard anatomy references
-const ANAT={deltAnt:['front of the collarbone (outer third)','deltoid bump on the side of the upper arm bone'],deltLat:['acromion, the top tip of the shoulder blade','deltoid bump on the side of the upper arm bone'],deltPost:['spine of the shoulder blade','deltoid bump on the side of the upper arm bone'],
+const ANAT={diaphragm:['inside of the lower ribs, the lower breastbone and the front of the lumbar spine','its own central tendon, the top of the dome'],intercostals:['lower edge of each rib','upper edge of the rib below'],
+ tva:['inner lower ribs, low back fascia and the hip bone crest','the midline of the belly (linea alba)'],pelvicFloor:['pubic bone and the sides of the pelvis','tailbone (coccyx)'],suboccipitals:['top two neck vertebrae (C1–C2)','base of the skull'],
+ thenar:['wrist bones on the thumb side and the flexor ligament','first bone of the thumb'],hypothenar:['wrist bones on the little-finger side','little finger'],handIntr:['finger tendons and the bones of the palm','the sides of the fingers and their extensor hood'],
+ deltAnt:['front of the collarbone (outer third)','deltoid bump on the side of the upper arm bone'],deltLat:['acromion, the top tip of the shoulder blade','deltoid bump on the side of the upper arm bone'],deltPost:['spine of the shoulder blade','deltoid bump on the side of the upper arm bone'],
  pec:['collarbone, breastbone and ribs 1–6','front of the upper arm bone, just below the shoulder'],lats:['spine from mid-back to the sacrum, back of the hip bone, lower ribs and the lower tip of the shoulder blade','front of the upper arm bone (it twists on the way)'],
  trapUpper:['base of the skull and the back of the neck','outer third of the collarbone'],trapMid:['spine at the base of the neck and upper back (C7–T3)','top edge of the shoulder blade (acromion and spine)'],trapLower:['spine of the mid-back (T4–T12)','inner end of the shoulder blade spine'],
  rhomboid:['spine at the base of the neck and upper back (C7–T5)','inner edge of the shoulder blade'],serratus:['sides of ribs 1–8','inner edge of the shoulder blade, on its rib side'],
@@ -2456,6 +2515,14 @@ const ANAT={deltAnt:['front of the collarbone (outer third)','deltoid bump on th
  piriformis:['front of the sacrum','top of the greater trochanter'],peroneals:['outer side of the fibula','under the foot to the big-toe side (longus) and the outer foot (brevis)'],tibPost:['back of the shin bone and fibula','bones on the inner sole (navicular and others)'],
  extDigLong:['outer shin bone and fibula','top of the toes'],flexHalLong:['back of the fibula and shin bone','tips of the toes, under the foot'],flexDigBrev:['heel bone, on the sole','middle bones of toes 2–5'],abdHallucis:['inner side of the heel bone','base of the big toe'],abdDigMin:['outer side of the heel bone','base of the little toe'],extDigBrev:['top of the heel bone','top of toes 1–4']};
 let FC=null;
+function BREATHLINK(T){
+ if(['scalenes','scm','trapUpper','levScap','pecMinor'].includes(T))return'An accessory breathing muscle. In upper-chest breathing it lifts the ribs on every in-breath, thousands of times a day. Low, wide breathing with the diaphragm lets it rest.';
+ if(['diaphragm','tva','pelvicFloor','multifidus'].includes(T))return'Part of the deep-core pressure canister: diaphragm on top, pelvic floor below, TVA around the sides and multifidus at the back. They switch on just before you move to steady the spine.';
+ if(T==='intercostals')return'Lift and spread the ribs on the in-breath. Stiff, slumped posture limits them.';
+ if(['longusColli','suboccipitals','splenius','semispinalis'].includes(T))return'When breathing moves up into the neck, the deep neck muscles lose out to the superficial ones. Calm belly breathing helps the head balance.';
+ if(['rectusAbd','oblique','intOblique','QL','erector'].includes(T))return'Shape the trunk around the breath: on a strong exhale they draw in; when you brace they hold the pressure the diaphragm builds.';
+ if(REGION.foot.includes(T)||REGION.hand.includes(T))return'Slow breathing calms the nervous system, which lowers grip and foot tension you do not need.';
+ return'';}
 function muscleFacing(T){prep(EXPLORE);const W=solve(EXPLORE,0);const m=MUSK[T+'L'];if(!m)return null;let c=[0,0,0],n=0;for(const st of m.strands){for(const q of strandPts(W,st)){c=add(c,q);n++;}}c=mulS(c,1/n);
  const segs=[[W.pelvis.p,W.spine.p],[W.spine.p,W.chest.p],[W.chest.p,W.neck.p],[W.neck.p,W.head.p],[W.pelvis.p,W.Lthigh.p],[W.Lthigh.p,W.Lshin.p],[W.Lshin.p,W.Lfoot.p],[W.Lfoot.p,W.Ltoes.p],[wp(W,'chest',[0,26,0]),W.Lclav.p],[W.Lclav.p,W.Lupper.p],[W.Lupper.p,W.Lfore.p],[W.Lfore.p,W.Lhand.p]];
  let best=null,bd=1e9;for(const[A,B]of segs){const ab=sub(B,A);const l2=dot3(ab,ab)||1;const u=clamp(dot3(sub(c,A),ab)/l2,0,1);const q=add(A,mulS(ab,u));const d=Math.hypot(...sub(c,q));if(d<bd){bd=d;best=q;}}
@@ -2529,7 +2596,7 @@ function drawWater(W){if(!ex.water)return;const wl=ex.water,y=wl+Math.sin(RT*1.3
 // BOTH SIDES for one-sided activities: the cycle plays the left side, then the mirror (right side)
 let MIRROR=false;
 (function(){const H=t=>(t*2)%1;
- for(const id of['box','dunk','jump','desk','nurse']){const e=EX.find(x=>x.id===id);if(!e||e.both)continue;e.both=true;e.dur*=2;
+ for(const id of['box','dunk','jump','desk','nurse','footlab']){const e=EX.find(x=>x.id===id);if(!e||e.both)continue;e.both=true;e.dur*=2;
   for(const f of['drop','lift','flow','vib','powder'])if(typeof e[f]==='function'){const o=e[f];e[f]=(t,...a)=>o(H(t),...a);}
   if(e.terr){const o=e.terr;e.terr=(x,z,t)=>o(x,z,H(t));}
   if(e.extra){const o=e.extra;e.extra=(W,t,items)=>{MIRROR=t>=.5;o(W,H(t),items);MIRROR=false;};}
@@ -2538,7 +2605,7 @@ let MIRROR=false;
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-17-2330';
+const BUILD='2026-11-18-0900';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -2608,11 +2675,22 @@ function classify(mu){const id=mu.d.id,th=.06;
  if(ex.workSet.has(id)){if(mu.v<-th)return'con';if(mu.v>th)return ex.ballistic?'str':'ecc';return'iso';}
  if(ex.stabSet.has(id))return'iso';
  if(mu.v>.12)return'str';return'idle';}
+
+// muscles whose action is not seen in joint angles: breathing, the deep core and the hand intrinsics
+function driveStates(W){const B=BR||breathAt(RT);const P=W&&W._P||{};const chest=(P.brs||0)>.5;const ph=B.ph;
+ const gripOn=ex.anchor==='bar'||ex.anchor==='free'||(ex.props||[]).some(x=>['poles','gloves','bag','vine','tree','bar','wheel','oars','rope'].includes(x))||(P.grip||0)>.5;const palm=(P.fit||0)>.5;const spread=(P.grip||0)<-.5;
+ for(const mu of MUS){const d=mu.d.drive,id=mu.d.id;
+  if(d==='breath')mu.state=ph==='Inhale'?(chest&&id==='diaphragm'?'iso':'con'):ph==='Hold'?'iso':(B.lvl>.45?'ecc':'idle');
+  else if(d==='floor')mu.state=ph==='Inhale'?'ecc':ph==='Exhale'?'con':'iso';
+  else if(d==='core')mu.state=ph==='Exhale'?'con':(chest?'idle':'iso');
+  else if(d==='grip')mu.state=spread?(id==='handIntr'?'con':'str'):gripOn?(ex.anchor==='bar'||ex.anchor==='free'||(P.grip||0)>.5?'iso':'iso'):palm?'iso':'idle';
+  if(chest&&ph==='Inhale'&&['scalenes','scm','trapUpper','levScap','pecMinor'].includes(id))mu.state='con';}}
 function updateMuscles(W){
  if(LOWQ>=1&&playing&&(FRN&1)&&MUS[0].L){for(const mu of MUS)mu.L=mLen(W,mu);return;}
  if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1)||ex.blocks[0];ex.workSet=b.ws;ex.stabSet=b.ss;}
  const e=.004;const Wm=solve(ex,(phase-e+1)%1),Wp=solve(ex,(phase+e)%1);
  for(const mu of MUS){mu.L=mLen(W,mu);mu.v=(mLen(Wp,mu)-mLen(Wm,mu))/(2*e)/mu.L0;mu.state=classify(mu);}
+ driveStates(W);
 }
 
 /* =========================================================

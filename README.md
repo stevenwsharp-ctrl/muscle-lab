@@ -1,6 +1,6 @@
 # Muscle Lab
 
-A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 27 activities.
+A 3D muscle lab that runs in the browser. You watch about 60 muscles on each side work in slow motion, in 31 activities, with 67 muscles.
 
 ### ▶ [Open Muscle Lab](https://stevenwsharp-ctrl.github.io/muscle-lab/)
 
@@ -14,6 +14,7 @@ A 3D muscle lab that runs in the browser. You watch about 60 muscles on each sid
   - Skiing on groomers, moguls and powder, ski jumping, and a freeride cliff drop (approach, load, pop, compact air, extend, absorb, ride away)
   - Piloting a boat in rough seas
   - Daily life and work: desk life (sitting and typing) and nursing (bedside care)
+- **Breath, neck, hand and foot:** 4 lessons (breath mechanics, neck deep vs superficial, hand grip and fine control, foot arches and the windlass) and 8 new muscles: diaphragm, intercostals, transversus abdominis, pelvic floor, suboccipitals, thumb pad, little-finger pad and hand intrinsics. The breathing muscles follow the breath in every activity; the hand muscles light up when you grip. Each coach card has a "Breath link".
 - **Animal mode:** 7 movements the body already knows but chairs and overuse let fade: koala climb (hug a tree, diagonal hand-foot pairs), vine swing (hang and pump a swing), monkey hang (passive and active hang, scapular pulls, knee raise, side swing), bear crawl, crab walk, ape squat and lizard crawl. Each explains which muscles work and why the pattern matters.
 - **Yoga mode:** 26 poses and a sun salutation, with Sanskrit names. Pick up to three focus areas (hips, hamstrings, shoulders, spine, core, legs, balance, neck, feet, calm, or the muscle you picked in the coach). The flow follows a class arc: arrive, warm up, sun salutation, standing poses, balance, backbend, seated poses, cool down and rest. One-sided poses play on the left side, then on the right side. Short flows are free; full flows are Pro. Share a flow with a link.
 - **Bath yoga:** 11 gentle poses in a bathtub (floating arms, neck release, shoulder circles, seated cat and cow, tub twist, knee to chest, figure four, foot waves, water forward fold, float and rest). Water and buoyancy are drawn on screen, and the gravity layer counts only about 10% of the weight below the waterline.
