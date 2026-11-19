@@ -168,3 +168,8 @@ This lens applies the methods of mechanistic interpretability (the study of how 
 - Wasted tension shows on the body as a red dashed edge.
 
 All values come from the app's simplified body model, not from sensors.
+
+### 🏷 Labels that do not hide the muscles
+- Callouts (helpers, opposers, steadiers, channels) sit in columns beside the body, with thin leader lines.
+- **Auto** (default): full labels for 5 s after a change, then small colored dots and a legend. Hover a dot to read it.
+- The 🏷 button switches between **auto**, **full** and **min**.

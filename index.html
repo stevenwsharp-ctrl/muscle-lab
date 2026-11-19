@@ -397,7 +397,7 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tLens" title="Mechanism lens: features, the attribution graph from gravity to muscles, knock-out tests and wasted energy">🔬 Lens</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tLbl" title="Labels: auto (full for 5 s after a change, then compact dots), full, or minimal">🏷 Labels · auto</button><button class="b pm" id="tLens" title="Mechanism lens: features, the attribution graph from gravity to muscles, knock-out tests and wasted energy">🔬 Lens</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
@@ -2821,7 +2821,7 @@ function drawFocus(W){if(!(ex.explore||ex.idT===cT)||!cT||document.body.classLis
  const dd=(arr)=>arr.filter((p,i)=>arr.findIndex(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<10)===i);
  const ph=document.body.classList.contains('phone');ctx.font=`700 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.textBaseline='middle';
  for(const[arr,col,lab]of[[dd(O),'#34d399','starts'],[dd(I_),'#5fb4ff','attaches']]){arr.forEach((p,i)=>{ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=10;ctx.beginPath();ctx.arc(p[0],p[1],5.5,0,7);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
-  if(i===0){const tx=p[0]+(p[0]<c[0]?-10:10);ctx.textAlign=p[0]<c[0]?'right':'left';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(lab,tx,p[1]);ctx.fillStyle=col;ctx.fillText(lab,tx,p[1]);}});}
+  if(i===0&&lblFull()&&!ph){const tx=p[0]+(p[0]<c[0]?-10:10);ctx.textAlign=p[0]<c[0]?'right':'left';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(lab,tx,p[1]);ctx.fillStyle=col;ctx.fillText(lab,tx,p[1]);}});}
  // callout label
  const d=MDEFK[cT];const left=c[0]>(camArea.x0+camArea.x1)/2;const lx=left?Math.max(camArea.x0+12,c[0]-rad*1.9-150):Math.min(camArea.x1-12-200,c[0]+rad*1.9);const ly=clamp(c[1]-rad*1.1,camArea.y0+10,camArea.y1-70);
  ctx.font=`800 ${ph?14:17}px Inter,system-ui,sans-serif`;const t1=d.short,w1=ctx.measureText(t1).width;ctx.font=`600 ${ph?10:11.5}px Inter,system-ui,sans-serif`;const IMn=IDMODES.find(x=>x[0]===(m.state||'idle'));const t2=(whereText(cT)+' · '+REGNAME[regionOf(cT)]).toUpperCase()+(IMn?'  ·  NOW: '+IMn[1]+' '+IMn[2].toUpperCase():'');const w=Math.max(w1,ctx.measureText(t2).width)+22;
@@ -3015,15 +3015,8 @@ function drawRoleTags(W,S,c,box){const R=ex.coach;if(!R)return;const ph=document
  const pick=(ids,role,word,max)=>{let n=0;for(const id of ids){if(n>=max)break;const m=MUSK[id+S];if(!m||id===cT)continue;let q=[0,0,0],k=0;for(const st of m.strands)for(const v of strandPts(W,st)){q=add(q,v);k++;}const p=proj(mulS(q,1/k));
   if(p[0]<camArea.x0+20||p[0]>camArea.x1-20||p[1]<camArea.y0||p[1]>camArea.y1-60)continue;tags.push({p,role,t:word+' · '+MDEFK[id].short});n++;}};
  pick(R.syn,'syn','helper',ph?1:2);pick(R.ant,'ant','opposer',ph?1:2);pick(R.stab,'stab','steadier',ph?1:2);
- ctx.save();ctx.font=`700 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.textBaseline='middle';const placed=[box];
- for(const g of tags){const col=ROLECOL[g.role];ctx.strokeStyle=col;ctx.globalAlpha=.55;ctx.setLineDash([3,5]);ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(c[0],c[1]);ctx.lineTo(g.p[0],g.p[1]);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-  ctx.fillStyle=col;ctx.beginPath();ctx.arc(g.p[0],g.p[1],4,0,7);ctx.fill();
-  const w=ctx.measureText(g.t).width+14,h=ph?18:20;let x=g.p[0]+(g.p[0]>c[0]?12:-12-w),y=g.p[1]-h/2;
-  for(let tries=0;tries<8;tries++){const hit=placed.find(b=>x<b[0]+b[2]&&x+w>b[0]&&y<b[1]+b[3]&&y+h>b[1]);if(!hit)break;y=hit[1]+hit[3]+3;}
-  x=clamp(x,camArea.x0+4,camArea.x1-w-4);placed.push([x,y,w,h]);
-  ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(g.p[0],g.p[1]);ctx.lineTo(x+(x>g.p[0]?0:w),y+h/2);ctx.stroke();
-  ctx.fillStyle='rgba(6,12,24,.86)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,7):ctx.rect(x,y,w,h);ctx.fill();ctx.stroke();ctx.fillStyle=col;ctx.textAlign='left';ctx.fillText(g.t,x+7,y+h/2+.5);}
- ctx.restore();}
+ if(lblFull()){ctx.save();ctx.globalAlpha=.35;ctx.setLineDash([2,5]);ctx.lineWidth=1;for(const g of tags){ctx.strokeStyle=ROLECOL[g.role];ctx.beginPath();ctx.moveTo(c[0],c[1]);ctx.lineTo(g.p[0],g.p[1]);ctx.stroke();}ctx.restore();}
+ for(const g of tags)sideLabel(g.p[0],g.p[1],g.t,null,ROLECOL[g.role]);}
 
 const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
 {const _arc=CanvasRenderingContext2D.prototype.arc;CanvasRenderingContext2D.prototype.arc=function(x,y,r,a0,a1,ccw){return _arc.call(this,x,y,r>0?r:0,a0,a1,ccw);};}
@@ -3231,14 +3224,12 @@ function drawChannels(W){const d=YOGA[curYK()||''];const on=CHAN||(d&&d.orbit);i
  const q=act==='rear'?R:F,col=act==='rear'?RC:FC_;ctx.save();for(let i=0;i<5;i++){const uu=u-i*.035;if(uu<0)continue;const p=polyAt(q,uu);ctx.globalAlpha=1-i*.18;ctx.fillStyle=i?col:'#fff';ctx.shadowColor=col;ctx.shadowBlur=18;ctx.beginPath();ctx.arc(p[0],p[1],(ph?4:5.5)-i*.7,0,7);ctx.fill();}ctx.restore();
  // key points
  const dot=(p,t,col)=>{ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.arc(p[0],p[1],3.5,0,7);ctx.fill();ctx.font=`700 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(t,p[0]+7,p[1]);ctx.fillStyle=col;ctx.fillText(t,p[0]+7,p[1]);ctx.restore();};
- dot(R[0],'base (perineum)','#e2e8f0');dot(R[10],'crown','#fde68a');dot(proj(wp(W,'pelvis',[0,5,9])),'lower belly (dantian)','#bae6fd');
+ if(lblFull()){dot(R[0],'base','#e2e8f0');dot(R[10],'crown','#fde68a');dot(proj(wp(W,'pelvis',[0,5,9])),'dantian','#bae6fd');}
  // labels
- const lab=(p,t1,t2,col,left)=>{ctx.save();ctx.font=`800 ${ph?10:11.5}px Inter,system-ui,sans-serif`;const w1=Math.max(ctx.measureText(t1).width,(ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`,ctx.measureText(t2).width))+16;
-  const x=clamp(left?p[0]-w1-30:p[0]+30,camArea.x0+6,camArea.x1-w1-6),y=clamp(p[1]-18,camArea.y0+6,camArea.y1-50);ctx.strokeStyle=col;ctx.globalAlpha=.7;ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(left?x+w1:x,y+18);ctx.stroke();ctx.globalAlpha=1;
-  ctx.fillStyle='rgba(6,10,20,.88)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w1,36,8):ctx.rect(x,y,w1,36);ctx.fill();ctx.stroke();ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillStyle=col;ctx.font=`800 ${ph?10:11.5}px Inter,system-ui,sans-serif`;ctx.fillText(t1,x+8,y+12);ctx.fillStyle='#cbd5e1';ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`;ctx.fillText(t2,x+8,y+26);ctx.restore();};
- const sR=Math.sin(cam.yaw*D);const backLeft=sR>0;
- lab(R[6],'REAR CHANNEL · rises','Governing Vessel (Du Mai) · yang · inhale',RC,backLeft);lab(F[5],'FRONT CHANNEL · descends','Conception Vessel (Ren Mai) · yin · exhale',FC_,!backLeft);
+ const backLeft=Math.sin(cam.yaw*D)>0;
+ sideLabel(R[6][0],R[6][1],'REAR CHANNEL · rises','Governing Vessel (Du Mai) · inhale',RC,backLeft?'L':'R',false);sideLabel(F[5][0],F[5][1],'FRONT CHANNEL · descends','Conception Vessel (Ren Mai) · exhale',FC_,backLeft?'R':'L',false);
  // front/back balance meter
+ if(ph&&idOn())return;
  const b=fbBalance();const v=clamp(b/.06,-1,1);const w=ph?190:250,h=48,x=camArea.x0+10,y=camArea.y0+(ph?8:10)+(showGrav&&!ph&&!idOn()?0:0);
  const yy=camArea.y0+8;const x_=camArea.x1-w-10;ctx.save();ctx.fillStyle='rgba(6,10,20,.88)';ctx.strokeStyle='rgba(255,255,255,.15)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x_,yy,w,h,10):ctx.rect(x_,yy,w,h);ctx.fill();ctx.stroke();
  ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e6faff';ctx.textBaseline='middle';ctx.textAlign='left';
@@ -3633,11 +3624,46 @@ function drawGraph(G){const cv_=$('mGraph');if(!cv_)return;const w=cv_.clientWid
 // on the body: knocked-out muscles grey, compensators orange, wasted tension dashed red
 function mechMuscleStyle(mu){if(!LENS)return null;const id=mu.d.id;if(MABL.has(id))return'abl';if(MCOMP.has(id)&&muActive(id))return'comp';if(MWASTE.has&&MWASTE.has(id))return'waste';return null;}
 
+
+// SIDE LABELS: callouts go in tidy columns beside the body, with thin leader lines, so the muscles stay visible.
+// Auto mode: full labels for 5 s after a change, then compact dots plus a legend. Hover a dot to read it.
+let LBL='auto';try{LBL=localStorage.getItem('ml_lbl')||'auto';}catch(_){}
+let lblT=0,lblSig='';const SIDELBL=[];
+function sideLabel(ax,ay,t1,t2,col,pref,dot){SIDELBL.push({ax,ay,t1,t2,col,pref,dot:dot!==false});}
+function lblFull(){if(LBL==='full')return true;if(LBL==='min')return false;return RT-lblT<5;}
+function bodyBox(W){let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const q of[wp(W,'head',[0,22,1]),wp(W,'Lhand',[0,-8,0]),wp(W,'Rhand',[0,-8,0]),W.Lupper.p,W.Rupper.p,W.Lshin.p,W.Rshin.p,cpt(W,'L','heel'),cpt(W,'R','heel'),W.pelvis.p]){const p=proj(q);x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}return[x0,y0,x1,y1];}
+function drawSideLabels(W){const sig=(cT||'')+'|'+(ex.name||'')+'|'+CHAN+'|'+LENS+'|'+LBL+'|'+(ex.explore?1:0);if(sig!==lblSig){lblSig=sig;lblT=RT;}
+ if(!SIDELBL.length)return;const ph=document.body.classList.contains('phone');const full=lblFull();const fade=LBL==='auto'?clamp(5-(RT-lblT),0,1):1;
+ const L=SIDELBL.splice(0);ctx.save();ctx.textBaseline='middle';
+ // dots on the anchors (always)
+ for(const g of L)if(g.dot){ctx.fillStyle=g.col;ctx.globalAlpha=.95;ctx.beginPath();ctx.arc(g.ax,g.ay,ph?3.2:3.8,0,7);ctx.fill();ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=1;ctx.stroke();}
+ ctx.globalAlpha=1;
+ // hover: show the nearest label even in compact mode
+ let hov=null;if(!full&&mouse){let bd=28;for(const g of L){const d=Math.hypot(g.ax-mouse[0],g.ay-mouse[1]);if(d<bd){bd=d;hov=g;}}}
+ let show=full?L:hov?[hov]:[];if(ph&&full){show=show.slice().sort((a,b)=>(b.dot?1:0)-(a.dot?1:0)).slice(0,4);for(const g of show)g.t2=null;}
+ if(show.length){const bb=bodyBox(W);const f1=`700 ${ph?10:11}px Inter,system-ui,sans-serif`,f2=`600 ${ph?8.5:9.5}px Inter,system-ui,sans-serif`;
+  for(const g of show){ctx.font=f1;g.w=ctx.measureText(g.t1).width+16;if(g.t2){ctx.font=f2;g.w=Math.max(g.w,ctx.measureText(g.t2).width+16);}g.h=g.t2?(ph?30:32):(ph?18:20);}
+  const lx=bb[0]-14,rx=bb[2]+14;const cols={L:[],R:[]};
+  for(const g of show){let side=g.pref||(g.ax<(bb[0]+bb[2])/2?'L':'R');const fitsL=lx-g.w>=camArea.x0+4,fitsR=rx+g.w<=camArea.x1-4;if(side==='L'&&!fitsL&&fitsR)side='R';else if(side==='R'&&!fitsR&&fitsL)side='L';cols[side].push(g);}
+  for(const side of['L','R']){const C=cols[side].sort((a,b)=>a.ay-b.ay);let yb=camArea.y0+4;
+   for(const g of C){g.y=Math.max(g.ay-g.h/2,yb);yb=g.y+g.h+4;}
+   let over=yb-(camArea.y1-4);for(let i=C.length-1;i>=0&&over>0;i--){const g=C[i];const room=i?g.y-(C[i-1].y+C[i-1].h+4):g.y-(camArea.y0+4);const mv=Math.min(over,Math.max(0,room)+over);g.y-=over;over=i?Math.max(0,(C[i-1].y+C[i-1].h+4)-g.y):0;if(over>0)C[i-1].y-=0;}
+   for(const g of C){g.x=side==='L'?clamp(lx-g.w,camArea.x0+4,camArea.x1-g.w-4):clamp(rx,camArea.x0+4,camArea.x1-g.w-4);g.side=side;}}
+  ctx.globalAlpha=full?Math.max(.15,fade):1;
+  for(const g of show){const ex_=g.side==='L'?g.x+g.w:g.x,ey=g.y+g.h/2;ctx.strokeStyle=g.col;ctx.globalAlpha*=1;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(g.ax,g.ay);const mx=g.side==='L'?ex_+8:ex_-8;ctx.lineTo(mx,ey);ctx.lineTo(ex_,ey);ctx.stroke();
+   ctx.fillStyle='rgba(6,10,20,.82)';ctx.beginPath();ctx.roundRect?ctx.roundRect(g.x,g.y,g.w,g.h,7):ctx.rect(g.x,g.y,g.w,g.h);ctx.fill();ctx.stroke();ctx.textAlign='left';
+   ctx.fillStyle=g.col;ctx.font=f1;ctx.fillText(g.t1,g.x+8,g.t2?g.y+10:g.y+g.h/2+.5);if(g.t2){ctx.fillStyle='#cbd5e1';ctx.font=f2;ctx.fillText(g.t2,g.x+8,g.y+(ph?22:23));}}}
+ // compact legend
+ if(!full){const cs=[];for(const g of L){if(!cs.find(c=>c[0]===g.col))cs.push([g.col,g.t1.split(' · ')[0]]);}
+  ctx.globalAlpha=.92;ctx.font=`600 ${ph?9.5:10.5}px Inter,system-ui,sans-serif`;let x=camArea.x0+10;const y=camArea.y1-(ph?12:14);ctx.textAlign='left';
+  for(const[c,t]of cs.slice(0,6)){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x+4,y,4,0,7);ctx.fill();ctx.fillStyle='#cbd5e1';ctx.fillText(t.toLowerCase(),x+11,y+.5);x+=ctx.measureText(t).width+24;}
+  ctx.fillStyle='#64748b';ctx.fillText(ph?'· 🏷 for names':'· hover a dot or press 🏷 for names',x,y+.5);}
+ ctx.restore();}
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-1640';
+const BUILD='2026-11-18-2000';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -3818,7 +3844,7 @@ function loop(now){
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawMudraBox(W);drawBalanceHUD(W);drawFBMeter();mechTick(W);autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawMudraBox(W);drawBalanceHUD(W);drawFBMeter();mechTick(W);autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();drawSideLabels(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -3862,7 +3888,8 @@ function init(){
  {const rb=$('tRead');rb.classList.toggle('on',READ);rb.onclick=()=>{READ=!READ;rb.classList.toggle('on',READ);try{localStorage.setItem('ml_read',READ?'1':'0');}catch(_){}toast(READ?'Reading pace on: the motion slows down for long instructions':'Reading pace off');};}
  $('cap').addEventListener('click',e=>{if(e.target.closest('button'))return;setPlay(!playing);toast(playing?'Playing':'Paused: read at your own pace, tap again to play');});
  $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
- $('actBtn').onclick=()=>openActs();$('modeBtn').onclick=()=>openModes();$('tLens').onclick=()=>{setLens(!LENS);toast(LENS?'Mechanism lens on: see the circuit, knock out a muscle, find wasted energy':'Mechanism lens off');};$('tChan').onclick=()=>{setChan(!CHAN);toast(CHAN?'Channels on: up the back on the inhale, down the front on the exhale':'Channels off');};$('tChan').classList.toggle('on',CHAN);$('tSimple').onclick=()=>{setSimple(!SIMPLE);toast(SIMPLE?'Simple view: only the essentials':'Full lab: all panels and data');};$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
+ $('actBtn').onclick=()=>openActs();$('modeBtn').onclick=()=>openModes();{const lb=$('tLbl');const set=()=>{lb.textContent='🏷 Labels · '+LBL;lb.classList.toggle('on',LBL!=='min');};set();lb.onclick=()=>{LBL=LBL==='auto'?'full':LBL==='full'?'min':'auto';lblT=RT;set();try{localStorage.setItem('ml_lbl',LBL);}catch(_){}toast(LBL==='auto'?'Labels: full for 5 s, then compact dots (hover a dot to read it)':LBL==='full'?'Labels: always full':'Labels: compact dots only');};}
+ $('tLens').onclick=()=>{setLens(!LENS);toast(LENS?'Mechanism lens on: see the circuit, knock out a muscle, find wasted energy':'Mechanism lens off');};$('tChan').onclick=()=>{setChan(!CHAN);toast(CHAN?'Channels on: up the back on the inhale, down the front on the exhale':'Channels off');};$('tChan').classList.toggle('on',CHAN);$('tSimple').onclick=()=>{setSimple(!SIMPLE);toast(SIMPLE?'Simple view: only the essentials':'Full lab: all panels and data');};$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
  document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
  setTimeout(()=>applySettings(location.hash),30);
  $('orbit').onclick=()=>{orbit=!orbit;$('orbit').classList.toggle('on',orbit);};
