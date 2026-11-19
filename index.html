@@ -397,7 +397,7 @@ body.phone #mvNav .b{min-height:50px;font-size:17px;padding:8px 14px}body.phone 
     <button class="b on" id="sweep" title="In exercises, the view swings left-right and up-down so you see the move from all sides">↔↕ Sweep</button><button class="b vw" data-y="0" data-p="8">Front</button><button class="b vw" data-y="90" data-p="8">Side</button><button class="b vw" data-y="180" data-p="8">Back</button><button class="b vw" data-y="38" data-p="16">¾</button><button class="b" id="orbit">Orbit</button>
   </div>
   <div class="grp pm"><span class="lbl">Layer</span><button class="b ly" data-l="surface">Surface</button><button class="b ly" data-l="deep">Deep</button><button class="b ly on" data-l="all">All</button><button class="b" id="tAnat" title="Anatomy colors: real muscle color with an activity outline">Anatomy</button><button class="b on" id="tLab">Labels</button><button class="b on" id="tBody">Body</button></div>
-  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b" id="tLbl" title="Labels: auto (full for 5 s after a change, then compact dots), full, or minimal">🏷 Labels · auto</button><button class="b pm" id="tLens" title="Mechanism lens: features, the attribution graph from gravity to muscles, knock-out tests and wasted energy">🔬 Lens</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
+  <div class="grp"><button class="b" id="tBreath" title="Breath guide: lungs and diaphragm move with the breath">🌬 Breath</button><button class="b on pm" id="tGrav" title="Gravity: center of mass, line of gravity, joint loads, Ease score">Gravity</button><button class="b on pm" id="tZoom">Zoom</button><button class="b pm" id="tMus">Muscles</button><button class="b ph" id="pMore" aria-label="More controls">⋯ More</button><button class="b" id="tPro">⭐ Go Pro</button><button class="b pm" id="tEmph" title="Draw small movements (wrist, ankle, neck, shoulder blade, small turns) bigger so you can see them">↔ Small moves · bigger</button><button class="b" id="tLbl" title="Labels: auto (full for 5 s after a change, then compact dots), full, or minimal">🏷 Labels · auto</button><button class="b pm" id="tLens" title="Mechanism lens: features, the attribution graph from gravity to muscles, knock-out tests and wasted energy">🔬 Lens</button><button class="b pm" id="tChan" title="Front and rear energy channels (microcosmic orbit) and the front/back body balance">🔆 Channels</button><button class="b" id="tSimple" title="Switch between the simple view and the full lab">🔬 Full lab</button><button class="b pm" id="tFeet" title="Feet close-up: auto (shows when the feet matter), on, or off">🦶 Feet</button><button class="b pm" id="tRead" title="Reading pace: slow the motion so every instruction can be read">📖 Read</button><button class="b" id="tText" title="Text size">Aa</button><button class="b pm" id="tShare" title="Share a link to what you see now">🔗 Share</button></div>
 </div>
 
 <div id="mvNav" class="panel nvOff" role="group" aria-label="Move navigator"><button class="b" id="nvPrev" aria-label="Previous move">◀</button><div id="nvMid"><div id="nvName"></div><div id="nvSub"></div></div><button class="b" id="nvShuf" title="Surprise me: a random new move" aria-label="Random move">🎲</button><button class="b on" id="nvNext">Next ▶</button></div>
@@ -805,7 +805,7 @@ function fitArms(P,fit){const gap=d=>{const Q=Object.assign({},P);Q['L.sh.f']=(Q
  P['L.sh.f']=(P['L.sh.f']||0)+d1*fit;P['R.sh.f']=(P['R.sh.f']||0)+d1*fit;}
 let BR=null,BRAPPLY=false;
 function solve(ex,t){
-const P=interp(ex,t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
+const P=emphApply(ex,interp(ex,t),t);if(ex.lift)P['root.y']=(P['root.y']||0)+ex.lift(t);
  if(BRAPPLY&&BR){const b=BR.lvl,cs=clamp(P.brs||0,0,1);P['chest.f']=(P['chest.f']||0)-(3.5+3*cs)*b;P['spine.f']=(P['spine.f']||0)-1.2*b;P['neck.f']=(P['neck.f']||0)+(1.5-7*cs)*b;for(const S of['L','R'])P[S+'.clav.e']=(P[S+'.clav.e']||0)+(1.6+10*cs)*b;}
  if(ex.anchor==='floor'&&(P.fit||0)>.02)fitArms(P,clamp(P.fit,0,1));
  const W=ex.anchor==='pushup'?solvePush(ex,P):fk(P);
@@ -961,7 +961,7 @@ function layoutCam(){
  cam.s=Math.min((y1-y0)*.9/b[1],(x1-x0)*.92/horiz);
 }
 // PERFORMANCE: phones start at a lower pixel ratio; if frames get slow, quality steps down (pixel ratio, glows, update rate)
-let TZ=1.15;try{const v=+localStorage.getItem('ml_tz');if(v)TZ=v;}catch(_){}
+const SMALLSCR=Math.min(innerWidth,innerHeight)<760;let TZ=SMALLSCR?1.25:1.15;try{const v=+localStorage.getItem('ml_tz');if(v&&!(SMALLSCR&&!localStorage.getItem('ml_tz2')&&v<1.25))TZ=v;localStorage.setItem('ml_tz2','1');}catch(_){}
 function applyTZ(){document.documentElement.style.setProperty('--tz',TZ);const b=document.getElementById('tText');if(b)b.textContent='Aa '+Math.round(TZ*100)+'%';if(typeof layoutCam==='function'&&cv)layoutCam();}
 let LOWQ=0,FT=16,slowSince=0,fastSince=0,FRN=0;
 (function(){const d=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'shadowBlur');if(d&&d.set)Object.defineProperty(CanvasRenderingContext2D.prototype,'shadowBlur',{get(){return d.get.call(this);},set(v){d.set.call(this,LOWQ>=2?0:v);},configurable:true});})();
@@ -2712,7 +2712,7 @@ function currentHash(){
  if(EX.includes(ex))return'#act-'+ex.id;return'';}
 function currentTitle(){if(ex.counterOf)return'Counter moves for '+EX.find(e=>e.id===ex.counterOf).name;if(ex.explore)return MDEFK[sel&&MDEFK[sel]?sel:cT].name+' · Muscle coach';return ex.name;}
 // shared links carry the viewer settings after '&' in the #hash: speed, view, layers, toggles, breath, frame
-function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET,ch:CHAN?1:0,ln:LENS?1:0};
+function settingsStr(){const o={s:speed,sw:sweep?1:0,ly:layer,an:anat?1:0,lb:showLabels?1:0,bd:showBody?1:0,gr:showGrav?1:0,zm:zOn?1:0,br:breathOn?1:0,bp:bPace,ft:FEET,ch:CHAN?1:0,ln:LENS?1:0,em:EMPH?1:0};
  if(!sweep||orbit){o.cy=Math.round(((cam.yaw%360)+360)%360);o.cp=Math.round(cam.pitch);}if(orbit)o.ob=1;if(Math.abs(cam.zoom-1)>.02)o.cz=+cam.zoom.toFixed(2);
  if(ex.env==='run')o.rs=runSurf;if(!playing){o.pa=1;o.p=+phase.toFixed(3);}
  return'&'+Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');}
@@ -2720,6 +2720,7 @@ function applySettings(hs){const i=hs.indexOf('&');if(i<0)return;const q=new URL
  if(q.has('s')){const v=+q.get('s');if(v>0&&v<=2){speed=v;document.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',+x.dataset.s===v));}}
  if(q.has('sw'))setSweep(on('sw'));
  if(q.has('ch'))setChan(on('ch'));
+ if(q.has('em'))setEmph(on('em'));
  if(q.has('ln'))setTimeout(()=>setLens(on('ln')),50);
  if(q.has('ft')&&/^(auto|on|off)$/.test(q.get('ft'))){FEET=q.get('ft');const fb=$('tFeet');if(fb){fb.textContent='🦶 Feet · '+FEET;fb.classList.toggle('on',FEET!=='off');}}
  if(q.has('ly')){const b=document.querySelector('.ly[data-l="'+q.get('ly')+'"]');if(b)b.click();}
@@ -3358,7 +3359,7 @@ function goMode(k){const B=document.body.classList;$('actMenu').hidden=true;if($
 // AUTO-FIT: keep the whole person (head to feet) inside the view
 // =========================================================
 let lastCamUser=-99,CLOSEW=0,CLOSEN=0;
-function closeTick(){const ph=document.body.classList.contains('phone');const n=(feetWanted()?1:0)+(neckWanted()?1:0)+((curMudra()&&document.body.classList.contains('yoga'))?1:0);
+function closeTick(){const ph=document.body.classList.contains('phone');const n=(feetWanted()?1:0)+(neckWanted()?1:0)+(handWanted()?1:0)+((curMudra()&&document.body.classList.contains('yoga'))?1:0);
  const zp=$('zoom');const inZoom=!ph&&zOn&&zp&&!zp.hidden&&getComputedStyle(zp).display!=='none';let want=0;
  if(n&&!ph&&VW>1000&&!inZoom){const full=camArea.x1+CLOSEW-camArea.x0;const per=Math.min(250,(full-300)/n);if(per>=150)want=n*(per+10);}
  if(want!==CLOSEW||n!==CLOSEN){CLOSEW=want;CLOSEN=n;layoutCam();}}
@@ -3663,11 +3664,63 @@ function drawSideLabels(W){const sig=(cT||'')+'|'+(ex.name||'')+'|'+CHAN+'|'+LEN
   for(const[c,t]of cs.slice(0,6)){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x+4,y,4,0,7);ctx.fill();ctx.fillStyle='#cbd5e1';ctx.fillText(t.toLowerCase(),x+11,y+.5);x+=ctx.measureText(t).width+24;}
   ctx.fillStyle='#64748b';ctx.fillText(ph?'· 🏷 for names':'· hover a dot or press 🏷 for names',x,y+.5);}
  ctx.restore();}
+
+// =========================================================
+// SMALL-MOVE EMPHASIS: small turns, rolls, wrist, ankle, toe, neck and shoulder-blade motions are drawn bigger so the eye can see them
+// SHAKE: steps that say "shake" really shake
+// =========================================================
+let EMPH=true;try{EMPH=localStorage.getItem('ml_emph')!=='0';}catch(_){}
+const EMPHRX=/(^|\.)(wr|an|toe|clav\.e|clav\.p)$|^(neck\.[fts]|chest\.t|spine\.t|spine\.s|root\.roll)$/;
+function emphMap(ex){if(ex._emK===ex.K&&ex._em!==undefined)return ex._em;ex._emK=ex.K;const K=ex.K||[];const m={};
+ for(const k of ex.keyList||[]){if(!EMPHRX.test(k))continue;let lo=1e9,hi=-1e9;for(const q of K){const v=q.P[k]||0;lo=Math.min(lo,v);hi=Math.max(hi,v);}const r=hi-lo;if(r>=2&&r<30)m[k]=[(lo+hi)/2,clamp(22/r,1.25,1.6)];}
+ ex._em=Object.keys(m).length?m:null;return ex._em;}
+const SHAKERX=/\b(shake|shaking|wiggle|jiggle|tremble|flick)\b/i;
+function emphApply(ex,P,t){if(EMPH){const m=emphMap(ex);if(m)for(const k in m)if(P[k]!=null){const[c,f]=m[k];P[k]=c+(P[k]-c)*f;}}
+ const cap=(P._cue||'')+' '+(P._cap||'');if(SHAKERX.test(cap)){const s_=t*(ex.dur||4)*2*Math.PI*4.5,o=Math.sin(s_),o2=Math.sin(s_*1.13+1);const legs=/\b(leg|legs|foot|feet|ankle)\b/i.test(cap);const one=/\bleft\b/i.test(cap)?['L']:/\bright\b/i.test(cap)?['R']:['L','R'];
+  for(const S of one){if(legs){P[S+'.an']=(P[S+'.an']||0)+o*9;P[S+'.kn']=(P[S+'.kn']||0)+Math.abs(o2)*6;}else{P[S+'.wr']=(P[S+'.wr']||0)+o*18;P[S+'.el']=(P[S+'.el']||0)+o2*7;P[S+'.sh.r']=(P[S+'.sh.r']||0)+o2*5;}}
+  if(!legs)P['B.clav.e']=(P['B.clav.e']||0)+Math.abs(o)*1.5;}
+ return P;}
+function setEmph(v){EMPH=!!v;try{localStorage.setItem('ml_emph',EMPH?'1':'0');}catch(_){}const b=$('tEmph');if(b){b.textContent='↔ Small moves · '+(EMPH?'bigger':'true size');b.classList.toggle('on',EMPH);}}
+
+// =========================================================
+// HAND CLOSE-UP: when a move works the hands, wrist or fingers
+// =========================================================
+const HANDMUS=['forearmFlex','forearmExt','thenar','hypothenar','handIntr'];const HANDEX=new Set(['handlab','guitar']);
+const HANDRX=/\b(hand|hands|finger|fingers|thumb|thumbs|wrist|wrists|grip|gripping|palm|palms|fist|knuckles?|squeeze|fretting)\b/i;
+const HANDNOT=/\b(hands?|palms?) (on|under|by|at|behind|to the|in the lap|flat|beside|rest)\b|hands and knees|hands-free/i;let handUntil=0;
+function handWanted(){if(FEET==='off')return false;const B=document.body.classList;if(B.contains('pick')||(B.contains('yoga')&&curMudra()))return false;
+ if(HANDEX.has(ex.id)||HANDEX.has(ex.counterOf)||(ex.explore&&cT&&(REGION.hand.includes(cT)||HANDMUS.includes(cT)))||(ex.idT&&HANDMUS.concat(REGION.hand).includes(ex.idT)))handUntil=RT+4;
+ else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>HANDMUS.includes(x)||REGION.hand.includes(x)))handUntil=RT+4;}
+ if(!ex.explore&&HANDRX.test(capShown||'')&&!HANDNOT.test(capShown||'')&&!/Coach mode/.test(capShown||''))handUntil=RT+4;
+ return RT<handUntil;}
+function handSide(W){const cap=capShown||'';if(/\bleft\b/i.test(cap)&&!/\bright\b/i.test(cap))return'L';if(/\bright\b/i.test(cap)&&!/\bleft\b/i.test(cap))return'R';
+ if(ex.id==='guitar'||ex.counterOf==='guitar')return'L';const m=emphMap(ex)||{};const P=W._P||{};const a=Math.abs(P['L.wr']||0)+Math.abs(P['L.el']||0)*.2,b=Math.abs(P['R.wr']||0)+Math.abs(P['R.el']||0)*.2;
+ if(Math.hypot(...sub(W.Lhand.p,W.Rhand.p))<34)return'B';return a>=b?'L':'R';}
+function drawHandCam(W){if(!handWanted()){hideBox('handCam');return;}const ph=document.body.classList.contains('phone');
+ const vis=id=>$(id)&&!$(id).hidden;const w=ph?150:240,h=ph?160:230;const c=floatBox('handCam',w,h,(vis('feetBox')?1:0)+(vis('neckBox')?1:0));const bw=c.canvas.width/Math.min(2,dpr),bh=c.canvas.height/Math.min(2,dpr);
+ const mctx=ctx;ctx=c;const sv={M:cam.M,target:cam.target,cx:cam.cx,cy:cam.cy,s:cam.s,zoom:cam.zoom};
+ try{const S=handSide(W);const hp=S==='B'?mix(wp(W,'Lhand',[0,-5,1]),wp(W,'Rhand',[0,-5,1]),.5):wp(W,S+'hand',[0,-5,1]);const span=S==='B'?Math.hypot(...sub(W.Lhand.p,W.Rhand.p))+24:25;
+  cam.target=hp;cam.zoom=1;cam.s=Math.min(bw*.8,bh-48)/span;cam.cx=bw*.42;cam.cy=(bh-44)/2+22;
+  ctx.fillStyle='#050a14';ctx.beginPath();ctx.roundRect?ctx.roundRect(0,0,bw,bh,12):ctx.rect(0,0,bw,bh);ctx.fill();ctx.strokeStyle='rgba(255,216,77,.55)';ctx.lineWidth=1.5;ctx.stroke();ctx.save();ctx.clip();
+  const R2=(span*.75)**2;const hs=hits.length;const items=(LASTITEMS||[]).filter(it=>{if(it.k==='tree'||it.fx)return false;const ps=itemPts(it,W);return ps.length&&ps.some(q=>(q[0]-hp[0])**2+(q[1]-hp[1])**2+(q[2]-hp[2])**2<R2);});
+  for(const it of items)it.z2=itemZ(it,W);items.sort((a,b)=>a.z2-b.z2);for(const it of items)drawItem(it,W,null);hits.length=hs;ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.setLineDash([]);
+  // finger state picture
+  const P=W._P||{};const g=P.grip||0;const sz=ph?.42:.6;const fx=bw-(ph?28:40),fy=ph?50:62;
+  ctx.fillStyle='rgba(6,10,20,.8)';ctx.beginPath();ctx.arc(fx,fy,ph?27:38,0,7);ctx.fill();
+  if(g>.12)drawHand2D(ctx,fx,fy+2,sz,{f:['c','c','c','c'],th:g>.7?'k':'p'},clamp(g,0,1));else drawHand2D(ctx,fx,fy+2,sz,{f:['e','e','e','e'],th:'e'},1);
+  ctx.restore();
+  const side=S==='B'?'BOTH HANDS':S==='L'?'LEFT HAND':'RIGHT HAND';const wrv=S==='B'?((P['L.wr']||0)+(P['R.wr']||0))/2:(P[S+'.wr']||0);
+  ctx.textAlign='left';ctx.textBaseline='middle';ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#ffd84d';ctx.fillText('✋ '+side+' · CLOSE-UP',9,12);
+  ctx.font=`700 ${ph?9:10.5}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e2e8f0';
+  ctx.fillText(g>.6?`Grip ${Math.round(g*100)}%: strong squeeze`:g>.12?`Grip ${Math.round(g*100)}%: light hold`:g<-.4?'Fingers spread wide':'Hand open and soft',9,bh-(ph?24:30));
+  ctx.fillStyle='#cbd5e1';ctx.font=`600 ${ph?8.5:10}px Inter,system-ui,sans-serif`;ctx.fillText(Math.abs(wrv)<6?'Wrist straight':wrv<0?`Wrist bent back ${Math.round(-wrv)}°`:`Wrist bent toward the palm ${Math.round(wrv)}°`,9,bh-(ph?10:13));
+ }finally{Object.assign(cam,sv);ctx=mctx;}}
+
 /* =========================================================
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-19-1210';
+const BUILD='2026-11-19-1300';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
@@ -3848,7 +3901,7 @@ function loop(now){
   if(ns&&ns!==SIDE&&SIDE&&!sweep&&!orbit){FC={yaw:-cam.yaw,pitch:cam.pitch,zoom:cam.zoom,target:cam.target.slice(),t0:RT};}SIDE=ns;SM+=((SIDE==='R'?-1:1)-SM)*Math.min(1,dt*2.5);}
  if(orbit){}
  else if(sweep&&(ex.blocks||ex.both)&&playing){if(!ex._sw)ex._sw={y:cam.yaw,p:cam.pitch,t0:RT};const s_=ex._sw,u=RT-s_.t0;cam.yaw=SM*s_.y+38*Math.sin(u*.32);cam.pitch=clamp(s_.p+12-14*Math.cos(u*.21),-6,40);}
- RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawMudraBox(W);drawBalanceHUD(W);drawFBMeter();mechTick(W);autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();drawSideLabels(W);
+ RT=now/1000;stepFocusCam(dt);BR=breathCalc();BRAPPLY=true;const W=solve(ex,phase);BRAPPLY=false;updateMuscles(W);updateTracks(W,dt);render(W);if(BR){drawLungs(W);drawBreathHUD();}readTagTick();closeTick();drawWater(W);drawChannels(W);drawEffort();drawFeet(W);drawNeckBox(W);drawHandCam(W);drawMudraBox(W);drawBalanceHUD(W);drawFBMeter();mechTick(W);autoFit(W);nowTick();drawSideBadge();drawVerdict(W);drawCountdown();drawFocus(W);idTick();drawSideLabels(W);
  if(zOn&&(zBig||(++zTick%2===0))){renderZoom(W,LASTITEMS);updateTrace();renderPhys(W);}
  updateUI();
  requestAnimationFrame(loop);
@@ -3891,8 +3944,8 @@ function init(){
  {const fb=$('tFeet');const lab=()=>{fb.textContent='🔍 Close-ups'+(FEET==='auto'?' · auto':FEET==='on'?' · on':' · off');fb.classList.toggle('on',FEET!=='off');};lab();fb.onclick=()=>{FEET=FEET==='auto'?'on':FEET==='on'?'off':'auto';lab();try{localStorage.setItem('ml_feet',FEET);}catch(_){}toast(FEET==='auto'?'Close-ups (feet, neck): show when that part matters':FEET==='on'?'Close-ups: always on':'Close-ups: off');};}
  {const rb=$('tRead');rb.classList.toggle('on',READ);rb.onclick=()=>{READ=!READ;rb.classList.toggle('on',READ);try{localStorage.setItem('ml_read',READ?'1':'0');}catch(_){}toast(READ?'Reading pace on: the motion slows down for long instructions':'Reading pace off');};}
  $('cap').addEventListener('click',e=>{if(e.target.closest('button'))return;setPlay(!playing);toast(playing?'Playing':'Paused: read at your own pace, tap again to play');});
- $('tText').onclick=()=>{const L=[1,1.15,1.3,1.45];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
- $('actBtn').onclick=()=>openActs();$('modeBtn').onclick=()=>openModes();{const lb=$('tLbl');const set=()=>{lb.textContent='🏷 Labels · '+LBL;lb.classList.toggle('on',LBL!=='min');};set();lb.onclick=()=>{LBL=LBL==='auto'?'full':LBL==='full'?'min':'auto';lblT=RT;set();try{localStorage.setItem('ml_lbl',LBL);}catch(_){}toast(LBL==='auto'?'Labels: full for 5 s, then compact dots (hover a dot to read it)':LBL==='full'?'Labels: always full':'Labels: compact dots only');};}
+ $('tText').onclick=()=>{const L=[1,1.15,1.25,1.4,1.55];TZ=L[(L.indexOf(TZ)+1)%L.length];applyTZ();try{localStorage.setItem('ml_tz',TZ);}catch(_){}toast('Text size '+Math.round(TZ*100)+'%');};applyTZ();
+ $('actBtn').onclick=()=>openActs();setEmph(EMPH);$('tEmph').onclick=()=>{setEmph(!EMPH);for(const e of[ex])e._em=undefined;toast(EMPH?'Small movements drawn bigger so you can see them':'Small movements at true size');};$('modeBtn').onclick=()=>openModes();{const lb=$('tLbl');const set=()=>{lb.textContent='🏷 Labels · '+LBL;lb.classList.toggle('on',LBL!=='min');};set();lb.onclick=()=>{LBL=LBL==='auto'?'full':LBL==='full'?'min':'auto';lblT=RT;set();try{localStorage.setItem('ml_lbl',LBL);}catch(_){}toast(LBL==='auto'?'Labels: full for 5 s, then compact dots (hover a dot to read it)':LBL==='full'?'Labels: always full':'Labels: compact dots only');};}
  $('tLens').onclick=()=>{setLens(!LENS);toast(LENS?'Mechanism lens on: see the circuit, knock out a muscle, find wasted energy':'Mechanism lens off');};$('tChan').onclick=()=>{setChan(!CHAN);toast(CHAN?'Channels on: up the back on the inhale, down the front on the exhale':'Channels off');};$('tChan').classList.toggle('on',CHAN);$('tSimple').onclick=()=>{setSimple(!SIMPLE);toast(SIMPLE?'Simple view: only the essentials':'Full lab: all panels and data');};$('actX').onclick=()=>{$('actMenu').hidden=true;};$('actMenu').onclick=e=>{if(e.target.id==='actMenu')$('actMenu').hidden=true;};
  document.querySelectorAll('#legend [data-st]').forEach(r=>r.onclick=()=>setCF(CF===r.dataset.st?'all':r.dataset.st));
  setTimeout(()=>applySettings(location.hash),30);

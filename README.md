@@ -173,3 +173,9 @@ All values come from the app's simplified body model, not from sensors.
 - Callouts (helpers, opposers, steadiers, channels) sit in columns beside the body, with thin leader lines.
 - **Auto** (default): full labels for 5 s after a change, then small colored dots and a legend. Hover a dot to read it.
 - The 🏷 button switches between **auto**, **full** and **min**.
+
+### ↔ Small movements you can see
+- Small motions (wrist, ankle, toes, neck turns and tilts, shoulder-blade lifts, small trunk turns and side bends) are drawn 1.25–1.6× bigger. Use the ↔ button for true size.
+- Steps that say "shake" really shake.
+- **✋ Hand close-up:** opens when a move works the hands, wrists or fingers. It shows the active hand, a picture of the finger position (open, light hold, strong squeeze, spread) and the wrist angle.
+- On phones, text starts at 125%.
