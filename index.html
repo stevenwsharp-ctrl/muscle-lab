@@ -1826,13 +1826,15 @@ const MIRNEG=new Set(['root.yaw','root.roll','root.x','spine.s','spine.t','chest
 function mirP(P){const o={};for(const k in P){let k2=k;if(k.startsWith('L.'))k2='R.'+k.slice(2);else if(k.startsWith('R.'))k2='L.'+k.slice(2);o[k2]=MIRNEG.has(k)?-P[k]:P[k];}return o;}
 function isAsym(m){return m.K.some(k=>Object.keys(k.P).some(x=>(MIRNEG.has(x)&&Math.abs(k.P[x])>.5)||(x.startsWith('L.')&&Math.abs((k.P[x]||0)-(k.P['R.'+x.slice(2)]||0))>.5)));}
 const mirCap=t=>t.replace(/\b(left|right|Left|Right)\b/g,w=>({left:'right',right:'left',Left:'Right',Right:'Left'})[w]);
+function moveSide(m){if(m.side)return m.side;const nm=m.name||'';if(/\(left\)|\bleft (arm|leg|hand|side)\b/i.test(nm))return'L';if(/\(right\)|\bright (arm|leg|hand|side)\b/i.test(nm))return'R';
+ let vl=0,vr=0;for(const k of m.keyList||[]){const S=k[0];if((S!=='L'&&S!=='R')||k[1]!=='.')continue;let lo=1e9,hi=-1e9;for(const q of m.K||[]){const v=q.P[k]||0;lo=Math.min(lo,v);hi=Math.max(hi,v);}if(S==='L')vl+=hi-lo;else vr+=hi-lo;}return vr>vl*1.2?'R':'L';}
 function buildPlanEx(T,plan,title){
  const parts=(CF!=='all'&&!plan.noCF&&MUSK[T+'L'])?plan.blocks.map(b=>Object.assign({},b,{m:tempoMove(b.m,T,CF)})):plan.blocks;parts.forEach(b=>prep(b.m));const RPb=b=>b.reps||REPS,RDb=b=>b.ready!=null?b.ready:READY;const bd=parts.map(b=>RDb(b)+RPb(b)*b.m.dur);const total=bd.reduce((a,b)=>a+b,0);
  const ks=new Set();parts.forEach(b=>b.m.keyList.forEach(k=>{ks.add(k);Object.keys(mirP({[k]:1})).forEach(x=>ks.add(x));}));const KL=[...ks];const full=P0=>{const P={};for(const kk of KL)P[kk]=P0[kk]||0;return P;};
  let off=0;const K=[],blocks=[];
  parts.forEach((b,i)=>{const m=b.m;const pre=(parts.length>1?`${i+1}/${parts.length} · ${b.label} — `:'')+`${m.name} (${m.src}). `;
   K.push({t:off,P:full(m.K[0].P),cap:pre+(b.ready?'Move into the start.':'Get ready.'),cue:(b.ready?'Next: ':'Get ready: ')+m.name,rep:0,bi:i});
-  const asym=isAsym(m);for(let r=0;r<RPb(b);r++){const base=off+(RDb(b)+r*m.dur)/total;const mr=asym&&r%2===1;const sd=asym?(mr?' · right side':' · left side'):'';for(const k of m.K)K.push({t:base+k.t*m.dur/total,P:full(mr?mirP(k.P):k.P),cap:pre+(mr?mirCap(k.cap):k.cap),cue:mr?mirCap(k.cap):k.cap,rep:r+1,bi:i,sd,br:k.br});}
+  const asym=isAsym(m);const s0=moveSide(m);for(let r=0;r<RPb(b);r++){const base=off+(RDb(b)+r*m.dur)/total;const mr=asym&&r%2===1&&!m.oneSide;const sd=asym?((mr?(s0==='L'?'R':'L'):s0)==='L'?' · left side':' · right side'):'';for(const k of m.K)K.push({t:base+k.t*m.dur/total,P:full(mr?mirP(k.P):k.P),cap:pre+(mr?mirCap(k.cap):k.cap),cue:mr?mirCap(k.cap):k.cap,rep:r+1,bi:i,sd,br:k.br});}
   blocks.push({reps:RPb(b),t0:off,t1:off+bd[i]/total,r1:off+RDb(b)/total,ws:new Set(m.work),ss:new Set(m.stab.filter(x=>!m.work.includes(x))),i,name:m.name,src:m.src,dose:m.dose,label:b.label});off+=bd[i]/total;});
  blocks.forEach((b,i)=>b.next=blocks[i+1]?blocks[i+1].name:null);
  const work=[...new Set(parts.flatMap(b=>b.m.work))],stab=[...new Set(parts.flatMap(b=>b.m.stab))].filter(x=>!work.includes(x));
@@ -3286,7 +3288,7 @@ function drawChannels(W){const d=YOGA[curYK()||''];const on=CHAN||(d&&d.orbit);i
     {t:.4,p:{'neck.t':-20,'neck.s':-16},cap:'Tip the right ear toward the right shoulder. The left side of the neck, which turned to the frets all session, lengthens.'},
     {t:.6,p:{'neck.t':0,'neck.s':0,'neck.f':6},cap:'Chin tuck: slide the head back, as if you make a double chin. The deep neck flexors (longus colli) wake up.'},{t:.8,p:{'neck.t':24,'neck.f':0},cap:'Turn gently the other way too. Both directions, so the neck is not stuck in one.'}],
    work:['longusColli','scm','splenius','suboccipitals'],stab:['trapUpper','scalenes']},
-  gtFretOpen:{name:'Fretting arm opener (left)',src:'Musician relief',dur:16,dose:'3 × 3 breaths',base:{'B.sh.a':6},
+  gtFretOpen:{name:'Fretting arm opener (left)',src:'Musician relief',side:'L',oneSide:true,dur:16,dose:'3 × 3 breaths',base:{'B.sh.a':6},
    keys:[{t:0,p:{},cap:'Stand tall. We build a goal-post (cactus) shape with the left arm, one part at a time.'},
     {t:.14,p:{'L.sh.a':88,'L.el':4},cap:'1. Lift the left arm out to the side to shoulder height. Palm faces down. The elbow is straight but soft.'},
     {t:.3,p:{'L.sh.a':88,'L.el':90,'L.sh.r':0},cap:'2. Bend the elbow to 90°. The forearm points forward and the hand is in front of you at shoulder height.'},
@@ -3294,10 +3296,9 @@ function drawChannels(W){const d=YOGA[curYK()||''];const on=CHAN||(d&&d.orbit);i
     {t:.66,p:{'L.sh.a':88,'L.el':90,'L.sh.r':-85,'L.sh.f':-12,'chest.t':-16},cap:'4. Draw the elbow a little back and turn the chest to the right. The chest and the front deltoid of the fretting arm lengthen. The rhomboids and middle trapezius draw the shoulder blade back and down.'},
     {t:.86,p:{},cap:'Release slowly. If the hand cannot reach straight up, stop where it is easy: tight chest and inner rotator muscles limit it, and that is what this stretch works on.'}],
    work:['infraspinatus','teresMinor','rhomboid','trapMid','trapLower'],stab:['serratus','oblique','deltLat','supraspinatus']},
-  gtPend:{name:'Strumming arm pendulum (right)',src:'Musician relief',dur:8,dose:'30 s',base:{'root.pitch':34,'B.hip.f':34,'B.kn':10,'L.sh.f':40,'L.el':20,'R.sh.f':34},
-   keys:[{t:0,p:{},cap:'Hinge forward a little. Let the strumming arm hang like a rope.'},{t:.25,p:{'R.sh.f':46,'R.sh.a':6},cap:'Sway the body so the arm swings in small circles. The shoulder muscles do not work: the upper trapezius lets go.'},
-    {t:.5,p:{'R.sh.f':24,'R.sh.a':-5}},{t:.75,p:{'R.sh.f':40,'R.sh.a':-6},cap:'Keep it loose. The arm feels heavy and long.'}],
-   work:['erector'],stab:['hamstrings','gluteMax','multifidus']},
+  gtPend:{name:'Strumming arm pendulum (right)',src:'Musician relief',side:'R',oneSide:true,dur:12,dose:'30 s, both directions',base:{'root.pitch':40,'B.hip.f':44,'B.kn':14,'L.sh.f':22,'L.sh.a':8,'L.el':48,'R.sh.f':40},
+   keys:[{t:0.0,p:{'root.pitch': 43.5, 'B.an': 13.5, 'L.hip.a': 0.0, 'R.hip.a': -0.0, 'R.sh.f': 43.5, 'R.sh.a': -12.0, 'spine.s': -0.0},cap:'Hinge forward with a soft back, left hand resting on the left thigh. Let the right arm hang straight down like a rope.'},{t:0.0833,p:{'root.pitch': 43.0, 'B.an': 13.0, 'L.hip.a': 2.0, 'R.hip.a': -2.0, 'R.sh.f': 51.0, 'R.sh.a': -10.4, 'spine.s': -1.0}},{t:0.1667,p:{'root.pitch': 41.8, 'B.an': 11.8, 'L.hip.a': 3.5, 'R.hip.a': -3.5, 'R.sh.f': 55.6, 'R.sh.a': -6.0, 'spine.s': -1.7}},{t:0.25,p:{'root.pitch': 40.0, 'B.an': 10.0, 'L.hip.a': 4.0, 'R.hip.a': -4.0, 'R.sh.f': 56.0, 'R.sh.a': 0.0, 'spine.s': -2.0},cap:'Shift your weight in a slow circle: forward, to the side, back, to the other side. The legs and hips move you; the arm only follows.'},{t:0.3333,p:{'root.pitch': 38.2, 'B.an': 8.3, 'L.hip.a': 3.5, 'R.hip.a': -3.5, 'R.sh.f': 52.1, 'R.sh.a': 6.0, 'spine.s': -1.7}},{t:0.4167,p:{'root.pitch': 37.0, 'B.an': 7.0, 'L.hip.a': 2.0, 'R.hip.a': -2.0, 'R.sh.f': 45.0, 'R.sh.a': 10.4, 'spine.s': -1.0}},{t:0.5,p:{'root.pitch': 36.5, 'B.an': 6.5, 'L.hip.a': 0.0, 'R.hip.a': -0.0, 'R.sh.f': 36.5, 'R.sh.a': 12.0, 'spine.s': -0.0},cap:'The hanging arm swings in small circles because the body sways. The shoulder muscles do not work: the upper trapezius lets go.'},{t:0.5833,p:{'root.pitch': 37.0, 'B.an': 7.0, 'L.hip.a': -2.0, 'R.hip.a': 2.0, 'R.sh.f': 29.0, 'R.sh.a': 10.4, 'spine.s': 1.0}},{t:0.6667,p:{'root.pitch': 38.2, 'B.an': 8.2, 'L.hip.a': -3.5, 'R.hip.a': 3.5, 'R.sh.f': 24.4, 'R.sh.a': 6.0, 'spine.s': 1.7}},{t:0.75,p:{'root.pitch': 40.0, 'B.an': 10.0, 'L.hip.a': -4.0, 'R.hip.a': 4.0, 'R.sh.f': 24.0, 'R.sh.a': 0.0, 'spine.s': 2.0},cap:'Keep it slow and heavy. Breathe out. Change direction after a few circles.'},{t:0.8333,p:{'root.pitch': 41.8, 'B.an': 11.8, 'L.hip.a': -3.5, 'R.hip.a': 3.5, 'R.sh.f': 27.9, 'R.sh.a': -6.0, 'spine.s': 1.7}},{t:0.9167,p:{'root.pitch': 43.0, 'B.an': 13.0, 'L.hip.a': -2.0, 'R.hip.a': 2.0, 'R.sh.f': 35.0, 'R.sh.a': -10.4, 'spine.s': 1.0}},{t:1.0,p:{'root.pitch': 43.5, 'B.an': 13.5, 'L.hip.a': -0.0, 'R.hip.a': 0.0, 'R.sh.f': 43.5, 'R.sh.a': -12.0, 'spine.s': 0.0}}],
+   work:['gluteMed','soleus','tibAnt'],stab:['erector','multifidus','hamstrings']},
   gtWrist:{name:'Forearm flexor and thumb stretch',src:'Musician relief',dur:9,dose:'2 × 20 s each hand',base:{'B.sh.a':6,'L.sh.f':88,'L.el':2,'R.sh.f':70,'R.el':40},
    keys:[{t:0,p:{},cap:'Left arm forward, elbow long.'},{t:.25,p:{'L.wr':-62,grip:-1},cap:'Palm forward, fingers up. Draw the fingers and thumb back gently with the other hand. The forearm flexors and the thumb pad lengthen after the squeeze.'},
     {t:.55,p:{'L.wr':38,grip:1},cap:'Make a soft fist and bend the wrist down. The extensors lengthen.'},{t:.8,p:{'L.wr':0,grip:0},cap:'Shake out the hand.'}],
@@ -3687,7 +3688,7 @@ function setEmph(v){EMPH=!!v;try{localStorage.setItem('ml_emph',EMPH?'1':'0');}c
 // =========================================================
 const HANDMUS=['forearmFlex','forearmExt','thenar','hypothenar','handIntr'];const HANDEX=new Set(['handlab','guitar']);
 const HANDRX=/\b(hand|hands|finger|fingers|thumb|thumbs|wrist|wrists|grip|gripping|palm|palms|fist|knuckles?|squeeze|fretting)\b/i;
-const HANDNOT=/\b(hands?|palms?) (on|under|by|at|behind|to the|in the lap|flat|beside|rest)\b|hands and knees|hands-free/i;let handUntil=0;
+const HANDNOT=/\b(hands?|palms?) (on|under|by|at|behind|to the|in the lap|flat|beside|rest|rests|resting|hang|hangs|hanging|down)\b|hands and knees|hands-free/i;let handUntil=0;
 function handWanted(){if(FEET==='off')return false;const B=document.body.classList;if(B.contains('pick')||(B.contains('yoga')&&curMudra()))return false;
  if(HANDEX.has(ex.id)||HANDEX.has(ex.counterOf)||(ex.explore&&cT&&(REGION.hand.includes(cT)||HANDMUS.includes(cT)))||(ex.idT&&HANDMUS.concat(REGION.hand).includes(ex.idT)))handUntil=RT+4;
  else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>HANDMUS.includes(x)||REGION.hand.includes(x)))handUntil=RT+4;}
@@ -3720,7 +3721,7 @@ function drawHandCam(W){if(!handWanted()){hideBox('handCam');return;}const ph=do
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-19-1300';
+const BUILD='2026-11-19-1330';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
