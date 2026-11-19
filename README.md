@@ -179,3 +179,7 @@ All values come from the app's simplified body model, not from sensors.
 - Steps that say "shake" really shake.
 - **✋ Hand close-up:** opens when a move works the hands, wrists or fingers. It shows the active hand, a picture of the finger position (open, light hold, strong squeeze, spread) and the wrist angle.
 - On phones, text starts at 125%.
+- **🔍 Head close-up:** opens for neck work and whenever the head nods, turns or tilts by 12° or more.
+  - It zooms in on the head from the side (nods), from above (turns) or from the front (tilts), and picks the view that matches the motion happening now.
+  - A yellow arrow shows where the face points, against a dashed level or forward line, with a dotted trail of the nose path.
+  - It shows the angle ("nod down 12°", "turned right 32°", "tilt to the left 10°") and an ear-over-shoulder check.

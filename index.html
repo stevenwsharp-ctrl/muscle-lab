@@ -3382,26 +3382,47 @@ function neckWanted(){if(FEET==='off')return false;if(document.body.classList.co
  else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>REGION.neck.includes(x)))neckUntil=RT+4;}
  else if(!ex.explore&&NECKRX.test(capShown||''))neckUntil=RT+4;
  if(FEET==='on'&&(ex.id==='guitar'||ex.id==='desk'))neckUntil=RT+4;
+ if(!ex.explore){const r=headRange();if(Math.max(r.f,r.t,r.s)>=12)neckUntil=RT+4;}
  return RT<neckUntil;}
-function drawNeckBox(W){if(!neckWanted()){hideBox('neckBox');return;}const ph=document.body.classList.contains('phone');
- const w=ph?150:240,h=ph?160:230;const slot=($('feetBox')&&!$('feetBox').hidden)?1:0;const c=floatBox('neckBox',w,h,slot);
+let HEADTR=[];const NPV={v:null,t:0,s:null,ts:0};
+function headRange(){const K=ex.K||[];if(!K.length)return{f:0,t:0,s:0};let b=null;if(ex.blocks)b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);const ks=b?K.filter(k=>k.bi===b.i):K;const r={};for(const k of['f','t','s']){let lo=1e9,hi=-1e9;for(const q of ks){const v=q.P['neck.'+k]||0;lo=Math.min(lo,v);hi=Math.max(hi,v);}r[k]=ks.length?hi-lo:0;}return r;}
+function drawNeckBox(W){if(!neckWanted()){hideBox('neckBox');HEADTR=[];return;}const ph=document.body.classList.contains('phone');
+ const hr=headRange();const P0=W._P||{},P1=solve(ex,(phase+.012)%1)._P||{};const dv={f:Math.abs((P1['neck.f']||0)-(P0['neck.f']||0)),t:Math.abs((P1['neck.t']||0)-(P0['neck.t']||0)),s:Math.abs((P1['neck.s']||0)-(P0['neck.s']||0))};
+ const mov=Math.max(dv.f,dv.t,dv.s)>.15?(dv.f>=dv.t&&dv.f>=dv.s?'side':dv.t>=dv.s?'top':'front'):null;
+ if(mov&&mov!==NPV.v&&RT-NPV.t>1.5){NPV.v=mov;NPV.t=RT;}if(!NPV.v)NPV.v=hr.f>=Math.max(hr.t,hr.s)?'side':hr.t>=hr.s?'top':'front';
+ if(mov&&mov!=='side'&&mov!==NPV.s&&RT-NPV.ts>1.5){NPV.s=mov;NPV.ts=RT;}if(!NPV.s)NPV.s=hr.t>=hr.s?'top':'front';
+ const panes=ph?[NPV.v]:['side',NPV.s];
+ const w=ph?165:310,h=ph?175:(panes.length>1?330:235);const slot=($('feetBox')&&!$('feetBox').hidden)?1:0;const c=floatBox('neckBox',w,h,slot);const bw=c.canvas.width/Math.min(2,dpr),bh=c.canvas.height/Math.min(2,dpr);
  const mctx=ctx;ctx=c;const sv={M:cam.M,target:cam.target,cx:cam.cx,cy:cam.cy,s:cam.s,zoom:cam.zoom};
- try{const fw=ap(W.pelvis.R,[0,0,1]);const fyaw=Math.atan2(fw[0],fw[2])/D;const top=wp(W,'head',[0,14,0]),low=wp(W,'chest',[0,6,0]);
-  cam.M=mm(rx(4*D),ry(-(fyaw+90)*D));cam.target=mix(top,low,.5);cam.zoom=1;const span=Math.hypot(...sub(top,low))+12;cam.s=(h-56)/span;cam.cx=w/2;cam.cy=(h-30)/2+14;
-  ctx.fillStyle='#050a14';ctx.beginPath();ctx.roundRect?ctx.roundRect(0,0,w,h,12):ctx.rect(0,0,w,h);ctx.fill();ctx.strokeStyle='rgba(255,79,216,.5)';ctx.lineWidth=1.5;ctx.stroke();ctx.save();ctx.clip();
-  const lowY=low[1]-6;const hs=hits.length;const items=(LASTITEMS||[]).filter(it=>{if(it.k==='tree'||it.fx)return false;const ps=itemPts(it,W);return ps.length&&ps.every(q=>q[1]>=lowY);});
-  for(const it of items)it.z2=itemZ(it,W);items.sort((a,b)=>a.z2-b.z2);for(const it of items)drawItem(it,W,null);hits.length=hs;ctx.globalAlpha=1;ctx.shadowBlur=0;
-  // ear over shoulder plumb line
-  const ear=wp(W,'head',[0,3,-1]),sh=mix(W.Lupper.p,W.Rupper.p,.5);const pe=proj(ear),ps_=proj(sh);const fwd=dot(sub(ear,sh),[fw[0],0,fw[2]]);const P0=W._P||{};const bad=fwd>4.5||(P0['neck.f']||0)>20;
-  ctx.setLineDash([4,4]);ctx.strokeStyle=bad?'#ff6b6b':'#34d399';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(ps_[0],ps_[1]);ctx.lineTo(ps_[0],pe[1]-14);ctx.stroke();ctx.setLineDash([]);
-  for(const[p,col]of[[pe,'#ffd84d'],[ps_,'#7ef9ff']]){ctx.fillStyle=col;ctx.beginPath();ctx.arc(p[0],p[1],4,0,7);ctx.fill();}
-  ctx.restore();
-  const P=W._P||{};const f=Math.round(P['neck.f']||0),t_=Math.round(P['neck.t']||0),s_=Math.round(P['neck.s']||0);
-  ctx.textAlign='left';ctx.textBaseline='middle';ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#ff9be8';ctx.fillText('🔍 HEAD AND NECK · SIDE VIEW',9,12);
-  ctx.font=`700 ${ph?9:10.5}px Inter,system-ui,sans-serif`;ctx.fillStyle=bad?'#fca5a5':'#86efac';ctx.fillText(bad?((P0['neck.f']||0)>20?'✕ Head dropped forward':'✕ Head forward of the shoulders'):'✓ Ear over the shoulder',9,h-(ph?24:30));
-  ctx.fillStyle='#cbd5e1';ctx.font=`600 ${ph?8.5:10}px Inter,system-ui,sans-serif`;ctx.fillText(`nod ${f>0?'down':'up'} ${Math.abs(f)}° · turn ${Math.abs(t_)}° · tilt ${Math.abs(s_)}°`,9,h-(ph?10:13));
+ try{const CR=W.chest.R,Fc=ap(CR,[0,0,1]),Uc=ap(CR,[0,1,0]),Lc=ap(CR,[1,0,0]);const fyaw=Math.atan2(Fc[0],Fc[2])/D;
+  const ear=wp(W,'head',[0,4,0]),nose=wp(W,'head',[0,4,10]),eL=wp(W,'head',[7,4,0]),eR=wp(W,'head',[-7,4,0]);const fv=sub(nose,ear);
+  const nod=Math.atan2(-dot(fv,Uc),dot(fv,Fc))/D,turn=Math.atan2(dot(fv,Lc),dot(fv,Fc))/D,ev=sub(eL,eR),tilt=Math.atan2(dot(ev,Uc),dot(ev,Lc))/D;
+  HEADTR.push(nose);if(HEADTR.length>45)HEADTR.shift();
+  const tgt=wp(W,'head',[0,3,2]),lowY=wp(W,'chest',[0,18,0])[1]-4,span=38;const hs=hits.length;
+  const items=(LASTITEMS||[]).filter(it=>{if(it.k==='tree'||it.fx)return false;const ps=itemPts(it,W);return ps.length&&ps.every(q=>q[1]>=lowY)&&ps.some(q=>Math.hypot(q[0]-tgt[0],q[2]-tgt[2])<40);});
+  ctx.fillStyle='#050a14';ctx.beginPath();ctx.roundRect?ctx.roundRect(0,0,bw,bh,12):ctx.rect(0,0,bw,bh);ctx.fill();ctx.strokeStyle='rgba(255,79,216,.5)';ctx.lineWidth=1.5;ctx.stroke();
+  const vert=panes.length>1&&bw<280;const pw=vert?bw:bw/panes.length,paneH=vert?(bh-40)/2:bh-40;
+  panes.forEach((v,pi)=>{const x0=vert?0:pi*pw,y0=22+(vert?pi*paneH:0);ctx.save();ctx.beginPath();ctx.rect(x0+3,y0,pw-6,paneH-16);ctx.clip();
+   cam.M=v==='side'?mm(rx(4*D),ry(-(fyaw+90)*D)):v==='front'?mm(rx(4*D),ry(-fyaw*D)):mm(rx(80*D),ry(-fyaw*D));cam.target=tgt;cam.zoom=1;cam.s=Math.min(pw-10,paneH-20)/span;cam.cx=x0+pw/2;cam.cy=y0+(paneH-16)/2;
+   for(const it of items)it.z2=itemZ(it,W);items.sort((a,b)=>a.z2-b.z2);for(const it of items)drawItem(it,W,null);ctx.globalAlpha=1;ctx.shadowBlur=0;
+   // motion trail of the nose
+   HEADTR.forEach((q,k)=>{const p_=proj(q);ctx.fillStyle=`rgba(255,216,77,${.08+.6*k/HEADTR.length})`;ctx.beginPath();ctx.arc(p_[0],p_[1],1.6+1.8*k/HEADTR.length,0,7);ctx.fill();});
+   const pe=proj(ear),pn=proj(nose);
+   if(v==='side'||v==='top'){const ref=add(ear,mulS(v==='side'?Fc:[Fc[0],0,Fc[2]],12));const pr=proj(ref);ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(148,163,184,.8)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(pe[0],pe[1]);ctx.lineTo(pr[0],pr[1]);ctx.stroke();ctx.setLineDash([]);
+    const tip=proj(add(ear,mulS(fv,1.3)));ctx.strokeStyle='#ffd84d';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(pe[0],pe[1]);ctx.lineTo(tip[0],tip[1]);ctx.stroke();const an=Math.atan2(tip[1]-pe[1],tip[0]-pe[0]);ctx.fillStyle='#ffd84d';ctx.beginPath();ctx.moveTo(tip[0],tip[1]);ctx.lineTo(tip[0]-8*Math.cos(an-.45),tip[1]-8*Math.sin(an-.45));ctx.lineTo(tip[0]-8*Math.cos(an+.45),tip[1]-8*Math.sin(an+.45));ctx.fill();}
+   else{const pl=proj(eL),pr=proj(eR);const mx=(pl[0]+pr[0])/2,my=(pl[1]+pr[1])/2,hl=Math.hypot(pl[0]-pr[0],pl[1]-pr[1])*.8;ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(148,163,184,.8)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(mx-hl,my);ctx.lineTo(mx+hl,my);ctx.stroke();ctx.setLineDash([]);
+    const ux=(pl[0]-pr[0])/(hl/.8||1),uy=(pl[1]-pr[1])/(hl/.8||1);ctx.strokeStyle='#ffd84d';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(mx-ux*hl,my-uy*hl);ctx.lineTo(mx+ux*hl,my+uy*hl);ctx.stroke();for(const q of[pl,pr]){ctx.fillStyle='#ffd84d';ctx.beginPath();ctx.arc(q[0],q[1],3.5,0,7);ctx.fill();}}
+   ctx.restore();
+   const lab=v==='side'?`${Math.abs(nod)<4?'head level':nod>0?`nod down ${Math.round(nod)}°`:`chin up ${Math.round(-nod)}°`}`:v==='front'?`${Math.abs(tilt)<3?'ears level':`tilt to the ${tilt>0?'right':'left'} ${Math.round(Math.abs(tilt))}°`}`:`${Math.abs(turn)<4?'facing forward':`turned ${turn>0?'left':'right'} ${Math.round(Math.abs(turn))}°`}`;
+   ctx.textAlign='left';ctx.textBaseline='middle';ctx.font=`700 ${ph?9:10.5}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e2e8f0';ctx.fillText(lab,x0+8,y0+paneH-8);ctx.fillStyle='#64748b';ctx.font=`700 ${ph?8:9}px Inter,system-ui,sans-serif`;ctx.fillText(v==='side'?'SIDE VIEW':v==='front'?'FRONT VIEW':'FROM ABOVE',x0+8,y0+8);
+   if(pi){ctx.fillStyle='rgba(255,255,255,.12)';if(vert)ctx.fillRect(6,y0-2,bw-12,1);else ctx.fillRect(x0,22,1,paneH-16);}});
+  hits.length=hs;
+  // posture check: ear over shoulder (side)
+  const sh=mix(W.Lupper.p,W.Rupper.p,.5);const fwd=dot(sub(ear,sh),[Fc[0],0,Fc[2]]);const bad=fwd>4.5||nod>22;
+  ctx.font=`800 ${ph?9.5:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#ff9be8';ctx.textAlign='left';ctx.fillText('🔍 HEAD',9,12);
+  ctx.font=`700 ${ph?8.5:10}px Inter,system-ui,sans-serif`;ctx.fillStyle=bad?'#fca5a5':'#86efac';ctx.textAlign='right';ctx.fillText(bad?(nod>22?'✕ head dropped':'✕ head forward'):'✓ ear over shoulder',bw-9,12);
+  ctx.textAlign='left';ctx.fillStyle='#94a3b8';ctx.font=`600 ${ph?8:9}px Inter,system-ui,sans-serif`;ctx.fillText(bw<280?'arrow = face · dots = nose path':'yellow arrow = where the face points · dots = path of the nose',8,bh-8);
  }finally{Object.assign(cam,sv);ctx=mctx;}}
-
 // =========================================================
 // NOW PLAYING: the left panel follows the exercise on screen
 // =========================================================
@@ -3721,7 +3742,7 @@ function drawHandCam(W){if(!handWanted()){hideBox('handCam');return;}const ph=do
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-19-1330';
+const BUILD='2026-11-19-1420';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
