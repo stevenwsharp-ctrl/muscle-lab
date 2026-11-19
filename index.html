@@ -3028,7 +3028,7 @@ let feetUntil=0;const FEETEX=new Set(['squat','skistance','ski','mogul','powder'
 function feetWanted(){if(FEET==='off')return false;if(FEET==='on')return true;if(document.body.classList.contains('pick'))return false;
  if(ex.id==='footlab'||(ex.idT&&REGION.foot.includes(ex.idT))||(ex.explore&&cT&&(REGION.foot.includes(cT)||['tibAnt','peroneals','tibPost','gastroc','soleus','flexHalLong','extDigLong'].includes(cT))))feetUntil=RT+4;
  else if(FEETEX.has(ex.id))feetUntil=RT+4;
- else if(!ex.explore&&FOOTRX.test(capShown||''))feetUntil=RT+4;
+ else if(!ex.explore&&FOOTRX.test(capShown||'')&&!/from the feet|feet to the head|Coach mode/i.test(capShown||''))feetUntil=RT+4;
  else if(ex.blocks){const b=ex.blocks.find(b=>phase>=b.t0&&phase<b.t1);if(b&&[...b.ws].some(x=>REGION.foot.includes(x)))feetUntil=RT+4;}
  return RT<feetUntil;}
 function drawFeet(W){let box=$('feetBox');const want=feetWanted();if(!want){if(box)box.hidden=true;return;}const ph=document.body.classList.contains('phone');
@@ -3285,10 +3285,14 @@ function drawChannels(W){const d=YOGA[curYK()||''];const on=CHAN||(d&&d.orbit);i
     {t:.4,p:{'neck.t':-20,'neck.s':-16},cap:'Tip the right ear toward the right shoulder. The left side of the neck, which turned to the frets all session, lengthens.'},
     {t:.6,p:{'neck.t':0,'neck.s':0,'neck.f':6},cap:'Chin tuck: slide the head back, as if you make a double chin. The deep neck flexors (longus colli) wake up.'},{t:.8,p:{'neck.t':24,'neck.f':0},cap:'Turn gently the other way too. Both directions, so the neck is not stuck in one.'}],
    work:['longusColli','scm','splenius','suboccipitals'],stab:['trapUpper','scalenes']},
-  gtFretOpen:{name:'Fretting arm opener (left)',src:'Musician relief',dur:9,dose:'3 × 3 breaths',base:{'B.sh.a':6},
-   keys:[{t:0,p:{},cap:'Stand tall.'},{t:.25,p:{'L.sh.a':88,'L.el':90,'L.sh.r':60},cap:'Left arm in a goal-post shape, forearm up. The chest and the front deltoid of the fretting arm start to lengthen.'},
-    {t:.5,p:{'L.sh.a':88,'L.el':90,'L.sh.r':70,'chest.t':-16},cap:'Turn the chest away to the right. Draw the left shoulder blade back and down: the rhomboids, middle trapezius and infraspinatus wake up.'},{t:.8,p:{},cap:'Release. This undoes the rolled-in fretting shoulder.'}],
-   work:['rhomboid','trapMid','infraspinatus','teresMinor','trapLower'],stab:['serratus','oblique']},
+  gtFretOpen:{name:'Fretting arm opener (left)',src:'Musician relief',dur:16,dose:'3 × 3 breaths',base:{'B.sh.a':6},
+   keys:[{t:0,p:{},cap:'Stand tall. We build a goal-post (cactus) shape with the left arm, one part at a time.'},
+    {t:.14,p:{'L.sh.a':88,'L.el':4},cap:'1. Lift the left arm out to the side to shoulder height. Palm faces down. The elbow is straight but soft.'},
+    {t:.3,p:{'L.sh.a':88,'L.el':90,'L.sh.r':0},cap:'2. Bend the elbow to 90°. The forearm points forward and the hand is in front of you at shoulder height.'},
+    {t:.48,p:{'L.sh.a':88,'L.el':90,'L.sh.r':-85},cap:'3. Turn the upper arm so the hand rises to point at the ceiling, palm forward. The turn is in the shoulder, like a door on a hinge. The elbow stays at 90°: it does not straighten or bend backward. The infraspinatus and teres minor do this turn.'},
+    {t:.66,p:{'L.sh.a':88,'L.el':90,'L.sh.r':-85,'L.sh.f':-12,'chest.t':-16},cap:'4. Draw the elbow a little back and turn the chest to the right. The chest and the front deltoid of the fretting arm lengthen. The rhomboids and middle trapezius draw the shoulder blade back and down.'},
+    {t:.86,p:{},cap:'Release slowly. If the hand cannot reach straight up, stop where it is easy: tight chest and inner rotator muscles limit it, and that is what this stretch works on.'}],
+   work:['infraspinatus','teresMinor','rhomboid','trapMid','trapLower'],stab:['serratus','oblique','deltLat','supraspinatus']},
   gtPend:{name:'Strumming arm pendulum (right)',src:'Musician relief',dur:8,dose:'30 s',base:{'root.pitch':34,'B.hip.f':34,'B.kn':10,'L.sh.f':40,'L.el':20,'R.sh.f':34},
    keys:[{t:0,p:{},cap:'Hinge forward a little. Let the strumming arm hang like a rope.'},{t:.25,p:{'R.sh.f':46,'R.sh.a':6},cap:'Sway the body so the arm swings in small circles. The shoulder muscles do not work: the upper trapezius lets go.'},
     {t:.5,p:{'R.sh.f':24,'R.sh.a':-5}},{t:.75,p:{'R.sh.f':40,'R.sh.a':-6},cap:'Keep it loose. The arm feels heavy and long.'}],
@@ -3663,7 +3667,7 @@ function drawSideLabels(W){const sig=(cT||'')+'|'+(ex.name||'')+'|'+CHAN+'|'+LEN
    PLANS AND PAYMENTS  — edit CONFIG to set prices, payment links and your booking link
    ========================================================= */
 // version check: if the server has a newer copy than this cached page, load the new one (keeps the #link)
-const BUILD='2026-11-18-2000';
+const BUILD='2026-11-19-1210';
 (function(){try{const q=new URLSearchParams(location.search);if(q.get('v')===BUILD)return;
  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=t.match(/const BUILD='([^']+)'/);
   if(m&&m[1]!==BUILD&&q.get('v')!==m[1]){q.set('v',m[1]);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(()=>{});}catch(_){}})();
