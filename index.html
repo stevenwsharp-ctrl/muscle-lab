@@ -913,6 +913,7 @@ function buildScene(ex,W,t,simT,opt){
   let prev=null,prevT=null;const N=14;
   for(let i=0;i<=N;i++){const u=i/N,z=sl[0]+(sl[1]-sl[0])*u;const d=V.a*(.5*Math.sin(2*Math.PI*u)+u*u)*om;const pt=q([0,-9+d,z]),pT=q([0,-8.2+d,z]);
    if(prev){items.push(L(prev,pt,3.5,'#ff3d71',{cap:'butt'}));items.push(L(prevT,pT,.7,'#ffffff',{alpha:.7}));}prev=pt;prevT=pT;}
+  if(ex.twin)items.push(L(q([0,-9,sl[0]]),q([0,-5.5,sl[0]-8]),3.2,'#ff3d71'));
   items.push(L(prev,q([0,-5,sl[1]+9]),3.2,'#ff3d71'),L(q([0,-8,-6]),q([0,-8,10]),5,'#1d222c',{cap:'butt'}),L(q([0,-2,-6]),q([0,-6,-6]),5.5,'#2a3140'));}
  if(pr.includes('poles'))for(const S of['L','R']){const c=wp(W,S+'hand',[0,-5,0]);const a=(P[S+'.pole']||0)*D,yw=(P['root.yaw']||0)*D,m=S==='L'?1:-1;
   const dir=norm(ap(ry(yw),[m*.12,-Math.cos(a),Math.sin(a)]));let Ln=118;if(c[1]+dir[1]*Ln<0)Ln=c[1]/-dir[1];const tip=add(c,mulS(dir,Ln));
@@ -2253,6 +2254,7 @@ const COUNTER={
  boat:{T:'erector',k:['neck','sky','cloud'],why:'release the neck and back after hours of bracing'},
  stack:{T:'splenius',k:['neck','opener','sky'],why:'restack the head and open the chest'},
  skistance:{T:'vastLat',k:['quad','calf','fold'],why:'lengthen the quads and calves'},
+ polegrav:{T:'lats',k:['sky','quad','calf'],why:'lengthen the lats and triceps after poling, then the quads and calves'},
  desk:{T:'pecMinor',k:['opener','neck','ytw','quad'],why:'open the chest, reset the neck, wake up the upper back, lengthen the hip flexors'},
  nurse:{T:'erector',k:['sky','opener','fold','crane'],why:'extend and side-bend the spine, open the chest, reset balance'}};
 function renderCounter(){const el=$('ctr');if(!el)return;let h='';
@@ -2507,6 +2509,29 @@ EX.push({id:'skistance',group:'Gravity and ease',name:'Ski stance: centered vs b
   {t:.85,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30},ok:1,okl:'centered stance',cap:'Back to centered: flex the ankles, knees and hips together. Ease returns.'}],
  focus:['knee','leg','hip','foot']});
 EX.find(e=>e.id==='stack').focus=['neck','core','foot','hip'];
+// SKI POLES WITH GRAVITY: on a Moment Deathwish 184 (138-112-129, Triple Camber, 25 m radius, twin rocker, mount -6) at Snowbird
+EX.push({id:'polegrav',group:'Gravity and ease',name:'Ski poles: work with gravity',icon:'⟊',dur:22,anchor:'ground',view:[70,10],props:['skis','poles','snow'],skiLen:[-86,98],twin:true,
+ env:'mountain',slope:18,cord:true,scroll:240,vib:()=>({f:12,a:.15}),
+ base:{'spine.f':8,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.sh.r':10,'root.y':2.8,'B.pole':-30},
+ work:['lats','triceps','forearmFlex','deltAnt','serratus','rectusAbd','oblique','vastLat','vastMed','rectFem','gluteMax','tibAnt','soleus','gastroc'],stab:['trapUpper','levScap','intOblique','multifidus','erector','peroneals','tibPost','abdHallucis'],
+ keys:[{t:0,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.pole':-30,'B.clav.e':0,'root.roll':0,'root.yaw':0,'spine.s':0,'spine.f':8,'spine.t':0},ok:1,okl:'quiet hands',cap:'Ski: Moment Deathwish 184. Triple Camber: rocker at tip and tail, camber underfoot, two small camber pockets at the binding. 112 mm under the foot, 25 m radius. It wants a centered skier. The poles put you there.'},
+  {t:.06,p:{},ok:1,okl:'quiet hands',cap:'Ready: hands in front and in view, wide, like you carry a tray. The poles hang down and back. Gravity holds the tips back. The arms do almost nothing.'},
+  {t:.12,p:{},ok:1,okl:'light grip',cap:'Light grip: push the hand up through the strap, so the strap carries the pole. Hold with the thumb and two fingers. Soft forearms, soft shoulders.'},
+  {t:.19,p:{'B.sh.f':5,'B.el':40,'B.clav.e':10,'B.pole':-58,'root.pitch':5,'B.hip.f':70,'B.kn':80,'B.an':12},ok:0,okl:'death grip, hands back',cap:'Against gravity: tight fists, hands behind the hips. The shoulders shrug, the chest pulls back, and the hips follow into the back seat.'},
+  {t:.26,p:{},ok:0,okl:'death grip, hands back',cap:'Feel it: the neck, shoulders and thighs ring red. On the Deathwish the rockered tips get light and wander, and the micro camber pockets lose grip. Effort up, speed down.'},
+  {t:.32,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.pole':-30,'B.clav.e':0,'root.roll':0,'root.yaw':0,'spine.s':0,'spine.f':8,'spine.t':0},ok:1,okl:'hands lead',cap:'Reset: hands forward first. When the hands lead, the hips follow over the feet, and the shins press the boot tongues.'},
+  {t:.38,p:{'L.sh.f':48,'L.el':64,'L.pole':5},ok:1,okl:'pendulum swing',cap:'Pendulum: flick the wrist a little and the pole tip swings forward. Let it fall like a pendulum. Gravity makes the swing, not the shoulder.'},
+  {t:.44,p:{'L.sh.f':58,'L.el':56,'L.pole':24,'root.pitch':15},ok:1,okl:'touch, not stab',cap:'Touch, do not stab: the tip drops in the snow next to the boot tip, a bit to the side. It is a timer and a hinge, not a brake.'},
+  {t:.51,p:{'root.roll':20,'root.yaw':8,'spine.s':-14,'L.kn':78,'L.hip.f':55,'R.kn':55,'L.sh.f':48,'L.el':64,'L.pole':-30},ok:1,okl:'fall over the pole',cap:'Leverage: the body falls down the hill, over and past the pole. The pole is the hinge and gravity pulls the hips across into the new turn. The hand keeps moving forward.'},
+  {t:.57,p:{},ok:1,okl:'ski does the work',cap:'Now let the ski work: tip it on edge and the camber pockets grip and bend it shorter than its 25 m radius. The rockered tip starts the turn and the rockered tail lets go at the end.'},
+  {t:.63,p:Object.assign({},{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.pole':-30,'B.clav.e':0,'root.roll':0,'root.yaw':0,'spine.s':0,'spine.f':8},{'R.sh.f':95,'R.el':12,'R.pole':55,'root.pitch':6,'spine.t':12}),ok:0,okl:'big reach, pole blocks',cap:'Against gravity: a big reach far in front. The pole blocks the body, the shoulder turns uphill, and you stop and wait. Flow is lost.'},
+  {t:.69,p:Object.assign({},{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.pole':-30,'B.clav.e':0,'root.roll':0,'root.yaw':0,'spine.s':0,'spine.f':8},{'spine.t':0,'R.sh.f':58,'R.el':56,'R.pole':24,'root.pitch':15}),ok:1,okl:'steeps: block and face down',cap:'Steeps (Great Scott, Silver Fox, the Cirque): plant the downhill pole down the fall line. The chest faces down the hill and the body hangs out over the pole. Gravity, not fear, pulls you into the next turn.'},
+  {t:.74,p:{'root.roll':-18,'root.yaw':-8,'spine.s':12,'R.kn':76,'R.hip.f':55,'L.kn':55,'R.sh.f':48,'R.el':64,'R.pole':-30},ok:1,okl:'fall over the pole',cap:'Pivot and slash: on the twin rocker the ski turns easily around the pole. In Snowbird trees and bumps: touch, pivot, release, touch.'},
+  {t:.8,p:Object.assign({},{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.pole':-30,'B.clav.e':0,'root.roll':0,'root.yaw':0,'spine.s':0,'spine.f':8},{'B.sh.f':85,'B.el':25,'B.pole':18,'root.pitch':16,'spine.t':0}),ok:1,okl:'double pole: reach',cap:'Flats and traverses (Cirque Traverse, Mineral Basin run-outs): reach both hands forward and set both tips near the boots.'},
+  {t:.86,p:{'spine.f':38,'root.pitch':30,'B.hip.f':68,'B.kn':48,'B.sh.f':12,'B.el':10,'B.pole':-42},ok:1,okl:'double pole: fall and crunch',cap:'Fall onto the poles and crunch: your body weight drives the push. The abs and lats pull, the triceps finish. Arms alone push slow. Gravity pushes fast. The 112 base glides well on the flats.'},
+  {t:.93,p:{'root.pitch':12,'B.hip.f':45,'B.kn':55,'B.an':30,'B.sh.f':40,'B.sh.a':22,'B.el':70,'B.pole':-30,'B.clav.e':0,'root.roll':0,'root.yaw':0,'spine.s':0,'spine.f':8,'spine.t':0},ok:1,okl:'flow',cap:'Flow: hands forward, swing, touch, fall, turn. Less grip, more glide. Let gravity and the ski do the work.'}],
+ focus:['shoulder','core','knee','hip']});
+
 
 /* =========================================================
    YOGA MODE — pose library, flow builder, breath
@@ -3027,7 +3052,7 @@ const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
 // FEET CLOSE-UP: a second camera on the feet when foot position, arch or alignment matters
 let FEET='auto';try{FEET=localStorage.getItem('ml_feet')||'auto';}catch(_){}
 const FOOTRX=/\b(foot|feet|arch|arches|toe|toes|heel|heels|ankle|ankles|tripod|sole|soles|knee over|knees over|knees track|knee track|knees out|knee caves|knees cave|ball of|balls of|stance|footwork|edge|edges|grip the floor|pronat|supinat|short foot)\b/i;
-let feetUntil=0;const FEETEX=new Set(['squat','skistance','ski','mogul','powder','jump','cliff','run','rope','dunk','footlab','stack','box']);
+let feetUntil=0;const FEETEX=new Set(['squat','skistance','polegrav','ski','mogul','powder','jump','cliff','run','rope','dunk','footlab','stack','box']);
 function feetWanted(){if(FEET==='off')return false;if(FEET==='on')return true;if(document.body.classList.contains('pick'))return false;
  if(ex.id==='footlab'||(ex.idT&&REGION.foot.includes(ex.idT))||(ex.explore&&cT&&(REGION.foot.includes(cT)||['tibAnt','peroneals','tibPost','gastroc','soleus','flexHalLong','extDigLong'].includes(cT))))feetUntil=RT+4;
  else if(FEETEX.has(ex.id))feetUntil=RT+4;
@@ -3756,7 +3781,7 @@ const CONFIG={
  book:'https://tone-yoga.com',bookLabel:'Private sessions with Tone Yoga',email:'',
  // allFree: true opens every feature (Pro and Coach) for everyone and hides the Go Pro button. Set it to false to turn on the paid plans.
  allFree:true};
-const FREE_EX=new Set(['koala','vine','hang','bear','crab','ape','lizard','bath','dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','desk','nurse','explore','coach']);
+const FREE_EX=new Set(['koala','vine','hang','bear','crab','ape','lizard','bath','dunk','cliff','yoga','lat','front','squat','run','ski','stack','skistance','polegrav','desk','nurse','explore','coach']);
 const TIERS={free:0,pro:1,coach:2};
 let TIER='free';try{TIER=localStorage.getItem('ml_tier')||'free';}catch(_){}
 const has=f=>CONFIG.allFree||(TIERS[TIER]||0)>=(TIERS[f]||0);

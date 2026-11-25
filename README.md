@@ -43,6 +43,7 @@ A 3D muscle lab that runs in the browser. You watch about 60 muscles on each sid
   - base of support
   - gravity load on each joint, in N·m
   - an Ease score
+  - **Ski poles: work with gravity** (new lesson): quiet hands in front, a light grip in the strap, a pendulum pole swing, a touch (not a stab), and the body falling over the pole as a hinge into the next turn. It shows the wrong ways too: death grip with the hands back (back seat), and a big reach that blocks the turn. Includes steeps, pivot and slash in trees and bumps, and double poling on flats and traverses. Set up for a Moment Deathwish 184 (Triple Camber, 138-112-129, 25 m radius, twin rocker) at Snowbird.
 - **Sharing:** links open a plan or one exercise directly. For example, `#plan-deltLat-wake` or `#move-soleus-kick`.
 - **Phone mode:** the page detects a phone and changes its layout automatically.
 
