@@ -109,10 +109,26 @@ When foot position matters (squats, ski stance, jumps, running, foot work, or ca
 Use the 🦶 Feet button to set it to auto, on or off.
 
 ### ◎ Modes and Simple view
-A mode picker opens at the start: Train a muscle, Activities, Yoga, Bath yoga, Mudras, Breath and channels, Musician relief, Tai chi and qigong, Animal mode.
+A mode picker opens at the start: Train a muscle, Activities, Yoga, Bath yoga, Mudras, Breath and channels, Musician relief, Tai chi and qigong, Animal mode, Classical physique.
 - **Simple view** (default) hides the lab panels (zoom, gravity data, layers).
 - **Full lab** shows everything.
 - Reopen the picker any time with ◎ Modes.
+
+### 🏛 Classical physique
+Train the muscles that classical artists carved. Choose a statue, then a stage.
+
+| Statue | Artist | Carved muscles |
+|---|---|---|
+| 🗿 Doryphoros (the Canon) | Polykleitos, c. 440 BC | Rectus abdominis, obliques over the hip, glute medius, vastus medialis, calf |
+| 🗽 David | Michelangelo, 1501–1504 | Side and front deltoids, chest, serratus anterior, lats, obliques, SCM, forearms |
+| ⭕ Vitruvian Man | Leonardo da Vinci, c. 1490 | Balance and range: side deltoid, lower trapezius, serratus, glute medius, adductors |
+| 🥏 Discobolus | Myron, c. 450 BC | Rotation: obliques, serratus, glutes, quads, hamstrings, chest |
+
+- 4 stages: 🌱 Wake → 🌿 Control → 🔥 Strength → 🗿 Statue (full-tension pose holds, or speed for the Discobolus).
+- 10 new moves: contrapposto stand, stomach vacuum, suitcase side bend, side raise, serratus reach, push-up, split squat, woodchop, Discobolus wind-up and throw, Vitruvian reach.
+- The carved muscles of the statue have a marble edge on the body.
+- Canon proportions: Polykleitos about 7 heads tall. Leonardo: arm span = height, shoulders = ¼ of the height, head = ⅛, foot = ⅐.
+- Share a program with `#cls-<dory|david|vitru|disco>-<1-4>`.
 
 ### 🙏 Mudras
 16 hand seals (Gyan, Prana, Apana, Prithvi, Shuni, Varuna, Vayu, Shunya, Surya, Heart, Vishnu, Adi, Abhaya, Anjali, Hakini, Dhyana). Each one has:

@@ -1059,6 +1059,7 @@ function drawMuscle(it,labels){
  if(ex.explore&&crole&&crole!=='x'&&crole!=='target'&&!(isSel||isHov)){ctx.lineWidth=1.8;ctx.strokeStyle=ROLECOL[crole];ctx.stroke();}
  if(LENS&&!Z){const ms=mechMuscleStyle(mu);if(ms==='abl'){ctx.fillStyle='rgba(30,41,59,.88)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#64748b';ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);}else if(ms==='comp'){ctx.lineWidth=2.6;ctx.strokeStyle='#fb923c';ctx.shadowColor='#fb923c';ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0;}else if(ms==='waste'){ctx.lineWidth=2.2;ctx.strokeStyle='#f87171';ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);}}
  if(ex.fbProg&&!Z){const fc=FBBACK.has(mu.d.id)?'#fbbf24':FBFRONT.has(mu.d.id)?'#7dd3fc':null;if(fc){ctx.lineWidth=1.7;ctx.strokeStyle=fc;ctx.stroke();}}
+ if(ex.clsProg&&!Z&&CLMARB.has(mu.d.id)){ctx.lineWidth=2;ctx.strokeStyle='#f5e6c8';ctx.stroke();}
  if(crole==='target'||(ex.explore&&mu.d.id===cT&&!Z)){ctx.save();ctx.globalAlpha=.35+.25*Math.sin(RT*3);ctx.fillStyle='#ff4fd8';ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ff4fd8';ctx.lineWidth=2.6;ctx.shadowColor='#ff4fd8';ctx.shadowBlur=12+8*Math.sin(RT*4);ctx.stroke();ctx.restore();}
  // fibers
  if(bl>=hw*1.1&&hw>1.6&&(Z||LOWQ<3)&&!(LENS&&MABL.has(mu.d.id))){
@@ -2731,6 +2732,7 @@ function renderYoga(){yFlow=buildYoga();const hold=yLen==='full'?5:3;let tot=0;c
  O.querySelectorAll('.ypose').forEach(b=>b.onclick=()=>startYoga([b.dataset.yk],YOGA[b.dataset.yk].name,true));}
 function currentHash(){
  if(ex.fbProg)return'#fb-'+FBG+'-'+(FBS+1);
+ if(ex.clsProg)return'#cls-'+CLG+'-'+(CLS+1);
  if(ex.counterOf)return'#counter-'+ex.counterOf;
  if(ex.yoga){const bl=ex.blocks||[];if(bl.length===1&&ex.yk1)return'#pose-'+ex.yk1+'-'+bPace;return yogaHash();}
  if(ex.stage!=null)return'#stage-'+ex.stageT+'-'+(ex.stage+1);
@@ -2776,6 +2778,8 @@ function readAnyHash(hs){let m;
  if(/^#mudra\b/.test(hs)){enterYoga('mudra');return true;}
  if((m=hs.match(/#fb-(sit|stand|fwd|back)-([1-4])/))){enterYoga('fb');fbPlay(m[1],+m[2]-1);return true;}
  if(/^#fb\b/.test(hs)){enterYoga('fb');return true;}
+ if((m=hs.match(/#cls-(dory|david|vitru|disco)-([1-4])/))){enterYoga('cls');clsPlay(m[1],+m[2]-1);return true;}
+ if(/^#cls\b/.test(hs)){enterYoga('cls');return true;}
  return false;}
 const yogaHash=()=>yMode==='mudra'?'#mudra':'#'+(yMode==='bath'?'bath':'yoga')+'-'+[...yFocus].filter(f=>f!=='coach').join('.')+'-'+yLen+'-'+bPace;
 async function shareYoga(){const url=baseShareURL()+yogaHash()+settingsStr();const text='Yoga flow · Muscle Lab';
@@ -2947,7 +2951,7 @@ function playStage(T,i){const L=LADDER[i];const plan={R:rolesFor(T)};const pick=
  const e=buildPlanEx(T,{R:plan.R,blocks,noCF:true},`${L.ic} ${L.n} · ${MDEFK[T].short}`);e.stage=i;e.stageT=T;e.effort=L.eff;cT=T;selectEx(e);sel=T;
  if(document.body.classList.contains('phone')){document.body.classList.add('sheetMini');$('cMin').textContent='▴';syncSheet();fitCamera();}
  try{history.replaceState(null,'','#stage-'+T+'-'+(i+1));}catch(_){}toast(`${L.ic} ${L.n}: ${L.dose}`);}
-function drawEffort(){if(ex.effort==null)return;const L=ex.fbProg?FBST[FBS]:LADDER[ex.stage];if(!L)return;const ph=document.body.classList.contains('phone');const w=ph?150:200,h=ph?30:34;
+function drawEffort(){if(ex.effort==null)return;const L=ex.fbProg?FBST[FBS]:ex.clsProg?CLST[CLS]:LADDER[ex.stage];if(!L)return;const ph=document.body.classList.contains('phone');const w=ph?150:200,h=ph?30:34;
  const x=ph?10:camArea.x0+16,y=camArea.y1-(ph?150:120);ctx.save();ctx.fillStyle='rgba(6,12,24,.82)';ctx.strokeStyle='rgba(255,255,255,.15)';ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h+18,10):ctx.rect(x,y,w,h+18);ctx.fill();ctx.stroke();
  ctx.font=`800 ${ph?11:12}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e6faff';ctx.textBaseline='middle';ctx.fillText(`${L.ic} EFFORT ${Math.round(ex.effort*100)}% · ${L.n.toUpperCase()}`,x+10,y+12);
  const bx=x+10,by=y+24,bw=w-20;const g=ctx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#34d399');g.addColorStop(.5,'#ffd84d');g.addColorStop(1,'#ff4d4d');ctx.fillStyle='rgba(255,255,255,.1)';ctx.fillRect(bx,by,bw,10);ctx.fillStyle=g;ctx.fillRect(bx,by,bw*ex.effort,10);ctx.restore();}
@@ -3360,7 +3364,7 @@ function drawBalanceHUD(W){if(ex.id!=='guitar'&&ex.counterOf!=='guitar')return;c
 const MODES=[['muscle','🎯','Train a muscle','Pick a muscle. See where it is, what it does, and how to wake it up.'],['acts','▦','Activities','Sports, ski, run, climb, desk and daily life.'],
  ['yoga','🧘','Yoga','A flow built from the areas you choose, with breath.'],['bath','🛁','Bath yoga','Gentle poses in warm water.'],['mudra','🙏','Mudras','Hand seals, with the hand muscles that hold them.'],
  ['energy','🔆','Breath and channels','Breathe up the back channel and down the front channel.'],['guitar','🎸','Musician relief','Guitar posture, the left–right imbalance, and relief moves.'],
- ['lens','🔬','Mechanism lens','See the circuit from gravity to joints to muscles. Knock out a muscle. Find wasted energy.'],['fb','⚖','Front and back power','Train the front and back lines to sit tall, stand up, and move forward or back with power.'],['taichi','☯','Tai chi and qigong','Slow, flowing moves.'],['animal','🐾','Animal mode','Hang, climb, crawl and swing.']];
+ ['lens','🔬','Mechanism lens','See the circuit from gravity to joints to muscles. Knock out a muscle. Find wasted energy.'],['fb','⚖','Front and back power','Train the front and back lines to sit tall, stand up, and move forward or back with power.'],['cls','🏛','Classical physique','Train the muscles of David, the Doryphoros, the Discobolus and Leonardo\'s Vitruvian Man.'],['taichi','☯','Tai chi and qigong','Slow, flowing moves.'],['animal','🐾','Animal mode','Hang, climb, crawl and swing.']];
 let SIMPLE=true;try{const v=localStorage.getItem('ml_simple');if(v!=null)SIMPLE=v==='1';}catch(_){}
 function setSimple(v){SIMPLE=!!v;try{localStorage.setItem('ml_simple',SIMPLE?'1':'0');}catch(_){}const B=document.body.classList;B.toggle('simple',SIMPLE);
  showGrav=!SIMPLE;$('tGrav').classList.toggle('on',showGrav);zOn=!SIMPLE&&innerWidth>1000;B.toggle('zhide',!zOn);$('tZoom').classList.toggle('on',zOn);
@@ -3378,7 +3382,7 @@ function goMode(k){const B=document.body.classList;$('actMenu').hidden=true;if($
  const act=id=>{const e=EX.find(x=>x.id===id);if(!e)return;B.remove('pick','movesOpen');PICKSET=null;exitYoga();selectEx(e);if(B.contains('phone')){$('coach').hidden=true;}syncSheet();fitCamera();try{history.replaceState(null,'','#act-'+id);}catch(_){}};
  if(k==='muscle')return goMainMenu();if(k==='acts')return openActs();if(k==='yoga'||k==='bath'||k==='mudra')return enterYoga(k);
  if(k==='energy'){enterYoga('mudra');setChan(true);return startYoga(['orbit'],'Energy orbit',true);}
- if(k==='guitar')return act('guitar');if(k==='fb')return enterYoga('fb');if(k==='lens'){if(ex.explore||B.contains('pick'))act('squat');return setLens(true);}if(k==='taichi')return playTaiChi();if(k==='animal')return act('koala');}
+ if(k==='guitar')return act('guitar');if(k==='fb')return enterYoga('fb');if(k==='cls')return enterYoga('cls');if(k==='lens'){if(ex.explore||B.contains('pick'))act('squat');return setLens(true);}if(k==='taichi')return playTaiChi();if(k==='animal')return act('koala');}
 
 
 // =========================================================
@@ -3578,6 +3582,116 @@ function drawFBMeter(){if(!ex.fbProg)return;const ph=document.body.classList.con
  ctx.textBaseline='middle';ctx.textAlign='left';ctx.font=`800 ${ph?10:11}px Inter,system-ui,sans-serif`;ctx.fillStyle='#e6faff';ctx.fillText(Math.abs(pb-.5)<.12?'⚖ BOTH LINES WORK':pb>.5?'BACK LINE DRIVES':'FRONT LINE WORKS',x+10,y+12);
  const bx=x+10,bw=w-20,by=y+24;ctx.fillStyle='#fbbf24';ctx.fillRect(bx,by,bw*pb,9);ctx.fillStyle='#7dd3fc';ctx.fillRect(bx+bw*pb,by,bw*(1-pb),9);
  ctx.font=`600 ${ph?9:10}px Inter,system-ui,sans-serif`;ctx.fillStyle='#fde68a';ctx.fillText(`back ${Math.round(pb*100)}%`,bx,by+19);ctx.textAlign='right';ctx.fillStyle='#bae6fd';ctx.fillText(`front ${Math.round((1-pb)*100)}%`,bx+bw,by+19);ctx.restore();}
+
+
+// =========================================================
+// CLASSICAL PHYSIQUE: train the muscles that the Greek sculptors, Michelangelo and Leonardo carved
+// statues: Doryphoros (Polykleitos' Canon), David (Michelangelo), Vitruvian Man (Leonardo), Discobolus (Myron)
+// =========================================================
+Object.assign(MOVES,{
+ clContra:{name:'Contrapposto stand (statue stance)',src:'Classical · Polykleitos',dur:10,dose:'3 × 20 s each side',base:{'anc.R':1},
+  keys:[{t:0,p:{'B.sh.a':6},cap:'Stand on both feet. The weight is even, the hips and the shoulders are level.'},
+   {t:.22,p:{'R.kn':2,'L.kn':24,'L.hip.f':14,'L.hip.a':4,'L.an':-16,'root.roll':-2,'spine.s':-6,'chest.s':-4,'neck.t':-18,'L.sh.a':12,'R.sh.a':4},cap:'Contrapposto: put all the weight on the right leg and relax the left knee. The right hip goes up, the right shoulder goes down, and the head turns toward the standing leg. This is the stance of the Doryphoros and of David.'},
+   {t:.45,p:{},cap:'Hold. The right glute medius holds the pelvis. The obliques and QL bunch on the right side and lengthen on the left side. This is why Greek sculptors carved the obliques so clearly.'},
+   {t:.7,p:{},cap:'Relax the face and the hands. A statue shows a body at ease, not a body that strains. The bones carry the weight; the muscles only balance it.'},
+   {t:.9,p:{'R.kn':0,'L.kn':0,'L.hip.f':0,'L.hip.a':0,'L.an':0,'root.roll':0,'spine.s':0,'chest.s':0,'neck.t':0,'L.sh.a':6,'R.sh.a':6},cap:'Come back to both feet.'}],
+  work:['gluteMed','gluteMin','QL','oblique','intOblique','vastMed','soleus'],stab:['multifidus','abdHallucis','peroneals','longusColli','tfl']},
+ clVacuum:{name:'Stomach vacuum (the carved waist)',src:'Classical · core',dur:10,dose:'5 × 10–20 s',base:{'B.sh.a':6},
+  keys:[{t:0,p:{},cap:'Stand tall. Breathe in through the nose.'},
+   {t:.25,p:{'chest.f':-4,'B.clav.e':2},cap:'Breathe out all the air. Then pull the navel in and up, toward the spine. The transversus abdominis (TVA) tightens like a belt.'},
+   {t:.55,p:{},cap:'Hold without a breath for 10 s, or take small breaths. The waist becomes narrow. Classical statues show a narrow waist between a wide chest and the obliques.'},
+   {t:.85,p:{'chest.f':0,'B.clav.e':0},cap:'Relax and breathe normally.'}],
+  work:['tva','intOblique'],stab:['diaphragm','pelvicFloor','multifidus','rectusAbd']},
+ clSuitcase:{name:'Suitcase side bend',src:'Classical · obliques',dur:7,dose:'3 × 10 each side · hold a weight',base:{'B.sh.a':4},
+  keys:[{t:0,p:{},cap:'Stand tall with a weight in the right hand.'},
+   {t:.4,p:{'spine.s':-14,'chest.s':-8,'neck.s':-4},cap:'Bend slowly to the right. The left obliques and the left QL lengthen under load (eccentric).'},
+   {t:.75,p:{'spine.s':4,'chest.s':2,'neck.s':0},cap:'Lift back up and a little past the center. The left obliques shorten. These muscles make the ridge above the hip on a classical statue.'}],
+  work:['oblique','intOblique','QL'],stab:['gluteMed','erector','forearmFlex','trapUpper']},
+ clLatRaise:{name:'Side raise (the round shoulder cap)',src:'Classical · shoulders',dur:6,dose:'3 × 12, slow lowering',base:{'B.sh.a':6},
+  keys:[{t:0,p:{},cap:'Stand tall, a light weight in each hand.'},
+   {t:.4,p:{'B.sh.a':86,'B.sh.f':14,'B.el':10},cap:'Raise the arms out to the sides to shoulder height. The side deltoid lifts. A wide shoulder cap makes the V-shape of David.'},
+   {t:.55,p:{},cap:'Pause. Keep the neck long: the upper trapezius stays quiet.'},
+   {t:.92,p:{'B.sh.a':6,'B.sh.f':0,'B.el':0},cap:'Lower slowly for 3 s (eccentric).'}],
+  work:['deltLat','supraspinatus','deltAnt'],stab:['trapLower','serratus','rectusAbd','trapUpper']},
+ clSerratus:{name:'Serratus reach (the fingers on the ribs)',src:'Classical · serratus',dur:8,dose:'3 × 10',base:{'B.sh.f':88,'B.el':0,'B.sh.a':4},
+  keys:[{t:0,p:{},cap:'Stand with the arms straight in front, or with the hands on a wall.'},
+   {t:.3,p:{'B.clav.p':10},cap:'Reach forward without bending the elbows. The serratus anterior pulls the shoulder blades around the ribs. On David, the serratus shows as fingers on the side of the ribs.'},
+   {t:.55,p:{'B.clav.p':-6},cap:'Let the shoulder blades come back together.'},
+   {t:.75,p:{'B.sh.f':165,'B.clav.e':8,'B.clav.p':4},cap:'Reach up: the serratus and the lower trapezius turn the shoulder blades up.'},
+   {t:.95,p:{'B.sh.f':88,'B.clav.e':0,'B.clav.p':0},cap:'Lower slowly.'}],
+  work:['serratus','trapLower'],stab:['rhomboid','rectusAbd','deltAnt','triceps']},
+ clPushup:{name:'Push-up (the flat, wide chest)',src:'Classical · chest',dur:6,dose:'3 × 6–15 · use a bench to make it easier',anchor:'pushup',
+  base:{'B.sh.f':65,'B.sh.a':12,'B.sh.r':20,'B.el':5,'B.wr':80,'B.an':10,'B.toe':60,'B.clav.p':6,'root.pitch':65},
+  keys:[{t:0,p:{},cap:'Top: arms straight, body in one line.'},
+   {t:.45,p:{'B.sh.f':15,'B.el':100,'B.sh.a':55,'B.sh.r':45,'B.clav.p':-4},cap:'Lower for 3 s. The pecs and the front deltoids lengthen under load. Classical chests are wide and flat, so a full range is more important than heavy load.'},
+   {t:.52,p:{},cap:'Push: the chest, front deltoids and triceps shorten. At the top, the serratus pushes the shoulder blades forward.'},
+   {t:.9,p:{'B.sh.f':65,'B.el':5,'B.sh.a':12,'B.sh.r':20,'B.clav.p':6},cap:'Top. The abs and glutes keep the body straight.'}],
+  work:['pec','deltAnt','triceps','serratus'],stab:['rectusAbd','oblique','gluteMax','vastLat','vastMed']},
+ clSplitSquat:{name:'Split squat (the knee teardrop)',src:'Classical · legs',dur:8,dose:'3 × 8 each leg',base:{'B.sh.a':6},
+  keys:[{t:0,p:{'R.hip.f':-14,'R.kn':8,'R.an':-28,'L.hip.f':18,'L.kn':6,'L.an':-4},cap:'Split stance: one foot forward, one foot back, the back heel up.'},
+   {t:.45,p:{'R.hip.f':-12,'R.kn':94,'R.an':-32,'L.hip.f':86,'L.kn':90,'L.an':4,'root.pitch':4},cap:'Lower for 3 s until the front knee bends to 90°. The front knee goes forward over the toes: this works the vastus medialis, the teardrop above the knee on classical statues.'},
+   {t:.85,p:{'R.hip.f':-14,'R.kn':8,'R.an':-28,'L.hip.f':18,'L.kn':6,'L.an':-4,'root.pitch':0},cap:'Push through the front foot to come up. The glute and the quads shorten.'}],
+  work:['vastMed','vastLat','rectFem','gluteMax'],stab:['gluteMed','adductors','intOblique','tibAnt','soleus']},
+ clWoodchop:{name:'Woodchop (high to low turn)',src:'Classical · Myron',dur:6,dose:'3 × 8 each side · cable or band',base:{'B.hip.a':10},
+  keys:[{t:0,p:{'B.sh.f':140,'B.sh.a':10,'B.el':10,'chest.t':26,'spine.t':10,'neck.t':22,'L.an':-10},cap:'Start: hands together high on the left side, the trunk turned to the left.'},
+   {t:.45,p:{'B.sh.f':40,'B.sh.a':10,'chest.t':-28,'spine.t':-12,'neck.t':-20,'root.pitch':20,'B.hip.f':24,'B.kn':22,'L.an':0,'R.an':-10},cap:'Chop down and across to the right knee. The hips turn first, then the trunk, then the arms. The obliques and the serratus make the turn: the same chain as the Discobolus throw.'},
+   {t:.6,p:{},cap:'Pause low. Keep the spine long.'},
+   {t:.95,p:{'B.sh.f':140,'B.sh.a':10,'chest.t':26,'spine.t':10,'neck.t':22,'root.pitch':0,'B.hip.f':0,'B.kn':0,'L.an':-10,'R.an':0},cap:'Return slowly to the high start (eccentric for the obliques).'}],
+  work:['oblique','intOblique','serratus','deltAnt','gluteMax'],stab:['rectusAbd','tva','gluteMed','adductors','vastLat']},
+ clDiscus:{name:'Discobolus wind-up and throw',src:'Classical · Myron · power',dur:5,dose:'4 × 5 each side, no weight or a light ball',base:{'B.sh.a':8},
+  keys:[{t:0,p:{},cap:'Stand with the feet a little wider than the hips.'},
+   {t:.3,p:{'anc.R':1,'R.kn':42,'R.hip.f':40,'R.an':18,'L.kn':22,'L.hip.f':10,'L.an':-24,'root.pitch':24,'chest.t':-30,'spine.t':-16,'R.sh.a':70,'R.sh.f':-30,'R.el':8,'L.sh.f':60,'L.el':70,'neck.t':-24},cap:'Wind-up: this is the pose of Myron\'s Discobolus. The weight is on the bent right leg, the trunk turns to the right, the right arm swings high behind. The obliques, serratus and glutes lengthen like a spring.'},
+   {t:.55,p:{'anc.R':1,'R.kn':18,'R.hip.f':12,'R.an':-6,'L.kn':10,'root.pitch':8,'chest.t':18,'spine.t':12,'R.sh.a':80,'R.sh.f':80,'L.sh.f':10,'L.el':30,'neck.t':10},cap:'Throw: the right leg and the glute drive the hips around, then the obliques turn the trunk, then the arm follows. Power goes from the ground up.'},
+   {t:.72,p:{'anc.R':0,'R.an':-20,'R.kn':8,'R.hip.f':6,'L.kn':12,'root.pitch':4,'chest.t':30,'spine.t':16,'R.sh.f':100,'R.sh.a':40,'neck.t':24},cap:'Follow through onto the left leg. The left glute and quads brake the turn.'},
+   {t:.92,p:{'anc.R':0,'R.kn':0,'R.hip.f':0,'R.an':0,'L.kn':0,'L.hip.f':0,'L.an':0,'root.pitch':0,'chest.t':0,'spine.t':0,'R.sh.a':8,'R.sh.f':0,'R.el':0,'L.sh.f':0,'L.el':0,'neck.t':0},cap:'Stand tall again.'}],
+  work:['oblique','intOblique','gluteMax','serratus','deltAnt','vastLat','pec'],stab:['adductors','gluteMed','hamstrings','rectusAbd','peroneals']},
+ clVitruvian:{name:'Vitruvian reach (circle and square)',src:'Classical · Leonardo',dur:10,dose:'3 × 5 slow breaths',base:{},
+  keys:[{t:0,p:{'B.sh.a':6},cap:'Stand tall, feet together.'},
+   {t:.25,p:{'B.sh.a':90,'B.el':0},cap:'The square: arms out to the sides. Leonardo wrote that the span of the arms is equal to the height of a man. The side deltoids and supraspinatus hold the arms level.'},
+   {t:.5,p:{'B.sh.a':118,'B.hip.a':20,'B.el':0},cap:'The circle: raise the arms higher and step the feet apart. Now the navel is the center of the body. The serratus and lower trapezius turn the shoulder blades up; the glute medius opens the legs.'},
+   {t:.72,p:{},cap:'Hold and breathe. Reach long through the fingers and the feet. Balanced and even on both sides: this is the ideal of the drawing.'},
+   {t:.92,p:{'B.sh.a':6,'B.hip.a':0},cap:'Come back slowly.'}],
+  work:['deltLat','supraspinatus','serratus','trapLower','gluteMed'],stab:['rectusAbd','tva','adductors','abdHallucis','trapUpper']}});
+for(const k in MOVES)if(/^cl[A-Z]/.test(k)){const m=MOVES[k];m.id='mv_'+k;m.key=k;m.anchor=m.anchor||'ground';m.props=[];m.view=m.anchor==='pushup'?[75,14]:[35,10];m.icon='•';m.focus=['shoulder','core','hip','leg'];}
+const CLGOALS={
+ dory:{ic:'🗿',n:'Doryphoros',who:'Polykleitos · c. 440 BC',
+  why:'The Spear-Bearer is the "Canon" of Polykleitos: a rule of proportion where each part measures against the others (about 7 heads tall). He stands in contrapposto. Look for the "Greek belt": the rectus abdominis in clear panels, the obliques as a thick ridge over the hip bone, a firm glute medius and the teardrop of the vastus medialis above the knee.',
+  mus:['rectusAbd','oblique','intOblique','gluteMed','vastMed','gastroc'],
+  st:[['clContra','deadBug','sideLift'],['clVacuum','clSuitcase','clContra'],['clSplitSquat','clSuitcase','fbHollow','fbCalf'],['clContra','fbPlank','clVacuum']]},
+ david:{ic:'🗽',n:'David',who:'Michelangelo · 1501–1504',
+  why:'Michelangelo\'s David is a V-shape: wide shoulders, wide lats and a narrow waist. He also stands in contrapposto, with the head turned and the sternocleidomastoid clear on the neck. Look for the round side deltoids, a wide flat chest, the serratus anterior as fingers on the ribs, the obliques, and big forearms and hands.',
+  mus:['deltLat','deltAnt','pec','serratus','lats','oblique','scm','forearmFlex'],
+  st:[['wallAngel','clSerratus','scap'],['clLatRaise','clSerratus','row'],['clPushup','climb','clLatRaise'],['clContra','clPushup','bdjFist']]},
+ vitru:{ic:'⭕',n:'Vitruvian Man',who:'Leonardo da Vinci · c. 1490',
+  why:'Leonardo measured real men to test the rules of Vitruvius. In his text: the arm span is equal to the height, the shoulders are 1/4 of the height, the head is 1/8 of the height and the foot is 1/7 of the height. The ideal is balance: no muscle too big, both sides even, full reach overhead and wide legs. So this program trains range and symmetry, not size.',
+  mus:['deltLat','trapLower','serratus','gluteMed','adductors','rectusAbd'],
+  st:[['clVitruvian','scap','neck'],['clVitruvian','ytw','sidelunge'],['press','sidelunge','fbHinge'],['clVitruvian','crane','warrior2']]},
+ disco:{ic:'🥏',n:'Discobolus',who:'Myron · c. 450 BC',
+  why:'The Discus Thrower is a body caught in a spiral: the trunk twists, one leg loads, one arm swings back. The muscles that show are the muscles of rotation: the obliques, the serratus, the glutes, the quads and the hamstrings. Train the turn with control first, then with speed.',
+  mus:['oblique','intOblique','serratus','gluteMax','vastLat','hamstrings','pec'],
+  st:[['deadBug','swingArms','clam'],['clWoodchop','sidelunge','bdjSway'],['clWoodchop','clSplitSquat','fbHinge'],['clDiscus','fbSwing','clWoodchop']]}};
+const CLST=[{ic:'🌱',n:'Wake',eff:.15,tempo:'pulse',reps:1,how:'Gentle 3 s squeezes, about 15% effort. Feel each carved muscle switch on.'},
+ {ic:'🌿',n:'Control',eff:.35,tempo:'ctrl',reps:2,how:'Slow, full range, 3 s each way, light load.'},
+ {ic:'🔥',n:'Strength',eff:.7,tempo:'ecc',reps:2,how:'More load, 6–12 reps, 3 s lowering. Muscle shape grows with weeks of this stage.'},
+ {ic:'🗿',n:'Statue',eff:1,tempo:'con',reps:2,how:'Hold the statue stance with full tension for 5–10 s, then relax. For the Discobolus, move fast. Long rests.'}];
+let CLG='david',CLS=0,CLMARB=new Set();
+function clsPlay(g,i){CLG=g;CLS=i;const G=CLGOALS[g],S=CLST[i];CLMARB=new Set(G.mus);const T0=G.mus.find(x=>MUSK[x+'L'])||'oblique';const R=rolesFor(T0);
+ const blocks=G.st[i].filter(k=>MOVES[k]).map(k=>{const m0=MOVES[k];const T=m0.work.find(x=>MUSK[x+'L'])||T0;const m=S.tempo==='con'?m0:tempoMove(m0,T,S.tempo);return{m,label:`${G.ic} ${G.n} · ${S.ic} ${S.n}`,k,reps:S.reps};});
+ const e=buildPlanEx(T0,{R,blocks,noCF:true},`${G.ic} ${G.n} · ${S.ic} ${S.n}`);e.clsProg=1;e.effort=S.eff;e.stage=null;selectEx(e);sel=null;playing=true;
+ if(document.body.classList.contains('phone')){document.body.classList.add('sheetMini');$('cMin').textContent='▴';syncSheet();fitCamera();}
+ try{history.replaceState(null,'','#cls-'+g+'-'+(i+1));}catch(_){}toast(`${G.ic} ${G.n} · ${S.ic} ${S.n}: ${S.how}`);renderCLS();}
+function renderCLS(){const O=$('cOut');const G=CLGOALS[CLG];CLMARB=new Set(G.mus);
+ let h=`<div class="csub" style="margin:2px 0 8px">Classical artists did not carve the biggest muscles. They carved <b style="color:#f5e6c8">clear, balanced</b> muscles on a body at ease: a wide chest and shoulders, a narrow waist, strong obliques over the hips, and the weight on one leg (contrapposto). Choose a statue and train the muscles that the artist carved.</div>
+ <div class="ch3" style="margin:6px 0 4px">1. Choose the statue</div><div class="pkrow" style="flex-wrap:wrap;gap:6px">`+Object.entries(CLGOALS).map(([k,g])=>`<button class="pk${k===CLG?' on':''}" data-cg="${k}">${g.ic} ${g.n}</button>`).join('')+`</div>
+ <div class="ctip" style="margin:8px 0"><b>${G.ic} ${G.n}</b> <span style="color:var(--dim)">(${G.who})</span><br>${G.why}</div>
+ <div class="csub" style="margin:0 0 6px"><b>The carved muscles:</b> `+G.mus.filter(x=>MDEFK[x]).map(x=>`<span style="color:#f5e6c8">●</span> ${MDEFK[x].short}`).join(' · ')+`</div>
+ <div class="ch3" style="margin:6px 0 4px">2. Choose the stage and play</div><div class="pkrow" style="flex-wrap:wrap;gap:6px">`+CLST.map((s,i)=>`<button class="pk${ex.clsProg&&i===CLS?' on':''}" data-cs="${i}">▶ ${s.ic} ${s.n} · ${Math.round(s.eff*100)}%</button>`).join('')+`</div>`;
+ CLST.forEach((s,i)=>{const ms=G.st[i].filter(k=>MOVES[k]);h+=`<div class="ypose" data-cs="${i}"><div><b>${s.ic} ${s.n}</b> <span style="color:var(--dim)">${s.how}</span></div><div class="csub" style="margin:1px 0 0">`+ms.map(k=>{const m=MOVES[k];const n=m.work.filter(x=>CLMARB.has(x)).length;return`<span style="color:${n>=2?'#f5e6c8':'#94a3b8'}">●</span> ${m.name.replace(/ \(.*\)$/,'').replace(/ · .*/,'')}`;}).join(' · ')+`</div></div>`;});
+ h+=`<div class="csub" style="margin-top:8px"><b>Canon proportions</b> · Polykleitos: about 7 heads tall · Leonardo: arm span = height, shoulders = ¼ of the height, head = ⅛, foot = ⅐. The "golden ratio" link to Leonardo is a later myth; his text does not use it.<br><span style="color:#f5e6c8">●</span> a carved muscle of this statue. On the body, these muscles have a marble edge. Build up over weeks: wake → control → strength → statue. Shape comes from training plus low body fat; genetics set the final form. Education only, not medical advice.</div>`;
+ O.innerHTML=h;O.querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>{CLG=b.dataset.cg;renderCLS();});O.querySelectorAll('[data-cs]').forEach(b=>b.onclick=()=>clsPlay(CLG,+b.dataset.cs));}
+{const _ry3=renderYoga;renderYoga=function(){if(yMode==='cls')return renderCLS();return _ry3();};
+ const _yi3=yogaIdle;yogaIdle=function(){if(yMode==='cls'){const R=rolesFor('oblique');const e=buildPlanEx('oblique',{R,blocks:[{m:MOVES.clContra,label:'Classical physique',k:'clContra',reps:1}],noCF:true},'Classical physique');e.clsProg=1;e.name='Classical physique · choose a statue and a stage';return e;}return _yi3();};
+ const _ey3=enterYoga;enterYoga=function(mode){_ey3(mode);if(mode==='cls'){setBreath(false);$('coach').querySelector('.chd b').textContent='🏛 Classical physique';renderCLS();}};}
 
 
 // =========================================================
